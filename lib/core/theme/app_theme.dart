@@ -446,9 +446,9 @@ class AppTheme {
     onSurfaceVariant: AppColors.onSurfaceVariant,
     surfaceContainer: AppColors.surfaceContainer,
     surfaceContainerHigh: AppColors.surfaceContainerHigh,
-    surfaceContainerHighest: AppColors.surfaceContainerHigh,
-    surfaceContainerLow: AppColors.surface,
-    surfaceContainerLowest: AppColors.surface,
+    surfaceContainerHighest: AppColors.surfaceContainerHighest,
+    surfaceContainerLow: AppColors.surfaceContainerLow,
+    surfaceContainerLowest: AppColors.surfaceContainerLowest,
     outline: AppColors.outline,
     outlineVariant: AppColors.outlineVariant,
     shadow: AppColors.shadow,
@@ -459,41 +459,41 @@ class AppTheme {
     surfaceTint: AppColors.primary,
   );
 
-  /// Dark color scheme based on Academy palette
+  /// Dark color scheme based on Academy palette - Navy theme
   static const ColorScheme _darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
-    primary: AppColors.primaryContainer,
-    onPrimary: AppColors.onPrimaryContainer,
-    primaryContainer: AppColors.primary,
-    onPrimaryContainer: AppColors.onPrimary,
-    secondary: AppColors.secondaryContainer,
-    onSecondary: AppColors.onSecondaryContainer,
-    secondaryContainer: AppColors.secondary,
-    onSecondaryContainer: AppColors.onSecondary,
-    tertiary: AppColors.tertiaryContainer,
-    onTertiary: AppColors.onTertiaryContainer,
-    tertiaryContainer: AppColors.tertiary,
-    onTertiaryContainer: AppColors.onTertiary,
-    error: Color(0xFFFFB4AB),
-    onError: Color(0xFF690005),
-    errorContainer: Color(0xFF93000A),
-    onErrorContainer: Color(0xFFFFDAD6),
-    surface: Color(0xFF161A24),
-    onSurface: Color(0xFFE8ECEF),
-    onSurfaceVariant: Color(0xFFBEC6D4),
-    surfaceContainer: Color(0xFF1E2430),
-    surfaceContainerHigh: Color(0xFF272D3D),
-    surfaceContainerHighest: Color(0xFF32384C),
-    surfaceContainerLow: Color(0xFF1A1F2B),
-    surfaceContainerLowest: Color(0xFF11151D),
-    outline: Color(0xFF7A8292),
-    outlineVariant: Color(0xFF4A5162),
-    shadow: Color(0x1A000000),
-    scrim: Color(0x99000000),
-    inverseSurface: Color(0xFFE8ECEF),
-    onInverseSurface: Color(0xFF161A24),
-    inversePrimary: AppColors.primary,
-    surfaceTint: AppColors.primaryContainer,
+    primary: AppColors.primary,           // #7C6FF2 - Soft purple
+    onPrimary: AppColors.onPrimary,       // White text on purple
+    primaryContainer: AppColors.primaryContainer, // #D4CDFF - Light purple
+    onPrimaryContainer: AppColors.onPrimaryContainer, // #2A225D - Dark purple text
+    secondary: AppColors.secondary,       // #9B8AFB - Light violet
+    onSecondary: AppColors.onSecondary,   // #0D1F42 - Navy text on violet
+    secondaryContainer: AppColors.secondaryContainer, // #EDE9FF - Very light violet
+    onSecondaryContainer: AppColors.onSecondaryContainer, // #4A3D7A - Purple-ish text
+    tertiary: AppColors.tertiary,         // #6A8DFF - Soft blue
+    onTertiary: AppColors.onTertiary,     // White text on blue
+    tertiaryContainer: AppColors.tertiaryContainer, // #E3E9FF - Light blue container
+    onTertiaryContainer: AppColors.onTertiaryContainer, // #1A345D - Navy-blue text
+    error: AppColors.error,               // #EF6B73 - Muted red
+    onError: AppColors.onError,           // White text on red
+    errorContainer: AppColors.errorContainer, // #F9CED2 - Light red container
+    onErrorContainer: AppColors.onErrorContainer, // #9B0025 - Dark red text
+    surface: AppColors.surface,           // #0D1F42 - Main card/surface color
+    onSurface: AppColors.onSurface,       // #F5F5F2 - Primary text
+    onSurfaceVariant: AppColors.onSurfaceVariant, // #AEB9D0 - Secondary text
+    surfaceContainer: AppColors.surfaceContainer, // #0E2147 - Input background
+    surfaceContainerHigh: AppColors.surfaceContainerHigh, // #0F234F - Elevated input
+    surfaceContainerHighest: AppColors.surfaceContainerHighest, // #112663 - More elevated
+    surfaceContainerLow: AppColors.surfaceContainerLow, // #0C1D3D - Lowered surface
+    surfaceContainerLowest: AppColors.surfaceContainerLowest, // #0A1A33 - Lowest surface
+    outline: AppColors.outline,           // #2A4170 - Border color
+    outlineVariant: AppColors.outlineVariant, // #344F8A - Subtle border
+    shadow: AppColors.shadow,             // Shadow
+    scrim: AppColors.scrim,               // Modal scrim
+    inverseSurface: AppColors.onSurface,  // For snack bars etc.
+    onInverseSurface: AppColors.surface,  // inverse text
+    inversePrimary: AppColors.primaryContainer, // inverse primary
+    surfaceTint: AppColors.primaryContainer, // surface tint
   );
 
   // =========================================================================
@@ -580,7 +580,7 @@ class AppTheme {
     );
   }
 
-  /// Dark theme for the Academy app
+  /// Dark theme for the Academy app - Navy theme
   static ThemeData get darkTheme {
     const colorScheme = _darkColorScheme;
     return ThemeData(
@@ -590,7 +590,7 @@ class AppTheme {
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
       ),
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: AppColors.background, // #071633 - Deep navy background
       canvasColor: colorScheme.surface,
       inputDecorationTheme: _inputDecorationTheme(colorScheme),
       elevatedButtonTheme: _elevatedButtonTheme(colorScheme),

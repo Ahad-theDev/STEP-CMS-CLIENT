@@ -1,4 +1,3 @@
-import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/auth/application/auth_controller.dart';
 import 'package:cms/features/auth/data/models/register_request.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +84,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         builder: (context) => AlertDialog(
           title: Row(
             children: [
-              Icon(Icons.check_circle_rounded, color: AppColors.tertiary, size: 28),
+              Icon(Icons.check_circle_rounded, color: Theme.of(context).colorScheme.tertiary, size: 28),
               const SizedBox(width: 12),
               const Text('Success'),
             ],
@@ -130,7 +129,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: const BoxConstraints(maxWidth: 600),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -139,41 +138,125 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   children: [
                     _HeaderSection(colorScheme: colorScheme),
                     const SizedBox(height: 32),
-                    _UsernameField(
-                      controller: _usernameController,
-                      colorScheme: colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-                    _EmailField(
-                      controller: _emailController,
-                      colorScheme: colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-                    _PhoneField(
-                      controller: _phoneController,
-                      colorScheme: colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-                    _FullNameField(
-                      controller: _fullNameController,
-                      colorScheme: colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-                    _PasswordField(
-                      controller: _passwordController,
-                      colorScheme: colorScheme,
-                    ),
-                    const SizedBox(height: 16),
-                    _RoleDropdown(
-                      initialValue: _role,
-                      onChanged: (v) => setState(() => _role = v ?? 'teacher'),
-                      colorScheme: colorScheme,
-                    ),
-                    const SizedBox(height: 24),
-                    _SubmitButton(
-                      isLoading: isLoading,
-                      onPressed: _submit,
-                      colorScheme: colorScheme,
+                    // Responsive layout: two fields per row on larger screens
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWideScreen = constraints.maxWidth > 500;
+                        if (isWideScreen) {
+                          return Column(
+                            children: [
+                              // First row: Username and Email
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _UsernameField(
+                                      controller: _usernameController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: _EmailField(
+                                      controller: _emailController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              // Second row: Phone and FullName
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _PhoneField(
+                                      controller: _phoneController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: _FullNameField(
+                                      controller: _fullNameController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              // Third row: Password and Role
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _PasswordField(
+                                      controller: _passwordController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: _RoleDropdown(
+                                      initialValue: _role,
+                                      onChanged: (v) => setState(() => _role = v ?? 'teacher'),
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              // Submit button full width
+                              _SubmitButton(
+                                isLoading: isLoading,
+                                onPressed: _submit,
+                                colorScheme: colorScheme,
+                              ),
+                            ],
+                          );
+                        } else {
+                          // Original single column layout for narrow screens
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _UsernameField(
+                                controller: _usernameController,
+                                colorScheme: colorScheme,
+                              ),
+                              const SizedBox(height: 16),
+                              _EmailField(
+                                controller: _emailController,
+                                colorScheme: colorScheme,
+                              ),
+                              const SizedBox(height: 16),
+                              _PhoneField(
+                                controller: _phoneController,
+                                colorScheme: colorScheme,
+                              ),
+                              const SizedBox(height: 16),
+                              _FullNameField(
+                                controller: _fullNameController,
+                                colorScheme: colorScheme,
+                              ),
+                              const SizedBox(height: 16),
+                              _PasswordField(
+                                controller: _passwordController,
+                                colorScheme: colorScheme,
+                              ),
+                              const SizedBox(height: 16),
+                              _RoleDropdown(
+                                initialValue: _role,
+                                onChanged: (v) => setState(() => _role = v ?? 'teacher'),
+                                colorScheme: colorScheme,
+                              ),
+                              const SizedBox(height: 24),
+                              _SubmitButton(
+                                isLoading: isLoading,
+                                onPressed: _submit,
+                                colorScheme: colorScheme,
+                              ),
+                            ],
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),

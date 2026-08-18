@@ -1,4 +1,3 @@
-import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/auth/application/auth_controller.dart';
 import 'package:cms/features/auth/presentation/screens/register_screen.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: AppColors.tertiary, size: 28),
+            Icon(Icons.check_circle_rounded, color: Theme.of(context).colorScheme.tertiary, size: 28),
             const SizedBox(width: 12),
             const Text('Success'),
           ],
@@ -188,27 +187,27 @@ class _HeaderSection extends StatelessWidget {
       children: [
         // Logo from core assets
         Container(
-          width: 72,
-          height: 72,
+          width: 120,
+          height: 120,
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
+            color: colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: AppColors.shadow,
-                blurRadius: 16,
-                offset: const Offset(0, 4),
+                color: Colors.black26,
+                blurRadius: 24,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(30),
             child: Image.asset(
-              'lib/core/assets/logo/CMS-LOGO.png',
-              fit: BoxFit.cover,
+              'lib/core/assets/logo/CMS-LOGO-F.png',
+              fit: BoxFit.contain, // Changed to contain to show full image
               errorBuilder: (context, error, stackTrace) => Icon(
                 Icons.school_rounded,
-                size: 36,
+                size: 60,
                 color: colorScheme.primary,
               ),
             ),

@@ -72,6 +72,7 @@ flutter:
   # Assets
   assets:
     - lib/core/assets/logo/CMS-LOGO.png
+    - lib/core/assets/logo/CMS-LOGO-F.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

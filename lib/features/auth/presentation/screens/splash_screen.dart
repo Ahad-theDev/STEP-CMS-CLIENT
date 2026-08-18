@@ -24,7 +24,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   static const Duration _minDisplayDuration = Duration(milliseconds: 1500);
   static const Duration _animationDuration = Duration(milliseconds: 1200);
   static const Duration _transitionDuration = Duration(milliseconds: 400);
-  static const double _logoSize = 120;
+  static const double _logoSize = 220;
   static const double _maxScale = 1.15;
   static const double _minScale = 0.85;
 
@@ -194,8 +194,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: Image.asset(
-              'lib/core/assets/logo/CMS-LOGO.png',
-              fit: BoxFit.cover,
+              'lib/core/assets/logo/CMS-LOGO-F.png',
+              fit: BoxFit.contain, // Changed to contain to show full image
               width: _logoSize,
               height: _logoSize,
               // Error handling for missing/corrupt asset
@@ -226,15 +226,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           ),
         ),
         // Optional: App name below logo (can be removed if not needed)
-        const SizedBox(height: 24),
-        Text(
-          'STEP CMS',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colorScheme.onSurface,
-                letterSpacing: -0.5,
-              ),
-        ),
+        // const SizedBox(height: 24),
+        // Text(
+        //   'STEP CMS',
+        //   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+        //         fontWeight: FontWeight.w700,
+        //         color: colorScheme.onSurface,
+        //         letterSpacing: -0.5,
+        //       ),
+        // ),
       ],
     );
   }
