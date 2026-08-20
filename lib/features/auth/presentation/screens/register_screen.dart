@@ -1,5 +1,7 @@
 import 'package:cms/features/auth/application/auth_controller.dart';
 import 'package:cms/features/auth/data/models/register_request.dart';
+import 'package:cms/features/auth/data/models/register_response.dart';
+import 'package:cms/features/auth/data/models/teacher_registration_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,6 +19,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _phoneController = TextEditingController();
   final _fullNameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _departmentController = TextEditingController();
+  final _hireDateController = TextEditingController();
+  final _qualificationController = TextEditingController();
+  final _subjectSpecializationController = TextEditingController();
   String _role = 'teacher';
 
   @override
@@ -31,6 +37,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _phoneController.dispose();
     _fullNameController.dispose();
     _passwordController.dispose();
+    _departmentController.dispose();
+    _hireDateController.dispose();
+    _qualificationController.dispose();
+    _subjectSpecializationController.dispose();
     super.dispose();
   }
 
@@ -61,6 +71,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    TeacherRegistrationDetails? teacherDetails;
+    if (_role == 'teacher') {
+      teacherDetails = TeacherRegistrationDetails(
+        department: _departmentController.text.trim(),
+        hireDate: DateTime.parse(_hireDateController.text.trim()),
+        qualification: _qualificationController.text.trim().isNotEmpty
+            ? _qualificationController.text.trim()
+            : null,
+        subjectSpecializationId: _subjectSpecializationController.text.trim().isNotEmpty
+            ? _subjectSpecializationController.text.trim()
+            : null,
+      );
+    }
+
     final request = RegisterRequest(
       username: _usernameController.text.trim(),
       email: _emailController.text.trim(),
@@ -68,15 +92,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       fullName: _fullNameController.text.trim(),
       password: _passwordController.text.trim(),
       role: _role,
+      teacher: teacherDetails,
     );
 
-    final success = await ref
+    final RegisterResponse? result = await ref
         .read(authControllerProvider.notifier)
         .register(request);
 
     if (!mounted) return;
 
-    if (success) {
+    if (result != null) {
       if (!mounted) return;
       await showDialog<void>(
         context: context,
@@ -202,7 +227,52 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 16),
+                              // Teacher-specific fields (visible only when role is teacher)
+                              if (_role == 'teacher') ...[
+                                Column(
+                                  children: [
+                                    // First row: Department and Hire Date
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _DepartmentField(
+                                            controller: _departmentController,
+                                            colorScheme: colorScheme,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: _HireDateField(
+                                            controller: _hireDateController,
+                                            colorScheme: colorScheme,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    // Second row: Qualification and Subject Specialization
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _QualificationField(
+                                            controller: _qualificationController,
+                                            colorScheme: colorScheme,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: _SubjectSpecializationField(
+                                            controller: _subjectSpecializationController,
+                                            colorScheme: colorScheme,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 24),
+                              ],
                               // Submit button full width
                               _SubmitButton(
                                 isLoading: isLoading,
@@ -247,7 +317,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 onChanged: (v) => setState(() => _role = v ?? 'teacher'),
                                 colorScheme: colorScheme,
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 16),
+                              // Teacher-specific fields (visible only when role is teacher)
+                              if (_role == 'teacher') ...[
+                                _DepartmentField(
+                                  controller: _departmentController,
+                                  colorScheme: colorScheme,
+                                ),
+                                const SizedBox(height: 16),
+                                _HireDateField(
+                                  controller: _hireDateController,
+                                  colorScheme: colorScheme,
+                                ),
+                                const SizedBox(height: 16),
+                                _QualificationField(
+                                  controller: _qualificationController,
+                                  colorScheme: colorScheme,
+                                ),
+                                const SizedBox(height: 16),
+                                _SubjectSpecializationField(
+                                  controller: _subjectSpecializationController,
+                                  colorScheme: colorScheme,
+                                ),
+                                const SizedBox(height: 24),
+                              ],
                               _SubmitButton(
                                 isLoading: isLoading,
                                 onPressed: _submit,
@@ -535,6 +628,135 @@ class _RoleDropdownState extends ConsumerState<_RoleDropdown> {
         }
       },
       borderRadius: BorderRadius.circular(12),
+    );
+  }
+}
+
+class _DepartmentField extends StatelessWidget {
+  const _DepartmentField({
+    required this.controller,
+    required this.colorScheme,
+  });
+  final TextEditingController controller;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Department',
+        hintText: 'Enter department',
+        prefixIcon: Icon(Icons.business_outlined, color: colorScheme.onSurfaceVariant),
+      ),
+      validator: (v) {
+        if (v == null || v.trim().isEmpty) {
+          return 'Department is required';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class _HireDateField extends StatefulWidget {
+  const _HireDateField({
+    required this.controller,
+    required this.colorScheme,
+  });
+  final TextEditingController controller;
+  final ColorScheme colorScheme;
+
+  @override
+  State<_HireDateField> createState() => _HireDateFieldState();
+}
+
+class _HireDateFieldState extends State<_HireDateField> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && mounted) {
+      final String formatted = "${picked.year.toString().padLeft(4, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      widget.controller.text = formatted;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      readOnly: true,
+      onTap: () => _selectDate(context),
+      decoration: InputDecoration(
+        labelText: 'Hire Date (YYYY-MM-DD)',
+        hintText: 'Enter hire date',
+        prefixIcon: Icon(Icons.calendar_today_outlined, color: widget.colorScheme.onSurfaceVariant),
+        suffixIcon: Icon(Icons.calendar_month_outlined, color: widget.colorScheme.onSurfaceVariant),
+      ),
+      validator: (v) {
+        if (v == null || v.trim().isEmpty) {
+          return 'Hire date is required';
+        }
+        // Simple validation for YYYY-MM-DD format
+        if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(v.trim())) {
+          return 'Enter a valid date (YYYY-MM-DD)';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class _QualificationField extends StatelessWidget {
+  const _QualificationField({
+    required this.controller,
+    required this.colorScheme,
+  });
+  final TextEditingController controller;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Qualification',
+        hintText: 'Enter qualification (optional)',
+        prefixIcon: Icon(Icons.school_outlined, color: colorScheme.onSurfaceVariant),
+      ),
+    );
+  }
+}
+
+class _SubjectSpecializationField extends StatelessWidget {
+  const _SubjectSpecializationField({
+    required this.controller,
+    required this.colorScheme,
+  });
+  final TextEditingController controller;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Subject Specialization ID',
+        hintText: 'Enter subject specialization ID (optional)',
+        prefixIcon: Icon(Icons.subject_outlined, color: colorScheme.onSurfaceVariant),
+      ),
     );
   }
 }

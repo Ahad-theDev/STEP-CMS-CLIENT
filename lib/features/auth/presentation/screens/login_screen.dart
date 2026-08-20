@@ -1,7 +1,8 @@
 import 'package:cms/features/auth/application/auth_controller.dart';
-import 'package:cms/features/auth/presentation/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/features/auth/application/auth_repository_provider.dart';
+import 'package:cms/features/dashboard/presentation/screens/dashboard_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -91,7 +92,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (success) {
       await _showSuccessDialog('Welcome back!');
       if (!mounted) return;
-      // Navigation will be handled by the app router based on auth state
+      try {
+        final user = await ref.read(authRepositoryProvider).getCurrentUser();
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => DashboardScreen(user: user)),
+        );
+      } catch (e) {
+        await _showErrorDialog('Failed to get user data. Please log in again.');
+      }
     }
   }
 
@@ -476,28 +485,6 @@ class _FooterSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        // TODO: Remove this register button after development phase
-        // Register button - temporary for development
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const RegisterScreen()),
-            );
-          },
-          style: TextButton.styleFrom(
-            foregroundColor: colorScheme.primary,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            "Don't have an account? Register",
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ),
         const SizedBox(height: 8),
         // Help/Support link
         TextButton.icon(

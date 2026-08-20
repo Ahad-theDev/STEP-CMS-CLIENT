@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'login_screen.dart';
+import '../../../dashboard/presentation/screens/dashboard_screen.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../auth/application/auth_repository_provider.dart';
+import '../../../auth/data/models/auth_user.dart';
 
 /// Splash screen with logo animation and smooth transition to login.
 ///
@@ -23,7 +27,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   // Configuration constants
   static const Duration _minDisplayDuration = Duration(milliseconds: 1500);
   static const Duration _animationDuration = Duration(milliseconds: 1200);
-  static const Duration _transitionDuration = Duration(milliseconds: 400);
   static const double _logoSize = 220;
   static const double _maxScale = 1.15;
   static const double _minScale = 0.85;
@@ -99,38 +102,63 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
   }
 
-  void _onAnimationComplete() {
+  Future<void> _onAnimationComplete() async {
     if (!mounted || _hasNavigated) return;
 
-    // Navigate to login screen with smooth transition
-    _navigateToLogin();
+    try {
+      final storage = ref.read(secureStorageProvider);
+      final repo = ref.read(authRepositoryProvider);
+      final token = await storage.getAccessToken();
+
+      if (token == null) {
+        _goToLogin();
+        return;
+      }
+
+      try {
+        final user = await repo.getCurrentUser();
+        _goToDashboard(user);
+        return;
+      } catch (_) {
+        // Access token might just be expired — try one refresh before giving up.
+      }
+
+      final refreshToken = await storage.getRefreshToken();
+      if (refreshToken != null) {
+        try {
+          final newAccess = await repo.refreshAccessToken(refreshToken);
+          await storage.saveToken(accessToken: newAccess, refreshToken: refreshToken);
+          final user = await repo.getCurrentUser();
+          _goToDashboard(user);
+          return;
+        } catch (_) {
+          // fall through to login
+        }
+      }
+
+      await storage.clearToken();
+      _goToLogin();
+    } catch (_) {
+      // If anything goes wrong, go to login screen as fallback
+      if (mounted) {
+        _goToLogin();
+      }
+    }
   }
 
-  Future<void> _navigateToLogin() async {
+  Future<void> _goToLogin() async {
     if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
 
-    await Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (_, _, _) => const LoginScreen(),
-        transitionDuration: _transitionDuration,
-        reverseTransitionDuration: _transitionDuration,
-        transitionsBuilder: (_, animation, _, child) {
-          // Fade + slight scale transition
-          return FadeTransition(
-            opacity: animation,
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 1.0, end: 1.0).animate(
-                CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeOutCubic,
-                ),
-              ),
-              child: child,
-            ),
-          );
-        },
-      ),
+  Future<void> _goToDashboard(AuthUser user) async {
+    if (!mounted || _hasNavigated) return;
+    _hasNavigated = true;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => DashboardScreen(user: user)),
     );
   }
 
