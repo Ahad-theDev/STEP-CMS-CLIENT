@@ -3,6 +3,7 @@ import 'package:cms/features/auth/data/models/auth_user.dart';
 import 'package:cms/features/auth/presentation/screens/login_screen.dart';
 import 'package:cms/features/auth/presentation/screens/register_screen.dart';
 import 'package:cms/features/dashboard/presentation/widgets/admin_dashboard_body.dart';
+import 'package:cms/features/students/presentation/screens/students_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,16 +69,18 @@ class DashboardScreen extends ConsumerWidget {
                             const SizedBox(height: 32),
                             Text(
                               'STEP CMS',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Admin Panel',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                           ],
                         ),
@@ -91,9 +94,36 @@ class DashboardScreen extends ConsumerWidget {
                             leading: const Icon(Icons.person_add_alt_1_rounded),
                             title: const Text('User+'),
                             onTap: () {
-                              Navigator.of(context).pop(); // Close drawer
-                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const RegisterScreen(),
+                                ),
+                              );
                             },
+                          ),
+                          ExpansionTile(
+                            leading: const Icon(Icons.apartment_rounded),
+                            title: const Text('Campus'),
+                            children: [
+                              ListTile(
+                                contentPadding: const EdgeInsets.only(
+                                  left: 32,
+                                  right: 16,
+                                ),
+                                leading: const Icon(Icons.people_alt_rounded),
+                                title: const Text('Students'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const StudentsListScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -113,7 +143,7 @@ class DashboardScreen extends ConsumerWidget {
       case 'principal':
         return const AdminDashboardBody();
       case 'teacher':
-      return const Center(child: Text('Teacher dashboard — coming next'));
+        return const Center(child: Text('Teacher dashboard — coming next'));
       default:
         return const Center(child: Text('Unknown role'));
     }
