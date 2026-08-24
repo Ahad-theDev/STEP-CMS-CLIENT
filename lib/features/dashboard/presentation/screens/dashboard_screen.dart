@@ -91,18 +91,18 @@ class DashboardScreen extends ConsumerWidget {
                     Expanded(
                       child: ListView(
                         children: [
-                          ListTile(
-                            leading: const Icon(Icons.person_add_alt_1_rounded),
-                            title: const Text('User+'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const RegisterScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                          // ListTile(
+                          //   leading: const Icon(Icons.person_add_alt_1_rounded),
+                          //   title: const Text('User+'),
+                          //   onTap: () {
+                          //     Navigator.of(context).pop();
+                          //     Navigator.of(context).push(
+                          //       MaterialPageRoute(
+                          //         builder: (_) => const RegisterScreen(),
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                           ExpansionTile(
                             leading: const Icon(Icons.apartment_rounded),
                             title: const Text('Campus'),

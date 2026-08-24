@@ -1,7 +1,6 @@
 import 'package:cms/features/students/application/students_list_controller.dart';
 import 'package:cms/features/students/presentation/screens/add_student_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class StudentsListScreen extends ConsumerWidget {

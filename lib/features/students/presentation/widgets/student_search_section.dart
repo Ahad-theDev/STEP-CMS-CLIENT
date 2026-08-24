@@ -57,7 +57,7 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
                 Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
             data: (classes) {
               return DropdownButtonFormField<SchoolClass>(
-                value: _selectedClass,
+                initialValue: _selectedClass,
                 decoration: const InputDecoration(labelText: 'Select Class'),
                 items: classes
                     .map((c) => DropdownMenuItem(

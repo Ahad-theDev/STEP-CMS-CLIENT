@@ -87,7 +87,7 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
                 data: (classes) {
                   final options = classes.where((c) => c.id != widget.student.classId).toList();
                   return DropdownButtonFormField<SchoolClass>(
-                    value: _selectedClass,
+                    initialValue: _selectedClass,
                     decoration: const InputDecoration(labelText: 'New Class'),
                     items: options
                         .map((c) => DropdownMenuItem(
