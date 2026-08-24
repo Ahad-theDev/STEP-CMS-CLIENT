@@ -3,6 +3,7 @@ import 'package:cms/features/auth/data/models/auth_user.dart';
 import 'package:cms/features/auth/presentation/screens/login_screen.dart';
 import 'package:cms/features/auth/presentation/screens/register_screen.dart';
 import 'package:cms/features/dashboard/presentation/widgets/admin_dashboard_body.dart';
+import 'package:cms/features/students/presentation/screens/student_management_screen.dart';
 import 'package:cms/features/students/presentation/screens/students_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -118,7 +119,7 @@ class DashboardScreen extends ConsumerWidget {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (_) =>
-                                          const StudentsListScreen(),
+                                          const StudentManagementScreen(),
                                     ),
                                   );
                                 },
