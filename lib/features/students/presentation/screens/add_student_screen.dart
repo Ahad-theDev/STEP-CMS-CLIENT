@@ -131,7 +131,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                         style: TextStyle(color: Colors.grey));
                   }
                   return DropdownButtonFormField<SchoolClass>(
-                    value: _selectedClass,
+                    initialValue: _selectedClass,
                     decoration: const InputDecoration(labelText: 'Class'),
                     items: classes
                         .map((c) => DropdownMenuItem(

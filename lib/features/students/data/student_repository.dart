@@ -55,9 +55,9 @@ class StudentRepository {
     final response = await dio.get(
       ApiConstants.students,
       queryParameters: {
-        if (classId != null) 'class_id': classId,
         'page': page,
         'limit': limit,
+        ... (classId != null ? {'class_id': classId} : <String, dynamic>{}),
       },
     );
     return (response.data as List).map((e) => Student.fromJson(e)).toList();
