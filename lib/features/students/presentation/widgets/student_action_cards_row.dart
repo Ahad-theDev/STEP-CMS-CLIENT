@@ -7,6 +7,7 @@ class StudentActionCardsRow extends StatelessWidget {
   final VoidCallback onChangeEnrollment;
   final VoidCallback onDelete;
   final VoidCallback onSearch;
+  final VoidCallback onBulkImport;
 
   const StudentActionCardsRow({
     super.key,
@@ -15,6 +16,7 @@ class StudentActionCardsRow extends StatelessWidget {
     required this.onChangeEnrollment,
     required this.onDelete,
     required this.onSearch,
+    required this.onBulkImport,
   });
 
   @override
@@ -77,6 +79,17 @@ class StudentActionCardsRow extends StatelessWidget {
             backgroundColor: const Color(0xFFEAE8F4),
             iconColor: const Color(0xFF7941C4),
             buttonColor: const Color(0xFF7335C5),
+          ),
+          const SizedBox(width: 12),
+          StudentActionCard(
+            icon: Icons.upload_file_rounded,
+            title: 'Bulk Import',
+            description: 'Import students from a CSV file',
+            buttonLabel: 'Import Now',
+            onPressed: onBulkImport,
+            backgroundColor: const Color(0xFFE8F5E9),
+            iconColor: const Color(0xFF43A047),
+            buttonColor: const Color(0xFF388E3C),
           ),
         ],
       ),

@@ -5,8 +5,15 @@ import '../../../classes/data/models/school_class.dart';
 import '../../application/student_search_controller.dart';
 import '../../data/models/student.dart';
 
+const int studentSearchPageSize = 10;
+
 class StudentSearchSection extends ConsumerStatefulWidget {
-  const StudentSearchSection({super.key});
+  const StudentSearchSection({
+    super.key,
+    this.onStudentTap,
+  });
+
+  final ValueChanged<Student>? onStudentTap;
 
   @override
   ConsumerState<StudentSearchSection> createState() => StudentSearchSectionState();
@@ -154,31 +161,26 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Roll No')),
-              DataColumn(label: Text('Full Name')),
-              DataColumn(label: Text('Guardian')),
-              DataColumn(label: Text('Guardian Phone')),
-              DataColumn(label: Text('Monthly Fee')),
-              DataColumn(label: Text('Status')),
-            ],
-            rows: filtered
-                .map((s) => DataRow(cells: [
-                      DataCell(Text(s.rollNumber)),
-                      DataCell(Text(s.fullName)),
-                      DataCell(Text(s.guardianName ?? '-')),
-                      DataCell(Text(s.guardianPhone ?? '-')),
-                      DataCell(Text(s.monthlyFee.toStringAsFixed(0))),
-                      DataCell(Text(
-                        s.isActive ? 'Active' : 'Inactive',
-                        style: TextStyle(color: s.isActive ? Colors.green : Colors.grey),
-                      )),
-                    ]))
-                .toList(),
-          ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: filtered.length,
+          itemBuilder: (context, index) {
+            final s = filtered[index];
+            return ListTile(
+              title: Text(s.fullName),
+              subtitle: Text('Roll #${s.rollNumber}'),
+              trailing: Text(
+                s.isActive ? 'Active' : 'Inactive',
+                style: TextStyle(color: s.isActive ? Colors.green : Colors.grey),
+              ),
+              onTap: () {
+                if (widget.onStudentTap != null) {
+                  widget.onStudentTap!(s);
+                }
+              },
+            );
+          },
         ),
         const SizedBox(height: 12),
         if (_query.isEmpty)

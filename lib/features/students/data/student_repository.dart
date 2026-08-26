@@ -1,4 +1,5 @@
 import 'package:cms/core/constants/api_constants.dart';
+import 'package:cms/features/students/data/models/bulk_import_result.dart';
 import 'package:cms/features/students/data/models/student.dart';
 import 'package:cms/features/students/data/models/student_create_request.dart';
 import 'package:dio/dio.dart';
@@ -57,9 +58,23 @@ class StudentRepository {
       queryParameters: {
         'page': page,
         'limit': limit,
-        ... (classId != null ? {'class_id': classId} : <String, dynamic>{}),
+        ...(classId != null ? {'class_id': classId} : <String, dynamic>{}),
       },
     );
     return (response.data as List).map((e) => Student.fromJson(e)).toList();
+  }
+
+  Future<BulkImportResult> bulkImportStudents(
+    String filePath,
+    String fileName,
+  ) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath, filename: fileName),
+    });
+    final response = await dio.post(
+      ApiConstants.studentsBulkImport,
+      data: formData,
+    );
+    return BulkImportResult.fromJson(response.data);
   }
 }

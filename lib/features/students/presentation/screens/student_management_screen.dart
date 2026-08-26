@@ -8,29 +8,44 @@ import 'add_student_screen.dart';
 import 'select_student_screen.dart';
 import 'update_student_screen.dart';
 import 'change_enrollment_screen.dart';
+import 'student_detail_screen.dart';
+import 'search_student_screen.dart';
+import 'bulk_import_students_screen.dart';
 
 class StudentManagementScreen extends ConsumerStatefulWidget {
   const StudentManagementScreen({super.key});
 
   @override
-  ConsumerState<StudentManagementScreen> createState() => _StudentManagementScreenState();
+  ConsumerState<StudentManagementScreen> createState() =>
+      _StudentManagementScreenState();
 }
 
-class _StudentManagementScreenState extends ConsumerState<StudentManagementScreen> {
+class _StudentManagementScreenState
+    extends ConsumerState<StudentManagementScreen> {
   final _searchSectionKey = GlobalKey<StudentSearchSectionState>();
 
   Future<void> _openAddStudent() async {
-    final created = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const AddStudentScreen()),
-    );
+    final created = await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const AddStudentScreen()));
     if (created == true) {
       _searchSectionKey.currentState?.refreshIfClassSelected();
     }
   }
 
+  Future<void> _openBulkImport() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const BulkImportStudentsScreen()));
+    _searchSectionKey.currentState?.refreshIfClassSelected();
+  }
+
   Future<void> _openUpdateStudent() async {
     final selected = await Navigator.of(context).push<Student>(
-      MaterialPageRoute(builder: (_) => const SelectStudentScreen(title: 'Select Student to Update')),
+      MaterialPageRoute(
+        builder: (_) =>
+            const SelectStudentScreen(title: 'Select Student to Update'),
+      ),
     );
     if (selected == null || !mounted) return;
     final updated = await Navigator.of(context).push<bool>(
@@ -43,11 +58,16 @@ class _StudentManagementScreenState extends ConsumerState<StudentManagementScree
 
   Future<void> _openChangeEnrollment() async {
     final selected = await Navigator.of(context).push<Student>(
-      MaterialPageRoute(builder: (_) => const SelectStudentScreen(title: 'Select Student to Move')),
+      MaterialPageRoute(
+        builder: (_) =>
+            const SelectStudentScreen(title: 'Select Student to Move'),
+      ),
     );
     if (selected == null || !mounted) return;
     final changed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => ChangeEnrollmentScreen(student: selected)),
+      MaterialPageRoute(
+        builder: (_) => ChangeEnrollmentScreen(student: selected),
+      ),
     );
     if (changed == true) {
       _searchSectionKey.currentState?.refreshIfClassSelected();
@@ -56,7 +76,10 @@ class _StudentManagementScreenState extends ConsumerState<StudentManagementScree
 
   Future<void> _openDeleteStudent() async {
     final selected = await Navigator.of(context).push<Student>(
-      MaterialPageRoute(builder: (_) => const SelectStudentScreen(title: 'Select Student to Delete')),
+      MaterialPageRoute(
+        builder: (_) =>
+            const SelectStudentScreen(title: 'Select Student to Delete'),
+      ),
     );
     if (selected == null || !mounted) return;
 
@@ -69,7 +92,10 @@ class _StudentManagementScreenState extends ConsumerState<StudentManagementScree
           'This cannot be undone from the app.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -79,21 +105,32 @@ class _StudentManagementScreenState extends ConsumerState<StudentManagementScree
     );
     if (confirmed != true || !mounted) return;
 
-    final success = await ref.read(deleteStudentControllerProvider.notifier).deleteStudent(selected.id);
+    final success = await ref
+        .read(deleteStudentControllerProvider.notifier)
+        .deleteStudent(selected.id);
     if (!mounted) return;
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Student deactivated')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Student deactivated')));
       _searchSectionKey.currentState?.refreshIfClassSelected();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete student')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to delete student')));
     }
   }
 
-  void _scrollToSearch() {
-    final ctx = _searchSectionKey.currentContext;
-    if (ctx != null) {
-      Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 300));
-    }
+  Future<void> _openSearchScreen() async {
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const SearchStudentScreen()),
+    );
+  }
+
+  Future<void> _openStudentDetailScreen(Student student) async {
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => StudentDetailScreen(student: student)),
+    );
   }
 
   @override
@@ -109,11 +146,15 @@ class _StudentManagementScreenState extends ConsumerState<StudentManagementScree
               onUpdate: _openUpdateStudent,
               onChangeEnrollment: _openChangeEnrollment,
               onDelete: _openDeleteStudent,
-              onSearch: _scrollToSearch,
+              onSearch: _openSearchScreen,
+              onBulkImport: _openBulkImport
             ),
             const Divider(height: 1),
             const SizedBox(height: 16),
-            StudentSearchSection(key: _searchSectionKey),
+            StudentSearchSection(
+              key: _searchSectionKey,
+              onStudentTap: _openStudentDetailScreen,
+            ),
             const SizedBox(height: 24),
           ],
         ),

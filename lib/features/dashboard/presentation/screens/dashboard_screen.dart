@@ -1,6 +1,7 @@
 import 'package:cms/core/network/dio_client.dart';
 import 'package:cms/features/auth/data/models/auth_user.dart';
 import 'package:cms/features/auth/presentation/screens/login_screen.dart';
+import 'package:cms/features/auth/presentation/screens/register_screen.dart';
 import 'package:cms/features/dashboard/presentation/widgets/admin_dashboard_body.dart';
 import 'package:cms/features/students/presentation/screens/student_management_screen.dart';
 import 'package:flutter/material.dart';
@@ -89,18 +90,18 @@ class DashboardScreen extends ConsumerWidget {
                     Expanded(
                       child: ListView(
                         children: [
-                          // ListTile(
-                          //   leading: const Icon(Icons.person_add_alt_1_rounded),
-                          //   title: const Text('User+'),
-                          //   onTap: () {
-                          //     Navigator.of(context).pop();
-                          //     Navigator.of(context).push(
-                          //       MaterialPageRoute(
-                          //         builder: (_) => const RegisterScreen(),
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
+                          ListTile(
+                            leading: const Icon(Icons.person_add_alt_1_rounded),
+                            title: const Text('User+'),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const RegisterScreen(),
+                                ),
+                              );
+                            },
+                          ),
                           ExpansionTile(
                             leading: const Icon(Icons.apartment_rounded),
                             title: const Text('Campus'),
