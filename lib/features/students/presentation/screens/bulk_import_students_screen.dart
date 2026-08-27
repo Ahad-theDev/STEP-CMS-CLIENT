@@ -22,7 +22,7 @@ class _BulkImportStudentsScreenState extends ConsumerState<BulkImportStudentsScr
       type: FileType.custom,
       allowedExtensions: ['csv'],
     );
-    if (picked == null || picked.isEmpty) return;
+    if (picked.isEmpty) return;
     setState(() {
       _pickedPath = picked.first.path;
       _pickedName = picked.first.name;
