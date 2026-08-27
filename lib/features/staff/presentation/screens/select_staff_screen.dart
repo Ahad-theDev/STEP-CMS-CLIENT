@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/staff_list_controller.dart';
-import '../../data/models/staff_member.dart';
 
 class SelectStaffScreen extends ConsumerStatefulWidget {
   final String title;
