@@ -6,6 +6,7 @@ import 'package:cms/features/dashboard/presentation/widgets/admin_dashboard_body
 import 'package:cms/features/students/presentation/screens/student_management_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/features/staff/presentation/screens/staff_management_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final AuthUser user;
@@ -119,6 +120,23 @@ class DashboardScreen extends ConsumerWidget {
                                     MaterialPageRoute(
                                       builder: (_) =>
                                           const StudentManagementScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              ListTile(
+                                contentPadding: const EdgeInsets.only(
+                                  left: 32,
+                                  right: 16,
+                                ),
+                                leading: const Icon(Icons.badge_outlined),
+                                title: const Text('Staff'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const StaffManagementScreen(),
                                     ),
                                   );
                                 },

@@ -8,4 +8,5 @@ class ApiConstants {
   static const String students = 'students';
   static const String classes = 'classes';
   static const String studentsBulkImport = 'students/bulk-import';
+  static const String staff = 'staff';
 }
