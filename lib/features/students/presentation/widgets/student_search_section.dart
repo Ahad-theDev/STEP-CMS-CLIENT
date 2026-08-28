@@ -89,54 +89,66 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
 
     return Card(
       elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxHeight: 400, // Limit card height to prevent overflow
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Students in ${cls.name}-${cls.section}',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 220,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Search Student',
-                      prefixIcon: Icon(Icons.search, size: 20),
-                      isDense: true,
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      'Students in ${cls.name}-${cls.section}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    onChanged: (v) => setState(() => _query = v),
-                  ),
+                    SizedBox(
+                      width: 220,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Search Student',
+                          prefixIcon: Icon(Icons.search, size: 20),
+                          isDense: true,
+                        ),
+                        onChanged: (v) => setState(() => _query = v),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: _exportStub,
+                      icon: const Icon(Icons.download_outlined, size: 18),
+                      label: const Text('Export'),
+                    ),
+                    IconButton(
+                      onPressed: refreshIfClassSelected,
+                      icon: const Icon(Icons.refresh, size: 20),
+                      tooltip: 'Refresh Student List',
+                    ),
+                  ],
                 ),
-                OutlinedButton.icon(
-                  onPressed: _exportStub,
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Export'),
+                const SizedBox(height: 16),
+                studentsAsync.when(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (e, _) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Text('Failed to load students: $e', style: const TextStyle(color: Colors.red)),
+                  ),
+                  data: (students) => _buildTableAndPagination(students),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            studentsAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 32),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text('Failed to load students: $e', style: const TextStyle(color: Colors.red)),
-              ),
-              data: (students) => _buildTableAndPagination(students),
-            ),
-          ],
+          ),
         ),
       ),
     );
