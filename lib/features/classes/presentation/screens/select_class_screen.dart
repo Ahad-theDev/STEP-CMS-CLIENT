@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/classes_list_controller.dart';
+// ignore: unused_import
 import '../../data/models/school_class.dart';
 
 class SelectClassScreen extends ConsumerStatefulWidget {

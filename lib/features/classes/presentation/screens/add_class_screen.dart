@@ -101,6 +101,7 @@ class _AddClassScreenState extends ConsumerState<AddClassScreen> {
                 error: (e, _) =>
                     Text('Failed to load teachers: $e', style: const TextStyle(color: Colors.red)),
                 data: (teachers) => DropdownButtonFormField<Teacher?>(
+                  // ignore: deprecated_member_use
                   value: _selectedTeacher,
                   decoration: const InputDecoration(labelText: 'Class Teacher (optional)'),
                   items: [
