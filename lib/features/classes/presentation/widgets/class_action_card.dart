@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class StaffActionCard extends StatelessWidget {
+class ClassActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
@@ -10,7 +10,7 @@ class StaffActionCard extends StatelessWidget {
   final Color? iconColor;
   final Color? buttonColor;
 
-  const StaffActionCard({
+  const ClassActionCard({
     super.key,
     required this.icon,
     required this.title,

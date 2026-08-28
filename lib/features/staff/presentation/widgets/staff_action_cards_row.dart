@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cms/core/theme/app_colors.dart';
 import 'staff_action_card.dart';
 
 class StaffActionCardsRow extends StatelessWidget {
@@ -29,8 +28,9 @@ class StaffActionCardsRow extends StatelessWidget {
             description: 'Add a new staff member',
             buttonLabel: 'Create Now',
             onPressed: onCreate,
-            iconColor: AppColors.roleTeacher, // Blue for create/add action
-            buttonColor: AppColors.roleTeacher,
+            backgroundColor: const Color(0xFFE3F2FD),
+            iconColor: const Color(0xFF1565C0),
+            buttonColor: const Color(0xFF1565C0),
           ),
           const SizedBox(width: 12),
           StaffActionCard(
@@ -39,8 +39,9 @@ class StaffActionCardsRow extends StatelessWidget {
             description: 'Edit staff information',
             buttonLabel: 'Update Now',
             onPressed: onUpdate,
-            iconColor: AppColors.tertiary, // Light blue for update action
-            buttonColor: AppColors.tertiary,
+            backgroundColor: const Color(0xFFF3E5F5),
+            iconColor: const Color(0xFF6A1B9A),
+            buttonColor: const Color(0xFF6A1B9A),
           ),
           const SizedBox(width: 12),
           StaffActionCard(
@@ -49,8 +50,9 @@ class StaffActionCardsRow extends StatelessWidget {
             description: 'Remove staff from the system',
             buttonLabel: 'Delete Now',
             onPressed: onDelete,
-            iconColor: AppColors.error, // Red for delete action
-            buttonColor: AppColors.error,
+            backgroundColor: const Color(0xFFFFEBEE),
+            iconColor: const Color(0xFFC62828),
+            buttonColor: const Color(0xFFC62828),
           ),
           const SizedBox(width: 12),
           StaffActionCard(
@@ -59,8 +61,9 @@ class StaffActionCardsRow extends StatelessWidget {
             description: 'Search and view all staff',
             buttonLabel: 'Search Now',
             onPressed: onSearch,
-            iconColor: AppColors.primary, // Purple for search action
-            buttonColor: AppColors.primary,
+            backgroundColor: const Color(0xFFF3E5F5),
+            iconColor: const Color(0xFF6A1B9A),
+            buttonColor: const Color(0xFF6A1B9A),
           ),
         ],
       ),
