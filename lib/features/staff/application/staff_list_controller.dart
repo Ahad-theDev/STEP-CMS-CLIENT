@@ -15,8 +15,7 @@ class StaffListController extends _$StaffListController {
     return repo.listStaff(page: page, limit: staffPageSize);
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({int page = 1}) async {
     ref.invalidateSelf();
-    await future;
   }
 }

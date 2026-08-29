@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/classes_list_controller.dart';
 import '../../data/models/school_class.dart';
 import '../screens/view_class_screen.dart';
+import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 
 class ClassSearchSection extends ConsumerStatefulWidget {
   const ClassSearchSection({
@@ -17,10 +18,11 @@ class ClassSearchSection extends ConsumerStatefulWidget {
 }
 
 class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
+  int _page = 1;
   String _query = '';
 
   Future<void> refresh() async {
-    await ref.read(classesListControllerProvider.notifier).refresh();
+    await ref.read(classesListControllerProvider(page: _page).notifier).refresh(page: _page);
   }
 
   void _exportStub() {
@@ -30,65 +32,84 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider);
-
+    final classesAsync = ref.watch(classesListControllerProvider(page: _page));
+    final teacherNameById = <String, String>{
+      for (final t in ref.watch(teachersListControllerProvider).valueOrNull ?? [])
+        t.id: t.fullName,
+    };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        elevation: 1,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text('All Classes',
+      child: classesAsync.when(
+        loading: () => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (e, _) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
+        ),
+        data: (classes) => _buildResultsCard(classes, teacherNameById),
+      ),
+    );
+  }
+
+  Widget _buildResultsCard(List<SchoolClass> classes, Map<String, String> teacherNameById) {
+    return Card(
+      elevation: 1,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 620),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      'All Classes',
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    width: 220,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        hintText: 'Search Classes',
-                        prefixIcon: Icon(Icons.search, size: 20),
-                        isDense: true,
-                      ),
-                      onChanged: (v) => setState(() => _query = v),
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: _exportStub,
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Export'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              classesAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(child: CircularProgressIndicator()),
+                    SizedBox(
+                      width: 220,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Search Classes',
+                          prefixIcon: Icon(Icons.search, size: 20),
+                          isDense: true,
+                        ),
+                        onChanged: (v) => setState(() => _query = v),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: _exportStub,
+                      icon: const Icon(Icons.download_outlined, size: 18),
+                      label: const Text('Export'),
+                    ),
+                    IconButton(
+                      onPressed: refresh,
+                      icon: const Icon(Icons.refresh, size: 20),
+                      tooltip: 'Refresh Class List',
+                    ),
+                  ],
                 ),
-                error: (e, _) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
-                ),
-                data: (classes) => _buildTable(classes),
-              ),
-            ],
+                const SizedBox(height: 16),
+                _buildTableAndPagination(classes, teacherNameById),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTable(List<SchoolClass> classes) {
+  Widget _buildTableAndPagination(List<SchoolClass> classes, Map<String, String> teacherNameById) {
     final filtered = _query.isEmpty
         ? classes
         : classes.where((c) {
@@ -103,46 +124,71 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: const [
-          DataColumn(label: Text('Name')),
-          DataColumn(label: Text('Section')),
-          DataColumn(label: Text('Academic Year')),
-          DataColumn(label: Text('Teacher')),
-          DataColumn(label: Text('Status')),
-        ],
-        rows: filtered
-            .map((c) => DataRow(
-                onSelectChanged: (b) {
-                  if (b == true) {
-                    if (widget.onClassTap != null) {
-                      widget.onClassTap!(c);
-                    } else {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => ViewClassScreen(schoolClass: c),
-                        ),
-                      );
-                    }
-                  }
-                },
-                cells: [
-                  DataCell(Text(c.name)),
-                  DataCell(Text(c.section)),
-                  DataCell(Text(c.academicYear)),
-                  DataCell(
-                    Text(c.classTeacherId == null ? 'Unassigned' : 'Assigned'),
-                  ),
-                  DataCell(Text(
-                    c.isActive ? 'Active' : 'Inactive',
-                    style: TextStyle(color: c.isActive ? Colors.green : Colors.grey),
-                  )),
-                ],
-              ))
-            .toList(),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Section')),
+              DataColumn(label: Text('Academic Year')),
+              DataColumn(label: Text('Teacher')),
+              DataColumn(label: Text('Status')),
+            ],
+            rows: filtered
+                .map((c) => DataRow(
+                    onSelectChanged: (b) {
+                      if (b == true) {
+                        if (widget.onClassTap != null) {
+                          widget.onClassTap!(c);
+                        } else {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ViewClassScreen(schoolClass: c),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    cells: [
+                      DataCell(Text(c.name)),
+                      DataCell(Text(c.section)),
+                      DataCell(Text(c.academicYear)),
+                      DataCell(
+                        Text(c.classTeacherId == null
+                            ? 'Unassigned'
+                            : (teacherNameById[c.classTeacherId] ?? 'Assigned')),
+                      ),
+                      DataCell(Text(
+                        c.isActive ? 'Active' : 'Inactive',
+                        style: TextStyle(color: c.isActive ? Colors.green : Colors.grey),
+                      )),
+                    ],
+                  ))
+                .toList(),
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (_query.isEmpty)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: _page > 1 ? () => setState(() => _page -= 1) : null,
+              ),
+              Text('Page $_page'),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: classes.length == classPageSize
+                    ? () => setState(() => _page += 1)
+                    : null,
+              ),
+            ],
+          ),
+      ],
     );
   }
 }

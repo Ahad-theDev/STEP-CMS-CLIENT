@@ -15,6 +15,5 @@ class StudentsListController extends _$StudentsListController {
 
   Future<void> refresh() async {
     ref.invalidateSelf();
-    await future;
   }
 }

@@ -7,7 +7,7 @@ part of 'staff_list_controller.dart';
 // **************************************************************************
 
 String _$staffListControllerHash() =>
-    r'85ac970e045922a67fdb08796350361ee46a747b';
+    r'7defe90ac30ac73c45836029c999a0ed94ce180a';
 
 /// Copied from Dart SDK
 class _SystemHash {

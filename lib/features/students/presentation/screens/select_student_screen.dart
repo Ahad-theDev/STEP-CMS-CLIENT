@@ -19,7 +19,7 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider);
+    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),

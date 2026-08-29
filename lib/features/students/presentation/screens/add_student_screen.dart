@@ -88,7 +88,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(addStudentControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider);
+    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
     final isLoading = state.isLoading;
 
     return Scaffold(
@@ -120,7 +120,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                   children: [
                     Expanded(child: Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red))),
                     TextButton(
-                      onPressed: () => ref.read(classesListControllerProvider.notifier).refresh(),
+                      onPressed: () => ref.read(classesListControllerProvider(page: 1).notifier).refresh(page: 1),
                       child: const Text('Retry'),
                     ),
                   ],

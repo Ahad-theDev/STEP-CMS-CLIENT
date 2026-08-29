@@ -9,6 +9,7 @@ import 'select_class_screen.dart';
 import 'update_class_screen.dart';
 import 'assign_teacher_screen.dart';
 import 'bulk_import_classes_screen.dart';
+import 'search_classes_screen.dart';
 
 class ClassManagementScreen extends ConsumerStatefulWidget {
   const ClassManagementScreen({super.key});
@@ -93,17 +94,25 @@ class _ClassManagementScreenState extends ConsumerState<ClassManagementScreen> {
     _searchSectionKey.currentState?.refresh();
   }
 
-  void _scrollToSearch() {
-    final ctx = _searchSectionKey.currentContext;
-    if (ctx != null) {
-      Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 300));
-    }
+  Future<void> _openSearchScreen() async {
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const SearchClassesScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Classes')),
+      appBar: AppBar(
+        title: const Text('Classes'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => _searchSectionKey.currentState?.refresh(),
+            tooltip: 'Refresh',
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +122,7 @@ class _ClassManagementScreenState extends ConsumerState<ClassManagementScreen> {
               onUpdate: _openUpdateClass,
               onAssignTeacher: _openAssignTeacher,
               onDelete: _openDeleteClass,
-              onSearch: _scrollToSearch,
+              onSearch: _openSearchScreen,
               onBulkImport: _openBulkImport,
             ),
             const Divider(height: 1),

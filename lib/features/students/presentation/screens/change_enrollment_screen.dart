@@ -66,7 +66,7 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(changeEnrollmentControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider);
+    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
     final isLoading = state.isLoading;
 
     return Scaffold(

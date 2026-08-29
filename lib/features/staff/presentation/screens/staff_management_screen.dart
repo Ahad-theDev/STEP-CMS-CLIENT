@@ -98,7 +98,16 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Staff')),
+      appBar: AppBar(
+        title: const Text('Staff'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => _searchSectionKey.currentState?.refresh(),
+            tooltip: 'Refresh',
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

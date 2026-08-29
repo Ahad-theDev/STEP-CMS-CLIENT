@@ -49,7 +49,7 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider);
+    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
