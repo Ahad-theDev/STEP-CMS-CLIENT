@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:cms/features/classes/presentation/screens/class_management_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/features/staff/presentation/screens/staff_management_screen.dart';
+import 'package:cms/features/subjects/presentation/screens/subject_management_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final AuthUser user;
@@ -155,6 +156,23 @@ class DashboardScreen extends ConsumerWidget {
                                     MaterialPageRoute(
                                       builder: (_) =>
                                           const ClassManagementScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              ListTile(
+                                contentPadding: const EdgeInsets.only(
+                                  left: 32,
+                                  right: 16,
+                                ),
+                                leading: const Icon(Icons.menu_book_outlined),
+                                title: const Text('Subjects'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const SubjectManagementScreen(),
                                     ),
                                   );
                                 },
