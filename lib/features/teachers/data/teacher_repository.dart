@@ -1,3 +1,4 @@
+import 'package:cms/features/students/data/models/bulk_import_result.dart';
 import 'package:cms/features/teachers/data/models/teacher_update_request.dart';
 import 'package:dio/dio.dart';
 import '../../../core/constants/api_constants.dart';
@@ -15,7 +16,7 @@ class TeacherRepository {
     return Teacher.fromJson(response.data);
   }
   Future<List<Teacher>> listTeachers() async {
-  final response = await dio.get(ApiConstants.teachers);
+  final response = await dio.get('${ApiConstants.teachers}/all');
   return (response.data as List).map((e) => Teacher.fromJson(e)).toList();
 }
 
@@ -26,5 +27,33 @@ Future<Teacher> updateTeacher(String teacherId, TeacherUpdateRequest request) as
 
 Future<void> deleteTeacher(String teacherId) async {
   await dio.delete('${ApiConstants.teachers}/$teacherId');
+}
+
+
+Future<List<Teacher>> searchTeachers({
+  String? department,
+  String? subjectSpecializationId,
+  int page = 1,
+  int limit = 20,
+}) async {
+  final response = await dio.get(
+    ApiConstants.teachers,
+    queryParameters: {
+      if (department != null && department.isNotEmpty) 'department': department,
+      if (subjectSpecializationId != null && subjectSpecializationId.isNotEmpty)
+        'subject_specialization_id': subjectSpecializationId,
+      'page': page,
+      'limit': limit,
+    },
+  );
+  return (response.data as List).map((e) => Teacher.fromJson(e)).toList();
+}
+
+Future<BulkImportResult> bulkImportTeachers(String filePath, String fileName) async {
+  final formData = FormData.fromMap({
+    'file': await MultipartFile.fromFile(filePath, filename: fileName),
+  });
+  final response = await dio.post(ApiConstants.teachersBulkImport, data: formData);
+  return BulkImportResult.fromJson(response.data);
 }
 }

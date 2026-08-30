@@ -10,6 +10,7 @@ class ApiConstants {
   static const String students = 'students';
   static const String classes = 'classes';
   static const String teachers = 'teachers';
+  static const String teachersBulkImport = 'teachers/bulk-import';
   static const String studentsBulkImport = 'students/bulk-import';
   static const String staff = 'staff';
   static const String classesBulkImport = 'classes/bulk-import';
