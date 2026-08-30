@@ -78,7 +78,7 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
                 data: (subjects) => SizedBox(
                   width: 220,
                   child: DropdownButtonFormField<Subject?>(
-                    value: _selectedSubject,
+                    initialValue: _selectedSubject,
                     decoration: const InputDecoration(labelText: 'Subject'),
                     items: [
                       const DropdownMenuItem<Subject?>(value: null, child: Text('All Subjects')),

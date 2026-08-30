@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/subjects_list_controller.dart';
-import '../../data/models/subject.dart';
 
 class SelectSubjectScreen extends ConsumerStatefulWidget {
   final String title;

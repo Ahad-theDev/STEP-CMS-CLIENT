@@ -132,7 +132,7 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
                   _selectedSubject ??=
                       _findById(subjects, widget.teacher.subjectSpecializationId);
                   return DropdownButtonFormField<Subject?>(
-                    value: _selectedSubject,
+                    initialValue: _selectedSubject,
                     decoration: const InputDecoration(labelText: 'Subject Specialization (optional)'),
                     items: [
                       const DropdownMenuItem<Subject?>(value: null, child: Text('None')),

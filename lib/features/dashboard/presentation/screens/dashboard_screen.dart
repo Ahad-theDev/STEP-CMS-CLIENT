@@ -178,24 +178,24 @@ class DashboardScreen extends ConsumerWidget {
                                   );
                                 },
                               ),
-                            ],
-                          ),
-                          ListTile(
-                            contentPadding: const EdgeInsets.only(
-                              left: 32,
-                              right: 16,
-                            ),
-                            leading: const Icon(Icons.school_outlined),
-                            title: const Text('Teachers'),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const TeacherManagementScreen(),
+                              ListTile(
+                                contentPadding: const EdgeInsets.only(
+                                  left: 32,
+                                  right: 16,
                                 ),
-                              );
-                            },
+                                leading: const Icon(Icons.school_outlined),
+                                title: const Text('Teachers'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const TeacherManagementScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
