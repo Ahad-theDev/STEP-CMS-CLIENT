@@ -22,15 +22,16 @@ class LectureRepository {
     int page = 1,
     int limit = 50,
   }) async {
+    final queryParameters = <String, dynamic>{
+      'page': page,
+      'limit': limit,
+    };
+    if (classId != null) queryParameters['class_id'] = classId;
+    if (teacherId != null) queryParameters['teacher_id'] = teacherId;
+    if (dayOfWeek != null) queryParameters['day_of_week'] = dayOfWeek;
     final response = await dio.get(
       ApiConstants.lectures,
-      queryParameters: {
-        if (classId != null) 'class_id': classId,
-        if (teacherId != null) 'teacher_id': teacherId,
-        if (dayOfWeek != null) 'day_of_week': dayOfWeek,
-        'page': page,
-        'limit': limit,
-      },
+      queryParameters: queryParameters,
     );
     return (response.data as List).map((e) => Lecture.fromJson(e)).toList();
   }

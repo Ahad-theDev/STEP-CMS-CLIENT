@@ -133,7 +133,7 @@ class _CreateOverrideScreenState extends ConsumerState<CreateOverrideScreen> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<LectureOverrideType>(
-                value: _overrideType,
+                initialValue: _overrideType,
                 decoration: const InputDecoration(labelText: 'Override Type'),
                 items: LectureOverrideType.values
                     .map((t) => DropdownMenuItem(value: t, child: Text(t.label)))
@@ -147,7 +147,7 @@ class _CreateOverrideScreenState extends ConsumerState<CreateOverrideScreen> {
                   error: (e, _) =>
                       Text('Failed to load teachers: $e', style: const TextStyle(color: Colors.red)),
                   data: (teachers) => DropdownButtonFormField<Teacher>(
-                    value: _substituteTeacher,
+                    initialValue: _substituteTeacher,
                     decoration: const InputDecoration(labelText: 'Substitute Teacher'),
                     items: teachers
                         .map((t) => DropdownMenuItem(value: t, child: Text(t.fullName)))

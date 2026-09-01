@@ -120,7 +120,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
                 data: (teachers) {
                   _selectedTeacher ??= _findTeacher(teachers);
                   return DropdownButtonFormField<Teacher>(
-                    value: _selectedTeacher,
+                    initialValue: _selectedTeacher,
                     decoration: const InputDecoration(labelText: 'Teacher'),
                     items: teachers
                         .map((t) => DropdownMenuItem(value: t, child: Text(t.fullName)))
@@ -140,7 +140,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
                 data: (subjects) {
                   _selectedSubject ??= _findSubject(subjects);
                   return DropdownButtonFormField<Subject>(
-                    value: _selectedSubject,
+                    initialValue: _selectedSubject,
                     decoration: const InputDecoration(labelText: 'Subject'),
                     items: subjects
                         .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
@@ -152,7 +152,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _selectedDay,
+                initialValue: _selectedDay,
                 decoration: const InputDecoration(labelText: 'Day of Week'),
                 items: weekDays
                     .map((d) => DropdownMenuItem(

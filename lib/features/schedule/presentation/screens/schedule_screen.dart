@@ -74,27 +74,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     return date.subtract(Duration(days: date.weekday - 1));
   }
 
-  DateTime _getWeekEnd(DateTime date) {
-    final weekStart = _getWeekStart(date);
-    return weekStart.add(const Duration(days: 6));
-  }
-
-  List<DateTime> _getWeekDates(DateTime date) {
-    final weekStart = _getWeekStart(date);
-    return List.generate(7, (i) => weekStart.add(Duration(days: i)));
-  }
-
   String _formatDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-
-  String _formatDayLabel(DateTime d) {
-    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return weekdays[d.weekday - 1];
-  }
-
-  String _formatDayNumber(DateTime d) {
-    return d.day.toString().padLeft(2, '0');
-  }
 
   Color _statusColor(String status) {
     switch (status) {
