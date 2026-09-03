@@ -60,6 +60,34 @@ ApiException mapDioExceptionToApiException(Object error) {
           } else {
             message = detail.toString();
           }
+        } else if (data is Map && data['error'] != null && data['error'] is Map) {
+          final errorMap = data['error'] as Map;
+          // Handle nested error format with details: {"error": {"message": "...", "details": [{...}]}}
+          if (errorMap['details'] != null && errorMap['details'] is List) {
+            final detailsList = errorMap['details'] as List;
+            if (detailsList.isNotEmpty) {
+              // Extract all error messages from details and join them
+              final messages = detailsList
+                  .where((e) => e is Map && e['msg'] != null)
+                  .map((e) => e['msg'].toString())
+                  .toList();
+              if (messages.isNotEmpty) {
+                message = messages.join('\n');
+              } else {
+                // Fallback to error message if details don't contain usable messages
+                message = errorMap['message']?.toString() ?? 'Validation failed';
+              }
+            } else {
+              // Empty details list, fall back to error message
+              message = errorMap['message']?.toString() ?? 'Validation failed';
+            }
+          } else if (errorMap['message'] != null) {
+            // Handle nested error format: {"error": {"message": "..."}}
+            message = errorMap['message'].toString();
+          } else {
+            // Fallback if error object doesn't have expected structure
+            message = errorMap.toString();
+          }
         } else if (data is Map && data['message'] != null) {
           message = data['message'].toString();
         } else if (data is String && data.isNotEmpty) {

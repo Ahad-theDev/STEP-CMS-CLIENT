@@ -4,6 +4,7 @@ import 'package:cms/features/auth/data/models/register_response.dart';
 import 'package:cms/features/auth/data/models/teacher_registration_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -138,7 +139,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // Show error dialog when auth state has error (also handled in initState listener)
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       if (next.hasError && previous?.hasError != true) {
-        _showErrorDialog(next.error.toString());
+        _showErrorDialog(friendlyErrorMessage(next.error!));
       }
     });
 

@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/bulk_shift_controller.dart';
 import '../../data/models/bulk_shift_request.dart';
 import 'package:cms/features/students/data/models/bulk_import_result.dart';
@@ -25,14 +25,6 @@ class _BulkShiftScreenState extends ConsumerState<BulkShiftScreen> {
     _minutesController.dispose();
     _reasonController.dispose();
     super.dispose();
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -99,7 +91,7 @@ class _BulkShiftScreenState extends ConsumerState<BulkShiftScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/classes/application/classes_list_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/change_enrollment_controller.dart';
@@ -31,14 +31,6 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
   void dispose() {
     _academicYearController.dispose();
     super.dispose();
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -83,7 +75,7 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
               classesAsync.when(
                 loading: () => const LinearProgressIndicator(),
                 error: (e, _) =>
-                    Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (classes) {
                   final options = classes.where((c) => c.id != widget.student.classId).toList();
                   return DropdownButtonFormField<SchoolClass>(
@@ -110,7 +102,7 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

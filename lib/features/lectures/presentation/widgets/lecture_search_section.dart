@@ -7,6 +7,7 @@ import 'package:cms/features/teachers/application/teachers_list_controller.dart'
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/core/utils/time_of_day_utils.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/lecture_search_controller.dart';
 import '../../data/models/lecture.dart';
 
@@ -70,7 +71,8 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
               classesAsync.when(
                 loading: () => const SizedBox(width: 180, child: LinearProgressIndicator()),
                 error: (e, _) => const SizedBox.shrink(),
-                data: (classes) => Flexible(
+                data: (classes) => SizedBox(
+                  width: 180,
                   child: DropdownButtonFormField<SchoolClass?>(
                     initialValue: _selectedClass,
                     decoration: const InputDecoration(labelText: 'Class'),
@@ -90,7 +92,8 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
               teachersAsync.when(
                 loading: () => const SizedBox(width: 180, child: LinearProgressIndicator()),
                 error: (e, _) => const SizedBox.shrink(),
-                data: (teachers) => Flexible(
+                data: (teachers) => SizedBox(
+                  width: 180,
                   child: DropdownButtonFormField<Teacher?>(
                     initialValue: _selectedTeacher,
                     decoration: const InputDecoration(labelText: 'Teacher'),
@@ -106,7 +109,8 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
                   ),
                 ),
               ),
-              Flexible(
+              SizedBox(
+                width: 180,
                 child: DropdownButtonFormField<String?>(
                   initialValue: _selectedDay,
                   decoration: const InputDecoration(labelText: 'Day'),
@@ -162,7 +166,8 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text('Failed to load lectures: $e', style: const TextStyle(color: Colors.red)),
+                child: Text('Failed to load lectures: ${friendlyErrorMessage(e)}',
+                    style: const TextStyle(color: Colors.red)),
               ),
               data: (lectures) =>
                   _buildTableAndPagination(lectures, classNameById, teacherNameById, subjectNameById),

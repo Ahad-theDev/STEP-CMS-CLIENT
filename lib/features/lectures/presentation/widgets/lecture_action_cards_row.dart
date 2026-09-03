@@ -5,6 +5,8 @@ class LectureActionCardsRow extends StatelessWidget {
   final VoidCallback onCreate;
   final VoidCallback onUpdate;
   final VoidCallback onCreateOverride;
+  final VoidCallback onBulkShift;
+  final VoidCallback onPreviewSchedule;
   final VoidCallback onDelete;
   final VoidCallback onSearch;
 
@@ -13,6 +15,8 @@ class LectureActionCardsRow extends StatelessWidget {
     required this.onCreate,
     required this.onUpdate,
     required this.onCreateOverride,
+    required this.onBulkShift,
+    required this.onPreviewSchedule,
     required this.onDelete,
     required this.onSearch,
   });
@@ -49,11 +53,27 @@ class LectureActionCardsRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           LectureActionCard(
+            icon: Icons.schedule_rounded,
+            title: 'Bulk Shift',
+            description: "Shift a whole day's lectures by N minutes",
+            buttonLabel: 'Shift Now',
+            onPressed: onBulkShift,
+          ),
+          const SizedBox(width: 12),
+          LectureActionCard(
             icon: Icons.delete_outline_rounded,
             title: 'Delete Lecture',
             description: 'Remove a permanent slot',
             buttonLabel: 'Delete Now',
             onPressed: onDelete,
+          ),
+          const SizedBox(width: 12),
+          LectureActionCard(
+            icon: Icons.preview_rounded,
+            title: 'Preview Schedule',
+            description: "See a specific date's resolved schedule",
+            buttonLabel: 'Preview Now',
+            onPressed: onPreviewSchedule,
           ),
           const SizedBox(width: 12),
           LectureActionCard(

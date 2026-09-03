@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/add_subject_controller.dart';
 import '../../data/models/subject_create_request.dart';
 
@@ -21,14 +21,6 @@ class _AddSubjectScreenState extends ConsumerState<AddSubjectScreen> {
     _nameController.dispose();
     _codeController.dispose();
     super.dispose();
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -74,7 +66,7 @@ class _AddSubjectScreenState extends ConsumerState<AddSubjectScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

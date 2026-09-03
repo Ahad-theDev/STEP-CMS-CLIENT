@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/features/classes/application/classes_list_controller.dart';
@@ -7,6 +6,7 @@ import 'package:cms/features/teachers/application/teachers_list_controller.dart'
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/features/subjects/data/models/subject.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/add_lecture_controller.dart';
 import '../../data/models/lecture_create_request.dart';
 import '../widgets/lecture_search_section.dart' show weekDays;
@@ -35,21 +35,31 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
   }
 
   Future<void> _pickStartTime() async {
-    final picked = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
     if (picked != null) setState(() => _startTime = picked);
   }
 
   Future<void> _pickEndTime() async {
-    final picked = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
     if (picked != null) setState(() => _endTime = picked);
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -103,7 +113,7 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: LinearProgressIndicator()),
                 error: (e, _) =>
-                    Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (classes) => DropdownButtonFormField<SchoolClass>(
                   initialValue: _selectedClass,
                   decoration: const InputDecoration(labelText: 'Class'),
@@ -121,7 +131,7 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: LinearProgressIndicator()),
                 error: (e, _) =>
-                    Text('Failed to load teachers: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load teachers: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (teachers) => DropdownButtonFormField<Teacher>(
                   initialValue: _selectedTeacher,
                   decoration: const InputDecoration(labelText: 'Teacher'),
@@ -138,7 +148,7 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: LinearProgressIndicator()),
                 error: (e, _) =>
-                    Text('Failed to load subjects: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load subjects: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (subjects) => DropdownButtonFormField<Subject>(
                   initialValue: _selectedSubject,
                   decoration: const InputDecoration(labelText: 'Subject'),
@@ -194,7 +204,7 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

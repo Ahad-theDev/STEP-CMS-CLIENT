@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/update_staff_controller.dart';
 import '../../data/models/staff_member.dart';
 import '../../data/models/staff_update_request.dart';
@@ -44,14 +44,7 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
     if (picked != null) setState(() => _joinDate = picked);
   }
 
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
-  }
-
+  
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -108,7 +101,7 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

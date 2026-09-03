@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/students/data/models/bulk_import_result.dart';
 import '../../application/bulk_import_classes_controller.dart';
 
@@ -28,14 +28,6 @@ class _BulkImportClassesScreenState extends ConsumerState<BulkImportClassesScree
       _pickedName = picked.first.name;
       _result = null;
     });
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Widget _buildResultSummary(BulkImportResult result) {
@@ -103,7 +95,7 @@ class _BulkImportClassesScreenState extends ConsumerState<BulkImportClassesScree
             if (state.hasError)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${_friendlyError(state.error!)}',
+                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                     style: const TextStyle(color: Colors.red)),
               ),
             ElevatedButton(

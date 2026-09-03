@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import '../../application/assign_teacher_controller.dart';
@@ -17,14 +17,6 @@ class AssignTeacherScreen extends ConsumerStatefulWidget {
 
 class _AssignTeacherScreenState extends ConsumerState<AssignTeacherScreen> {
   Teacher? _selectedTeacher;
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
-  }
 
   Future<void> _submit() async {
     if (_selectedTeacher == null) {
@@ -61,7 +53,7 @@ class _AssignTeacherScreenState extends ConsumerState<AssignTeacherScreen> {
             teachersAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) =>
-                  Text('Failed to load teachers: $e', style: const TextStyle(color: Colors.red)),
+                  Text('Failed to load teachers: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
               data: (teachers) => DropdownButtonFormField<Teacher>(
                 // ignore: deprecated_member_use
                 value: _selectedTeacher,
@@ -76,7 +68,7 @@ class _AssignTeacherScreenState extends ConsumerState<AssignTeacherScreen> {
             if (state.hasError)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${_friendlyError(state.error!)}',
+                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                     style: const TextStyle(color: Colors.red)),
               ),
             ElevatedButton(

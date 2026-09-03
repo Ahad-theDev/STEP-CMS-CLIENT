@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/add_student_controller.dart';
 import '../../data/models/student_create_request.dart';
 import '../../../classes/application/classes_list_controller.dart';
@@ -43,14 +43,6 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       lastDate: DateTime(2100),
     );
     if (picked != null) setState(() => _admissionDate = picked);
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -118,7 +110,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                 ),
                 error: (e, _) => Row(
                   children: [
-                    Expanded(child: Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red))),
+                    Expanded(child: Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red))),
                     TextButton(
                       onPressed: () => ref.read(classesListControllerProvider(page: 1).notifier).refresh(page: 1),
                       child: const Text('Retry'),
@@ -186,7 +178,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
-                    'Failed: ${_friendlyError(state.error!)}',
+                    'Failed: ${friendlyErrorMessage(state.error!)}',
                     style: const TextStyle(color: Colors.red),
                   ),
                 ),

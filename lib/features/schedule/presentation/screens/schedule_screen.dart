@@ -7,6 +7,7 @@ import 'package:cms/features/classes/application/classes_list_controller.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/core/utils/time_of_day_utils.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/schedule_preview_controller.dart';
 import '../../application/publish_controller.dart';
 import '../../data/models/resolved_lecture.dart';
@@ -109,32 +110,30 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           'Teachers already notified for this date will be skipped.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Publish'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Publish')),
         ],
       ),
     );
     if (confirmed != true) return;
 
-    final result = await ref
-        .read(publishControllerProvider.notifier)
-        .publish(_selectedDate);
-    if (!mounted || result == null) return;
+    final result = await ref.read(publishControllerProvider.notifier).publish(_selectedDate);
+    if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Notified ${result.notified.length} teacher(s)'
-          '${result.skippedDuplicate.isNotEmpty ? ', skipped ${result.skippedDuplicate.length} already notified' : ''}',
-        ),
+    if (result == null) {
+      final error = ref.read(publishControllerProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Publish failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
+      ));
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        'Notified ${result.notified.length} teacher(s)'
+        '${result.skippedDuplicate.isNotEmpty ? ', skipped ${result.skippedDuplicate.length} already notified' : ''}',
       ),
-    );
+    ));
   }
 
   @override
@@ -216,7 +215,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
             child: previewAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) =>
-                  Center(child: Text('Failed to load schedule: $e')),
+                  Center(child: Text('Failed to load schedule: ${friendlyErrorMessage(e)}')),
               data: (preview) {
                 if (preview.isHoliday) {
                   return const Center(

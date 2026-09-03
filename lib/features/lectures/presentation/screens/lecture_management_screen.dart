@@ -8,6 +8,9 @@ import 'add_lecture_screen.dart';
 import 'select_lecture_screen.dart';
 import 'update_lecture_screen.dart';
 import 'create_override_screen.dart';
+import 'package:cms/features/schedule/presentation/screens/bulk_shift_screen.dart';
+import 'package:cms/features/schedule/presentation/screens/schedule_screen.dart';
+import 'package:cms/core/utils/error_utils.dart';
 
 class LectureManagementScreen extends ConsumerStatefulWidget {
   const LectureManagementScreen({super.key});
@@ -48,6 +51,26 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
     );
   }
 
+  Future<void> _openBulkShift() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate == null || !mounted) return;
+
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => BulkShiftScreen(date: pickedDate)),
+    );
+  }
+
+  Future<void> _openPreviewSchedule() async {
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const ScheduleScreen()),
+    );
+  }
+
   Future<void> _openDeleteLecture() async {
     final selected = await Navigator.of(context).push<Lecture>(
       MaterialPageRoute(builder: (_) => const SelectLectureScreen(title: 'Select Lecture to Delete')),
@@ -80,8 +103,10 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lecture deactivated')));
       _searchSectionKey.currentState?.refresh();
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Failed to delete lecture')));
+      final error = ref.read(deleteLectureControllerProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to delete lecture: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
+      ));
     }
   }
 
@@ -104,6 +129,8 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
               onCreate: _openAddLecture,
               onUpdate: _openUpdateLecture,
               onCreateOverride: _openCreateOverride,
+              onBulkShift: _openBulkShift,
+              onPreviewSchedule: _openPreviewSchedule,
               onDelete: _openDeleteLecture,
               onSearch: _scrollToSearch,
             ),

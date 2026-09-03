@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/features/subjects/data/models/subject.dart';
 import '../../application/update_teacher_controller.dart';
@@ -53,14 +53,6 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
       lastDate: DateTime(2100),
     );
     if (picked != null) setState(() => _hireDate = picked);
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -127,7 +119,7 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 ),
                 error: (e, _) =>
-                    Text('Failed to load subjects: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load subjects: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (subjects) {
                   _selectedSubject ??=
                       _findById(subjects, widget.teacher.subjectSpecializationId);
@@ -146,7 +138,7 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

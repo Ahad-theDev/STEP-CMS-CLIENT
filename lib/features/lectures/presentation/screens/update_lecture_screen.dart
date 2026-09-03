@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
@@ -6,6 +5,7 @@ import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/features/subjects/data/models/subject.dart';
 import 'package:cms/core/utils/time_of_day_utils.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/update_lecture_controller.dart';
 import '../../data/models/lecture.dart';
 import '../../data/models/lecture_update_request.dart';
@@ -58,21 +58,31 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
   }
 
   Future<void> _pickStartTime() async {
-    final picked = await showTimePicker(context: context, initialTime: _startTime);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _startTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
     if (picked != null) setState(() => _startTime = picked);
   }
 
   Future<void> _pickEndTime() async {
-    final picked = await showTimePicker(context: context, initialTime: _endTime);
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _endTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
     if (picked != null) setState(() => _endTime = picked);
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -116,7 +126,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: LinearProgressIndicator()),
                 error: (e, _) =>
-                    Text('Failed to load teachers: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load teachers: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (teachers) {
                   _selectedTeacher ??= _findTeacher(teachers);
                   return DropdownButtonFormField<Teacher>(
@@ -136,7 +146,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: LinearProgressIndicator()),
                 error: (e, _) =>
-                    Text('Failed to load subjects: $e', style: const TextStyle(color: Colors.red)),
+                    Text('Failed to load subjects: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
                 data: (subjects) {
                   _selectedSubject ??= _findSubject(subjects);
                   return DropdownButtonFormField<Subject>(
@@ -200,7 +210,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

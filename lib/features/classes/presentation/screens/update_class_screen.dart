@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/update_class_controller.dart';
 import '../../data/models/class_update_request.dart';
 import '../../data/models/school_class.dart';
@@ -33,14 +33,6 @@ class _UpdateClassScreenState extends ConsumerState<UpdateClassScreen> {
     _sectionController.dispose();
     _academicYearController.dispose();
     super.dispose();
-  }
-
-  String _friendlyError(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map && data['detail'] != null) return data['detail'].toString();
-    }
-    return error.toString();
   }
 
   Future<void> _submit() async {
@@ -101,7 +93,7 @@ class _UpdateClassScreenState extends ConsumerState<UpdateClassScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${_friendlyError(state.error!)}',
+                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
                       style: const TextStyle(color: Colors.red)),
                 ),
               ElevatedButton(

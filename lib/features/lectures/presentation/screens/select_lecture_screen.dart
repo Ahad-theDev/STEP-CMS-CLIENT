@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/time_of_day_utils.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import '../../application/lecture_search_controller.dart';
 
 class SelectLectureScreen extends ConsumerStatefulWidget {
@@ -36,7 +37,7 @@ class _SelectLectureScreenState extends ConsumerState<SelectLectureScreen> {
             Expanded(
               child: lecturesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Failed to load lectures: $e')),
+                error: (e, _) => Center(child: Text('Failed to load lectures: ${friendlyErrorMessage(e)}')),
                 data: (lectures) {
                   final filtered = _query.isEmpty
                       ? lectures
