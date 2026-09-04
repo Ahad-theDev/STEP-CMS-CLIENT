@@ -11,7 +11,8 @@ import 'create_override_screen.dart';
 import 'package:cms/features/schedule/presentation/screens/bulk_shift_screen.dart';
 import 'package:cms/features/schedule/presentation/screens/schedule_screen.dart';
 import 'package:cms/core/utils/error_utils.dart';
-
+import 'search_lectures_screen.dart';
+import 'package:cms/features/calendar/presentation/screens/calendar_screen.dart';
 class LectureManagementScreen extends ConsumerStatefulWidget {
   const LectureManagementScreen({super.key});
 
@@ -110,11 +111,17 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
     }
   }
 
-  void _scrollToSearch() {
-    final ctx = _searchSectionKey.currentContext;
-    if (ctx != null) {
-      Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 300));
-    }
+  Future<void> _openCalendar() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const CalendarScreen()),
+    );
+  }
+
+  Future<void> _openSearchScreen() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const SearchLecturesScreen()),
+    );
+    _searchSectionKey.currentState?.refresh();
   }
 
   @override
@@ -132,7 +139,8 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
               onBulkShift: _openBulkShift,
               onPreviewSchedule: _openPreviewSchedule,
               onDelete: _openDeleteLecture,
-              onSearch: _scrollToSearch,
+              onCalendar: _openCalendar,
+              onSearch: _openSearchScreen,
             ),
             const Divider(height: 1),
             const SizedBox(height: 16),
