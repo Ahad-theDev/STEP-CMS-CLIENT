@@ -16,7 +16,8 @@ const List<String> weekDays = [
 ];
 
 class LectureSearchSection extends ConsumerStatefulWidget {
-  const LectureSearchSection({super.key});
+  final ValueChanged<Lecture>? onLectureTap;
+  const LectureSearchSection({super.key, this.onLectureTap});
 
   @override
   ConsumerState<LectureSearchSection> createState() => LectureSearchSectionState();
@@ -206,15 +207,22 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
               DataColumn(label: Text('Subject')),
             ],
             rows: lectures
-                .map((l) => DataRow(cells: [
-                      DataCell(Text(l.dayOfWeek)),
-                      DataCell(Text(
-                          '${TimeOfDayUtils.displayLabel(l.startTime)} - ${TimeOfDayUtils.displayLabel(l.endTime)}')),
-                      DataCell(Text(l.roomNumber)),
-                      DataCell(Text(classNameById[l.classId] ?? '-')),
-                      DataCell(Text(teacherNameById[l.teacherId] ?? '-')),
-                      DataCell(Text(subjectNameById[l.subjectId] ?? '-')),
-                    ]))
+                .map((l) => DataRow(
+                      onSelectChanged: widget.onLectureTap == null
+                          ? null
+                          : (selected) {
+                              if (selected == true) widget.onLectureTap!(l);
+                            },
+                      cells: [
+                        DataCell(Text(l.dayOfWeek)),
+                        DataCell(Text(
+                            '${TimeOfDayUtils.displayLabel(l.startTime)} - ${TimeOfDayUtils.displayLabel(l.endTime)}')),
+                        DataCell(Text(l.roomNumber)),
+                        DataCell(Text(classNameById[l.classId] ?? '-')),
+                        DataCell(Text(teacherNameById[l.teacherId] ?? '-')),
+                        DataCell(Text(subjectNameById[l.subjectId] ?? '-')),
+                      ],
+                    ))
                 .toList(),
           ),
         ),

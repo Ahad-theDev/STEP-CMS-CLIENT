@@ -6,6 +6,7 @@ import '../widgets/lecture_action_cards_row.dart';
 import '../widgets/lecture_search_section.dart';
 import 'add_lecture_screen.dart';
 import 'select_lecture_screen.dart';
+import 'select_lecture_rich_screen.dart';
 import 'update_lecture_screen.dart';
 import 'create_override_screen.dart';
 import 'package:cms/features/schedule/presentation/screens/bulk_shift_screen.dart';
@@ -32,7 +33,7 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
 
   Future<void> _openUpdateLecture() async {
     final selected = await Navigator.of(context).push<Lecture>(
-      MaterialPageRoute(builder: (_) => const SelectLectureScreen(title: 'Select Lecture to Update')),
+      MaterialPageRoute(builder: (_) => const SelectLectureRichScreen(title: 'Select Lecture to Update')),
     );
     if (selected == null || !mounted) return;
     final updated = await Navigator.of(context).push<bool>(
