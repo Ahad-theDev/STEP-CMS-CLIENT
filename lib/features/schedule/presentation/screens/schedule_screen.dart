@@ -22,24 +22,9 @@ class ScheduleScreen extends ConsumerStatefulWidget {
 
 class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   DateTime _selectedDate = DateTime.now();
-  late PageController _datePageController;
-  int _currentPageIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _datePageController = PageController(
-      initialPage: _currentPageIndex,
-      viewportFraction: 0.9,
-    );
-  }
-
-  @override
-  void dispose() {
-    _datePageController.dispose();
-    super.dispose();
-  }
-
+  
+  
+  
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -49,32 +34,12 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
-      _jumpToDatePage(picked);
     }
   }
 
-  void _jumpToDatePage(DateTime date) {
-    final targetIndex = _getPageIndexForDate(date);
-    if (targetIndex != _currentPageIndex) {
-      _currentPageIndex = targetIndex;
-      _datePageController.animateToPage(
-        targetIndex,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  int _getPageIndexForDate(DateTime date) {
-    final weekStart = _getWeekStart(date);
-    final daysDiff = date.difference(weekStart).inDays;
-    return daysDiff;
-  }
-
-  DateTime _getWeekStart(DateTime date) {
-    return date.subtract(Duration(days: date.weekday - 1));
-  }
-
+  
+  
+  
   String _formatDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
@@ -276,6 +241,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           padding: const EdgeInsets.all(16),
           child: DataTable(
             columnSpacing: 16,
+            dataRowMinHeight: 96,
+            dataRowMaxHeight: 96,
             headingRowColor: WidgetStateProperty.resolveWith<Color?>(
               (states) => Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
@@ -322,6 +289,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                     if (lec == null) return const DataCell(Text('-'));
                     return DataCell(
                       Container(
+                        width: 110,
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: _statusColor(lec.status),
@@ -334,32 +302,32 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                           children: [
                             Text(
                               subjectNameById[lec.subjectId] ?? lec.subjectId,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               'Room: ${lec.roomNumber}',
                               style: const TextStyle(fontSize: 11),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               teacherNameById[lec.teacherId] ?? lec.teacherId,
                               style: const TextStyle(fontSize: 11),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              lec.status[0].toUpperCase() +
-                                  lec.status.substring(1),
+                              lec.status[0].toUpperCase() + lec.status.substring(1),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: lec.status == 'cancelled'
-                                    ? Colors.red
-                                    : Colors.black,
-                                decoration: lec.status == 'cancelled'
-                                    ? TextDecoration.lineThrough
-                                    : null,
+                                color: lec.status == 'cancelled' ? Colors.red : Colors.black,
+                                decoration: lec.status == 'cancelled' ? TextDecoration.lineThrough : null,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
