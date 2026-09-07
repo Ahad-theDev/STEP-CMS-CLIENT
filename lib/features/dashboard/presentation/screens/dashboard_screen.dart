@@ -11,6 +11,7 @@ import 'package:cms/features/staff/presentation/screens/staff_management_screen.
 import 'package:cms/features/subjects/presentation/screens/subject_management_screen.dart';
 import 'package:cms/features/teachers/presentation/screens/teacher_management_screen.dart';
 import 'package:cms/features/lectures/presentation/screens/lecture_management_screen.dart';
+import 'package:cms/features/attendance/presentation/screens/attendance_home_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final AuthUser user;
@@ -217,6 +218,18 @@ class DashboardScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.fact_check_outlined),
+                      title: const Text('Attendance'),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const AttendanceHomeScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
