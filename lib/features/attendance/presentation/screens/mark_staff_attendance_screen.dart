@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/staff/application/all_staff_list_controller.dart';
-import 'package:cms/features/staff/data/models/staff_member.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
-import 'package:cms/features/teachers/data/models/teacher.dart';
-import '../../application/mark_staff_attendance_controller.dart';
+import '../../application/staff_attendance_list_controller.dart';
+import '../../application/staff_attendance_repository_provider.dart';
 import '../../data/models/staff_attendance_mark_request.dart';
+import '../models/attendance_roster_entry.dart';
+
+const List<Map<String, String>> attendanceStatusOptions = [
+  {'value': 'present', 'label': 'Present'},
+  {'value': 'absent', 'label': 'Absent'},
+  {'value': 'late', 'label': 'Late'},
+  {'value': 'leave', 'label': 'Leave'},
+];
 
 class MarkStaffAttendanceScreen extends ConsumerStatefulWidget {
   const MarkStaffAttendanceScreen({super.key});
@@ -16,11 +23,9 @@ class MarkStaffAttendanceScreen extends ConsumerStatefulWidget {
 }
 
 class _MarkStaffAttendanceScreenState extends ConsumerState<MarkStaffAttendanceScreen> {
-  bool _isStaff = true;
-  StaffMember? _selectedStaff;
-  Teacher? _selectedTeacher;
   DateTime _date = DateTime.now();
-  String _status = 'present';
+  String _query = '';
+  final Set<String> _savingKeys = {};
 
   String _fmt(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -35,126 +40,179 @@ class _MarkStaffAttendanceScreenState extends ConsumerState<MarkStaffAttendanceS
     if (picked != null) setState(() => _date = picked);
   }
 
-  Future<void> _submit() async {
-    if (_isStaff && _selectedStaff == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please select a staff member')));
-      return;
-    }
-    if (!_isStaff && _selectedTeacher == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please select a teacher')));
-      return;
-    }
+  Future<void> _mark(AttendanceRosterEntry entry, String status) async {
+    final key = '${entry.type}:${entry.id}';
+    setState(() => _savingKeys.add(key));
 
     final request = StaffAttendanceMarkRequest(
-      staffId: _isStaff ? _selectedStaff!.id : null,
-      teacherId: _isStaff ? null : _selectedTeacher!.id,
+      staffId: entry.type == 'staff' ? entry.id : null,
+      teacherId: entry.type == 'teacher' ? entry.id : null,
       date: _date,
-      status: _status,
+      status: status,
     );
 
-    final result =
-        await ref.read(markStaffAttendanceControllerProvider.notifier).markAttendance(request);
-    if (!mounted || result == null) return;
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Marked ${result.status} for ${result.personName}')));
-    Navigator.of(context).pop(true);
+    try {
+      await ref.read(staffAttendanceRepositoryProvider).markAttendance(request);
+      if (!mounted) return;
+      setState(() {
+        entry.markedStatus = status;
+        _savingKeys.remove(key);
+      });
+      ref.invalidate(staffAttendanceListControllerProvider(date: _date));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _savingKeys.remove(key));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to mark ${entry.name}: ${friendlyErrorMessage(e)}')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(markStaffAttendanceControllerProvider);
     final staffAsync = ref.watch(allStaffListControllerProvider);
     final teachersAsync = ref.watch(teachersListControllerProvider);
-    final isLoading = state.isLoading;
+    final attendanceAsync = ref.watch(staffAttendanceListControllerProvider(date: _date));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Mark Attendance')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            Row(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Row(
               children: [
-                ChoiceChip(
-                  label: const Text('Staff'),
-                  selected: _isStaff,
-                  onSelected: (v) => setState(() => _isStaff = true),
-                ),
-                const SizedBox(width: 8),
-                ChoiceChip(
-                  label: const Text('Teacher'),
-                  selected: !_isStaff,
-                  onSelected: (v) => setState(() => _isStaff = false),
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickDate,
+                    child: InputDecorator(
+                      decoration: const InputDecoration(labelText: 'Date'),
+                      child: Text(_fmt(_date)),
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            if (_isStaff)
-              staffAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Text('Failed to load staff: ${friendlyErrorMessage(e)}',
-                    style: const TextStyle(color: Colors.red)),
-                data: (staffList) => DropdownButtonFormField<StaffMember>(
-                  initialValue: _selectedStaff,
-                  decoration: const InputDecoration(labelText: 'Staff Member'),
-                  items: staffList
-                      .map((s) => DropdownMenuItem(value: s, child: Text(s.fullName)))
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedStaff = v),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search by name',
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (v) => setState(() => _query = v),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: staffAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) =>
+                  Center(child: Text('Failed to load staff: ${friendlyErrorMessage(e)}')),
+              data: (staffList) => teachersAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) =>
+                    Center(child: Text('Failed to load teachers: ${friendlyErrorMessage(e)}')),
+                data: (teacherList) => attendanceAsync.when(
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (e, _) =>
+                      Center(child: Text('Failed to load attendance: ${friendlyErrorMessage(e)}')),
+                  data: (records) {
+                    final markedByKey = {
+                      for (final r in records)
+                        (r.personType == 'staff' ? 'staff:${r.staffId}' : 'teacher:${r.teacherId}'):
+                            r.status,
+                    };
+
+                    var roster = [
+                      ...staffList.map((s) => AttendanceRosterEntry(
+                            id: s.id,
+                            name: s.fullName,
+                            type: 'staff',
+                            markedStatus: markedByKey['staff:${s.id}'],
+                          )),
+                      ...teacherList.map((t) => AttendanceRosterEntry(
+                            id: t.id,
+                            name: t.fullName,
+                            type: 'teacher',
+                            markedStatus: markedByKey['teacher:${t.id}'],
+                          )),
+                    ]..sort((a, b) => a.name.compareTo(b.name));
+
+                    if (_query.isNotEmpty) {
+                      final q = _query.toLowerCase();
+                      roster = roster.where((e) => e.name.toLowerCase().contains(q)).toList();
+                    }
+
+                    if (roster.isEmpty) {
+                      return const Center(child: Text('No staff or teachers found'));
+                    }
+
+                    return ListView.separated(
+                      itemCount: roster.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final entry = roster[index];
+                        final key = '${entry.type}:${entry.id}';
+                        final isSaving = _savingKeys.contains(key);
+                        final isLocked = entry.markedStatus != null;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(entry.name,
+                                        style: const TextStyle(fontWeight: FontWeight.w600)),
+                                    Text(
+                                      entry.type == 'staff' ? 'Staff' : 'Teacher',
+                                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: isSaving
+                                    ? const Center(
+                                        child: SizedBox(
+                                          height: 18,
+                                          width: 18,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      )
+                                    : Wrap(
+                                        spacing: 6,
+                                        runSpacing: 4,
+                                        children: attendanceStatusOptions.map((opt) {
+                                          final selected = entry.markedStatus == opt['value'];
+                                          return ChoiceChip(
+                                            label: Text(opt['label']!,
+                                                style: const TextStyle(fontSize: 12)),
+                                            selected: selected,
+                                            onSelected:
+                                                isLocked ? null : (_) => _mark(entry, opt['value']!),
+                                          );
+                                        }).toList(),
+                                      ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-              )
-            else
-              teachersAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Text('Failed to load teachers: ${friendlyErrorMessage(e)}',
-                    style: const TextStyle(color: Colors.red)),
-                data: (teachers) => DropdownButtonFormField<Teacher>(
-                  initialValue: _selectedTeacher,
-                  decoration: const InputDecoration(labelText: 'Teacher'),
-                  items: teachers
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t.fullName)))
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedTeacher = v),
-                ),
-              ),
-            const SizedBox(height: 12),
-            InkWell(
-              onTap: _pickDate,
-              child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Date'),
-                child: Text(_fmt(_date)),
               ),
             ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              initialValue: _status,
-              decoration: const InputDecoration(labelText: 'Status'),
-              items: const [
-                DropdownMenuItem(value: 'present', child: Text('Present')),
-                DropdownMenuItem(value: 'absent', child: Text('Absent')),
-                DropdownMenuItem(value: 'late', child: Text('Late')),
-                DropdownMenuItem(value: 'leave', child: Text('Leave')),
-              ],
-              onChanged: (v) => setState(() => _status = v ?? _status),
-            ),
-            const SizedBox(height: 24),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red)),
-              ),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Mark Attendance'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
