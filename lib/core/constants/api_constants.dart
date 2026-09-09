@@ -21,4 +21,5 @@ static const String scheduleBulkShift = 'schedule/bulk-shift';
 static const String schedulePublish = 'schedule/publish';
 static const String calendarHolidays = 'calendar/holidays';
 static const String attendanceStaff = 'attendance/staff';
+static const String attendanceStaffBulkMark = 'attendance/staff/bulk-mark';
 }

@@ -1,3 +1,5 @@
+import 'package:cms/features/attendance/data/models/bulk_staff_attendance_request.dart';
+import 'package:cms/features/attendance/data/models/bulk_staff_attendance_response.dart';
 import 'package:dio/dio.dart';
 import 'package:cms/core/constants/api_constants.dart';
 import 'models/staff_attendance.dart';
@@ -24,4 +26,9 @@ class StaffAttendanceRepository {
     );
     return (response.data as List).map((e) => StaffAttendance.fromJson(e)).toList();
   }
+
+  Future<BulkStaffAttendanceResponse> bulkMarkAttendance(BulkStaffAttendanceRequest request) async {
+  final response = await dio.post(ApiConstants.attendanceStaffBulkMark, data: request.toJson());
+  return BulkStaffAttendanceResponse.fromJson(response.data);
+}
 }

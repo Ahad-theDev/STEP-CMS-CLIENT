@@ -2,12 +2,16 @@ class AttendanceRosterEntry {
   final String id;
   final String name;
   final String type; // 'staff' | 'teacher'
-  String? markedStatus;
+  final String? originalStatus;
+  String? localStatus;
 
   AttendanceRosterEntry({
     required this.id,
     required this.name,
     required this.type,
-    this.markedStatus,
-  });
+    this.originalStatus,
+    String? localStatus,
+  }) : localStatus = localStatus ?? originalStatus;
+
+  bool get isDirty => localStatus != originalStatus;
 }
