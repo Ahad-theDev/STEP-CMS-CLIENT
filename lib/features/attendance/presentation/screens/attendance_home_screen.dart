@@ -1,8 +1,10 @@
+import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/attendance/presentation/screens/student_attendance_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/attendance_action_card.dart';
 import 'mark_staff_attendance_screen.dart';
 import 'staff_attendance_list_screen.dart';
+import 'analytics_home_screen.dart';
 
 class AttendanceHomeScreen extends StatelessWidget {
   const AttendanceHomeScreen({super.key});
@@ -62,6 +64,23 @@ class AttendanceHomeScreen extends StatelessWidget {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => const StudentAttendanceScreen(),
+                    ),
+                  );
+                },
+              ),
+              AttendanceActionCard(
+                icon: Icons.analytics_outlined,
+                title: 'Analytics',
+                description:
+                    'Trends and defaulters across classes and teachers',
+                buttonLabel: 'Open',
+                backgroundColor: AppColors.secondaryContainer,
+                iconColor: AppColors.secondary,
+                buttonColor: AppColors.secondary,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const AnalyticsHomeScreen(),
                     ),
                   );
                 },

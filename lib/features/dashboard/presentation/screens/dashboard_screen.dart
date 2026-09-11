@@ -3,6 +3,7 @@ import 'package:cms/features/auth/data/models/auth_user.dart';
 import 'package:cms/features/auth/presentation/screens/login_screen.dart';
 import 'package:cms/features/auth/presentation/screens/register_screen.dart';
 import 'package:cms/features/dashboard/presentation/widgets/admin_dashboard_body.dart';
+import 'package:cms/features/dashboard/presentation/widgets/teacher_dashboard_body.dart';
 import 'package:cms/features/students/presentation/screens/student_management_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cms/features/classes/presentation/screens/class_management_screen.dart';
@@ -246,7 +247,7 @@ class DashboardScreen extends ConsumerWidget {
       case 'principal':
         return const AdminDashboardBody();
       case 'teacher':
-        return const Center(child: Text('Teacher dashboard — coming next'));
+        return const TeacherDashboardBody();
       default:
         return const Center(child: Text('Unknown role'));
     }
