@@ -7,7 +7,7 @@ part of 'student_attendance_list_controller.dart';
 // **************************************************************************
 
 String _$studentAttendanceListControllerHash() =>
-    r'96488c1947b25ae2331f989aa4651c9cb705c57c';
+    r'5c7ed98166c69748c49d124f539a2d8a24b22b88';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,12 +32,18 @@ class _SystemHash {
 
 abstract class _$StudentAttendanceListController
     extends BuildlessAutoDisposeAsyncNotifier<List<StudentAttendanceRecord>> {
-  late final String classId;
+  late final String? classId;
   late final DateTime? date;
+  late final String? lectureId;
+  late final String? studentId;
+  late final String? status;
 
   FutureOr<List<StudentAttendanceRecord>> build({
-    required String classId,
+    String? classId,
     DateTime? date,
+    String? lectureId,
+    String? studentId,
+    String? status,
   });
 }
 
@@ -54,12 +60,18 @@ class StudentAttendanceListControllerFamily
 
   /// See also [StudentAttendanceListController].
   StudentAttendanceListControllerProvider call({
-    required String classId,
+    String? classId,
     DateTime? date,
+    String? lectureId,
+    String? studentId,
+    String? status,
   }) {
     return StudentAttendanceListControllerProvider(
       classId: classId,
       date: date,
+      lectureId: lectureId,
+      studentId: studentId,
+      status: status,
     );
   }
 
@@ -67,7 +79,13 @@ class StudentAttendanceListControllerFamily
   StudentAttendanceListControllerProvider getProviderOverride(
     covariant StudentAttendanceListControllerProvider provider,
   ) {
-    return call(classId: provider.classId, date: provider.date);
+    return call(
+      classId: provider.classId,
+      date: provider.date,
+      lectureId: provider.lectureId,
+      studentId: provider.studentId,
+      status: provider.status,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -94,12 +112,18 @@ class StudentAttendanceListControllerProvider
         > {
   /// See also [StudentAttendanceListController].
   StudentAttendanceListControllerProvider({
-    required String classId,
+    String? classId,
     DateTime? date,
+    String? lectureId,
+    String? studentId,
+    String? status,
   }) : this._internal(
          () => StudentAttendanceListController()
            ..classId = classId
-           ..date = date,
+           ..date = date
+           ..lectureId = lectureId
+           ..studentId = studentId
+           ..status = status,
          from: studentAttendanceListControllerProvider,
          name: r'studentAttendanceListControllerProvider',
          debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -110,6 +134,9 @@ class StudentAttendanceListControllerProvider
              StudentAttendanceListControllerFamily._allTransitiveDependencies,
          classId: classId,
          date: date,
+         lectureId: lectureId,
+         studentId: studentId,
+         status: status,
        );
 
   StudentAttendanceListControllerProvider._internal(
@@ -121,16 +148,28 @@ class StudentAttendanceListControllerProvider
     required super.from,
     required this.classId,
     required this.date,
+    required this.lectureId,
+    required this.studentId,
+    required this.status,
   }) : super.internal();
 
-  final String classId;
+  final String? classId;
   final DateTime? date;
+  final String? lectureId;
+  final String? studentId;
+  final String? status;
 
   @override
   FutureOr<List<StudentAttendanceRecord>> runNotifierBuild(
     covariant StudentAttendanceListController notifier,
   ) {
-    return notifier.build(classId: classId, date: date);
+    return notifier.build(
+      classId: classId,
+      date: date,
+      lectureId: lectureId,
+      studentId: studentId,
+      status: status,
+    );
   }
 
   @override
@@ -140,7 +179,10 @@ class StudentAttendanceListControllerProvider
       override: StudentAttendanceListControllerProvider._internal(
         () => create()
           ..classId = classId
-          ..date = date,
+          ..date = date
+          ..lectureId = lectureId
+          ..studentId = studentId
+          ..status = status,
         from: from,
         name: null,
         dependencies: null,
@@ -148,6 +190,9 @@ class StudentAttendanceListControllerProvider
         debugGetCreateSourceHash: null,
         classId: classId,
         date: date,
+        lectureId: lectureId,
+        studentId: studentId,
+        status: status,
       ),
     );
   }
@@ -165,7 +210,10 @@ class StudentAttendanceListControllerProvider
   bool operator ==(Object other) {
     return other is StudentAttendanceListControllerProvider &&
         other.classId == classId &&
-        other.date == date;
+        other.date == date &&
+        other.lectureId == lectureId &&
+        other.studentId == studentId &&
+        other.status == status;
   }
 
   @override
@@ -173,6 +221,9 @@ class StudentAttendanceListControllerProvider
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, classId.hashCode);
     hash = _SystemHash.combine(hash, date.hashCode);
+    hash = _SystemHash.combine(hash, lectureId.hashCode);
+    hash = _SystemHash.combine(hash, studentId.hashCode);
+    hash = _SystemHash.combine(hash, status.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -183,10 +234,19 @@ class StudentAttendanceListControllerProvider
 mixin StudentAttendanceListControllerRef
     on AutoDisposeAsyncNotifierProviderRef<List<StudentAttendanceRecord>> {
   /// The parameter `classId` of this provider.
-  String get classId;
+  String? get classId;
 
   /// The parameter `date` of this provider.
   DateTime? get date;
+
+  /// The parameter `lectureId` of this provider.
+  String? get lectureId;
+
+  /// The parameter `studentId` of this provider.
+  String? get studentId;
+
+  /// The parameter `status` of this provider.
+  String? get status;
 }
 
 class _StudentAttendanceListControllerProviderElement
@@ -199,11 +259,20 @@ class _StudentAttendanceListControllerProviderElement
   _StudentAttendanceListControllerProviderElement(super.provider);
 
   @override
-  String get classId =>
+  String? get classId =>
       (origin as StudentAttendanceListControllerProvider).classId;
   @override
   DateTime? get date =>
       (origin as StudentAttendanceListControllerProvider).date;
+  @override
+  String? get lectureId =>
+      (origin as StudentAttendanceListControllerProvider).lectureId;
+  @override
+  String? get studentId =>
+      (origin as StudentAttendanceListControllerProvider).studentId;
+  @override
+  String? get status =>
+      (origin as StudentAttendanceListControllerProvider).status;
 }
 
 // ignore_for_file: type=lint

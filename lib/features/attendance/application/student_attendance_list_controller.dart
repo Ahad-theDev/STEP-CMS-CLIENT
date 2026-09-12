@@ -8,9 +8,21 @@ part 'student_attendance_list_controller.g.dart';
 @riverpod
 class StudentAttendanceListController extends _$StudentAttendanceListController {
   @override
-  Future<List<StudentAttendanceRecord>> build({required String classId, DateTime? date}) async {
+  Future<List<StudentAttendanceRecord>> build({
+    String? classId,
+    DateTime? date,
+    String? lectureId,
+    String? studentId,
+    String? status,
+  }) async {
     final repo = ref.read(studentAttendanceRepositoryProvider);
-    return repo.listAttendance(classId: classId, date: date);
+    return repo.listAttendance(
+      classId: classId,
+      date: date,
+      lectureId: lectureId,
+      studentId: studentId,
+      status: status,
+    );
   }
 
   Future<void> refresh() async {

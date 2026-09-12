@@ -1,10 +1,10 @@
+import 'package:cms/features/attendance/presentation/widgets/trend_pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/classes/application/classes_list_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/class_trends_controller.dart';
-import '../widgets/trend_bar_chart.dart';
 
 class ClassTrendsScreen extends ConsumerStatefulWidget {
   const ClassTrendsScreen({super.key});
@@ -49,13 +49,20 @@ class _ClassTrendsScreenState extends ConsumerState<ClassTrendsScreen> {
           children: [
             classesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red)),
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
               data: (classes) => DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
                 decoration: const InputDecoration(labelText: 'Select Class'),
                 items: classes
-                    .map((c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text('${c.name} - ${c.section}'),
+                      ),
+                    )
                     .toList(),
                 onChanged: (v) => setState(() => _selectedClass = v),
               ),
@@ -77,18 +84,21 @@ class _ClassTrendsScreenState extends ConsumerState<ClassTrendsScreen> {
   }
 
   Widget _buildChart() {
-    final trendsAsync = ref.watch(classTrendsControllerProvider(
-      classId: _selectedClass!.id,
-      dateFrom: _dateFrom,
-      dateTo: _dateTo,
-    ));
+    final trendsAsync = ref.watch(
+      classTrendsControllerProvider(
+        classId: _selectedClass!.id,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo,
+      ),
+    );
 
     return trendsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load trends: ${friendlyErrorMessage(e)}')),
-      data: (response) => SingleChildScrollView(
-        child: TrendBarChart(points: response.trends),
+      error: (e, _) => Center(
+        child: Text('Failed to load trends: ${friendlyErrorMessage(e)}'),
       ),
+      data: (response) =>
+          SingleChildScrollView(child: TrendPieChart(points: response.trends)),
     );
   }
 }

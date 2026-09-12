@@ -1,9 +1,21 @@
+import 'package:cms/features/attendance/application/all_students_for_class_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
+import 'package:cms/core/utils/time_of_day_utils.dart';
 import 'package:cms/features/classes/application/classes_list_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
+import 'package:cms/features/lectures/application/all_lectures_for_class_controller.dart';
+import 'package:cms/features/lectures/data/models/lecture.dart';
+import 'package:cms/features/students/data/models/student.dart';
 import '../../application/student_attendance_list_controller.dart';
+
+const List<Map<String, String>> _statusFilterOptions = [
+  {'value': 'present', 'label': 'Present'},
+  {'value': 'absent', 'label': 'Absent'},
+  {'value': 'late', 'label': 'Late'},
+  {'value': 'leave', 'label': 'Leave'},
+];
 
 class ViewStudentAttendanceScreen extends ConsumerStatefulWidget {
   const ViewStudentAttendanceScreen({super.key});
@@ -14,6 +26,9 @@ class ViewStudentAttendanceScreen extends ConsumerStatefulWidget {
 
 class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttendanceScreen> {
   SchoolClass? _selectedClass;
+  Lecture? _selectedLecture;
+  Student? _selectedStudent;
+  String? _selectedStatus;
   DateTime? _date = DateTime.now();
 
   String _fmt(DateTime d) =>
@@ -27,6 +42,14 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
       lastDate: DateTime(2100),
     );
     if (picked != null) setState(() => _date = picked);
+  }
+
+  void _onClassChanged(SchoolClass? cls) {
+    setState(() {
+      _selectedClass = cls;
+      _selectedLecture = null;
+      _selectedStudent = null;
+    });
   }
 
   Color _statusColor(String status) {
@@ -50,28 +73,46 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
 
     return Scaffold(
       appBar: AppBar(title: const Text('View Attendance')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              classesAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) =>
-                    Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                        style: const TextStyle(color: Colors.red)),
-                data: (classes) => DropdownButtonFormField<SchoolClass>(
-                  initialValue: _selectedClass,
-                  decoration: const InputDecoration(labelText: 'Select Class'),
-                  items: classes
-                      .map((c) => DropdownMenuItem(
-                            value: c,
-                            child: Text('${c.name} - ${c.section}'),
-                          ))
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedClass = v),
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            classesAsync.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red)),
+              data: (classes) => DropdownButtonFormField<SchoolClass>(
+                initialValue: _selectedClass,
+                decoration: const InputDecoration(labelText: 'Select Class'),
+                items: classes
+                    .map((c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                    .toList(),
+                onChanged: _onClassChanged,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (_selectedClass != null) ...[
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                children: [
+                  SizedBox(width: 220, child: _buildLectureDropdown()),
+                  SizedBox(width: 200, child: _buildStudentDropdown()),
+                  SizedBox(
+                    width: 160,
+                    child: DropdownButtonFormField<String?>(
+                      initialValue: _selectedStatus,
+                      decoration: const InputDecoration(labelText: 'Status'),
+                      items: [
+                        const DropdownMenuItem<String?>(value: null, child: Text('All')),
+                        ..._statusFilterOptions.map(
+                            (o) => DropdownMenuItem(value: o['value'], child: Text(o['label']!))),
+                      ],
+                      onChanged: (v) => setState(() => _selectedStatus = v),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               Row(
@@ -94,24 +135,78 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
                 ],
               ),
               const SizedBox(height: 16),
-              if (_selectedClass != null)
-                SizedBox(
-                  height: 400,
-                  child: _buildResults())
-              else
-                const SizedBox(
-                  height: 400,
-                  child: Center(child: Text('Select a class to view attendance'))),
-            ],
-          ),
+              Expanded(child: _buildResults()),
+            ] else
+              const Expanded(child: Center(child: Text('Select a class to view attendance'))),
+          ],
         ),
       ),
     );
   }
 
+  Widget _buildLectureDropdown() {
+    final lecturesAsync =
+        ref.watch(allLecturesForClassControllerProvider(classId: _selectedClass!.id));
+    return lecturesAsync.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (e, _) => Text('Failed: ${friendlyErrorMessage(e)}',
+          style: const TextStyle(color: Colors.red, fontSize: 12)),
+      data: (lectures) => DropdownButtonFormField<Lecture?>(
+        initialValue: _selectedLecture,
+        decoration: const InputDecoration(labelText: 'Lecture'),
+        isExpanded: true,
+        items: [
+          const DropdownMenuItem<Lecture?>(value: null, child: Text('All Lectures')),
+          ...lectures.map((l) => DropdownMenuItem(
+                value: l,
+                child: Text(
+                  '${l.dayOfWeek[0].toUpperCase()}${l.dayOfWeek.substring(1)} ${TimeOfDayUtils.displayLabel(l.startTime)}',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )),
+        ],
+        onChanged: (v) => setState(() => _selectedLecture = v),
+      ),
+    );
+  }
+
+  Widget _buildStudentDropdown() {
+    final studentsAsync =
+        ref.watch(allStudentsForClassControllerProvider(classId: _selectedClass!.id));
+    return studentsAsync.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (e, _) => Text('Failed: ${friendlyErrorMessage(e)}',
+          style: const TextStyle(color: Colors.red, fontSize: 12)),
+      data: (students) => DropdownButtonFormField<Student?>(
+        initialValue: _selectedStudent,
+        decoration: const InputDecoration(labelText: 'Student'),
+        isExpanded: true,
+        items: [
+          const DropdownMenuItem<Student?>(value: null, child: Text('All Students')),
+          ...students.map((s) => DropdownMenuItem(
+                value: s,
+                child: Text(s.fullName, overflow: TextOverflow.ellipsis),
+              )),
+        ],
+        onChanged: (v) => setState(() => _selectedStudent = v),
+      ),
+    );
+  }
+
   Widget _buildResults() {
-    final recordsAsync = ref
-        .watch(studentAttendanceListControllerProvider(classId: _selectedClass!.id, date: _date));
+    final studentsAsync =
+        ref.watch(allStudentsForClassControllerProvider(classId: _selectedClass!.id));
+    final phoneByStudentId = {
+      for (final s in studentsAsync.valueOrNull ?? <Student>[]) s.id: s.guardianPhone,
+    };
+
+    final recordsAsync = ref.watch(studentAttendanceListControllerProvider(
+      classId: _selectedClass!.id,
+      date: _date,
+      lectureId: _selectedLecture?.id,
+      studentId: _selectedStudent?.id,
+      status: _selectedStatus,
+    ));
 
     return recordsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -125,6 +220,7 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
           child: DataTable(
             columns: const [
               DataColumn(label: Text('Student')),
+              DataColumn(label: Text('Phone')),
               DataColumn(label: Text('Date')),
               DataColumn(label: Text('Status')),
               DataColumn(label: Text('Remarks')),
@@ -132,6 +228,7 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
             rows: records
                 .map((r) => DataRow(cells: [
                       DataCell(Text(r.studentName)),
+                      DataCell(Text(phoneByStudentId[r.studentId] ?? '-')),
                       DataCell(Text(r.date)),
                       DataCell(Chip(
                         label: Text(r.status[0].toUpperCase() + r.status.substring(1),

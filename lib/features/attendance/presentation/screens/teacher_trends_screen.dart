@@ -5,7 +5,7 @@ import 'package:cms/features/teachers/application/teachers_list_controller.dart'
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:cms/features/classes/application/classes_list_controller.dart';
 import '../../application/teacher_trends_controller.dart';
-import '../widgets/trend_bar_chart.dart';
+import '../widgets/trend_pie_chart.dart';
 
 class TeacherTrendsScreen extends ConsumerStatefulWidget {
   const TeacherTrendsScreen({super.key});
@@ -104,7 +104,7 @@ class _TeacherTrendsScreenState extends ConsumerState<TeacherTrendsScreen> {
                   Text(classNameById[classTrend.classId] ?? classTrend.classId,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  TrendBarChart(points: classTrend.trends),
+                  TrendPieChart(points: classTrend.trends),
                 ],
               ),
             );
