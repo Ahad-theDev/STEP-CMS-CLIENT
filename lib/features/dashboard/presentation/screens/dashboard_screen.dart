@@ -109,6 +109,18 @@ class DashboardScreen extends ConsumerWidget {
                               );
                             },
                           ),
+                          ListTile(
+                            leading: const Icon(Icons.fact_check_outlined),
+                            title: const Text('Attendance'),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const AttendanceHomeScreen(),
+                                ),
+                              );
+                            },
+                          ),
                           ExpansionTile(
                             leading: const Icon(Icons.apartment_rounded),
                             title: const Text('Campus'),
@@ -219,18 +231,6 @@ class DashboardScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.fact_check_outlined),
-                      title: const Text('Attendance'),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AttendanceHomeScreen(),
-                          ),
-                        );
-                      },
                     ),
                   ],
                 ),
