@@ -17,7 +17,7 @@ class FeeStructureRepository {
     final response = await dio.get(
       ApiConstants.feeStructures,
       queryParameters: {
-        if (classId != null) 'class_id': classId,
+        ...? (classId != null ? {'class_id': classId} : null),
         if (academicYear != null && academicYear.isNotEmpty) 'academic_year': academicYear,
       },
     );

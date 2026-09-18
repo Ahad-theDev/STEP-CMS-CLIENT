@@ -21,11 +21,11 @@ class StudentAttendanceRepository {
     final response = await dio.get(
       ApiConstants.attendanceStudents,
       queryParameters: {
-        if (lectureId != null) 'lecture_id': lectureId,
-        if (classId != null) 'class_id': classId,
-        if (date != null) 'date': _fmt(date),
-        if (studentId != null) 'student_id': studentId,
-        if (status != null) 'attendance_status': status,
+        ...? (lectureId != null ? {'lecture_id': lectureId} : null),
+        ...? (classId != null ? {'class_id': classId} : null),
+        ...? (date != null ? {'date': _fmt(date)} : null),
+        ...? (studentId != null ? {'student_id': studentId} : null),
+        ...? (status != null ? {'attendance_status': status} : null),
       },
     );
     return (response.data as List).map((e) => StudentAttendanceRecord.fromJson(e)).toList();

@@ -89,7 +89,7 @@ class _PayFeeScreenState extends ConsumerState<PayFeeScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: records.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, unused) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final r = records[index];
             final isPaid = r.status == 'paid';

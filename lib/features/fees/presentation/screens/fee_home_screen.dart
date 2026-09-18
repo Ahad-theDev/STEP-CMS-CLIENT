@@ -10,12 +10,6 @@ import 'fee_summary_screen.dart';
 class FeeHomeScreen extends StatelessWidget {
   const FeeHomeScreen({super.key});
 
-  void _comingSoon(BuildContext context, String feature) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$feature — coming soon')));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +26,9 @@ class FeeHomeScreen extends StatelessWidget {
                 title: 'Pay Fee',
                 description: 'Record a payment for a student\'s fee',
                 buttonLabel: 'Open',
+                backgroundColor: const Color(0xFFE8F5E9),
+                iconColor: const Color(0xFF43A047),
+                buttonColor: const Color(0xFF388E3C),
                 onPressed: () => Navigator.of(
                   context,
                 ).push(MaterialPageRoute(builder: (_) => const PayFeeScreen())),
@@ -42,6 +39,9 @@ class FeeHomeScreen extends StatelessWidget {
                 description:
                     'Set, view, and update each class\'s fee structure',
                 buttonLabel: 'Open',
+                backgroundColor: const Color(0xFFF6FBFF),
+                iconColor: const Color(0xFF1769D1),
+                buttonColor: const Color(0xFF1265D4),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const FeeStructureHomeScreen(),
@@ -53,6 +53,9 @@ class FeeHomeScreen extends StatelessWidget {
                 title: 'Records',
                 description: 'Generate and view monthly fee records',
                 buttonLabel: 'Open',
+                backgroundColor: const Color(0xFFEAE8F4),
+                iconColor: const Color(0xFF7941C4),
+                buttonColor: const Color(0xFF7335C5),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const FeeRecordsHomeScreen(),
@@ -64,6 +67,9 @@ class FeeHomeScreen extends StatelessWidget {
                 title: 'Fee Due Students',
                 description: 'Due today, overdue, and upcoming payments',
                 buttonLabel: 'Open',
+                backgroundColor: const Color(0xFFFFF8E1),
+                iconColor: const Color(0xFFF9A825),
+                buttonColor: const Color(0xFFF57F17),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const FeeDueStudentsScreen(),
@@ -75,6 +81,9 @@ class FeeHomeScreen extends StatelessWidget {
                 title: 'Fee Defaulters',
                 description: 'Students with unpaid or partial fees',
                 buttonLabel: 'Open',
+                backgroundColor: const Color(0xFFF3E9E8),
+                iconColor: const Color(0xFFE84245),
+                buttonColor: const Color(0xFFED4043),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const FeeDefaultersScreen(),
@@ -86,6 +95,9 @@ class FeeHomeScreen extends StatelessWidget {
                 title: 'Fee Summary',
                 description: 'Collection totals and efficiency by class',
                 buttonLabel: 'Open',
+                backgroundColor: const Color(0xFFE3F4F6),
+                iconColor: const Color(0xFF0795A5),
+                buttonColor: const Color(0xFF0795A5),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const FeeSummaryScreen()),
                 ),

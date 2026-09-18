@@ -194,7 +194,7 @@ class _MarkStaffAttendanceScreenState extends ConsumerState<MarkStaffAttendanceS
 
                     return ListView.separated(
                       itemCount: visible.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      separatorBuilder: (_, unused) => const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final entry = visible[index];
                         return Padding(

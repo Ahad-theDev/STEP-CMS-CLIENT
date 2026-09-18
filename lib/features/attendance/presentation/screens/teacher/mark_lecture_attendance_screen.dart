@@ -144,7 +144,7 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
                     Expanded(
                       child: ListView.separated(
                         itemCount: _rows!.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        separatorBuilder: (_, unused) => const Divider(height: 1),
                         itemBuilder: (context, index) {
                           final row = _rows![index];
                           return Padding(

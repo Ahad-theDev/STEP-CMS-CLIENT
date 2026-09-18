@@ -116,7 +116,7 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
 
                 return ListView.separated(
                   itemCount: sorted.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, unusedParam) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final lec = sorted[index];
                     return ListTile(

@@ -69,10 +69,12 @@ class _CorrectAttendanceScreenState extends ConsumerState<CorrectAttendanceScree
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-    if (picked != null) setState(() {
-      _date = picked;
-      _rows = null;
-    });
+    if (picked != null) {
+      setState(() {
+        _date = picked;
+        _rows = null;
+      });
+    }
   }
 
   Future<void> _save() async {
@@ -225,7 +227,7 @@ class _CorrectAttendanceScreenState extends ConsumerState<CorrectAttendanceScree
 
           return ListView.separated(
             itemCount: _rows!.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, unused) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final row = _rows![index];
               return Padding(

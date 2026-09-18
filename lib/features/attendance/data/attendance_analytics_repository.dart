@@ -50,7 +50,7 @@ class AttendanceAnalyticsRepository {
         'threshold': threshold,
         'date_from': _fmt(dateFrom),
         'date_to': _fmt(dateTo),
-        if (classId != null) 'class_id': classId,
+        ...? (classId != null ? {'class_id': classId} : null),
       },
     );
     return DefaultersResponse.fromJson(response.data);

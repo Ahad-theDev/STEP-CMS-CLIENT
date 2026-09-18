@@ -1,9 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/classes/application/classes_list_controller.dart';
-import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/bulk_generate_fees_controller.dart';
 import '../../data/models/fee_generate_request.dart';
 import '../../data/models/fee_generate_result.dart';
@@ -102,11 +100,11 @@ class _GenerateBulkFeesScreenState extends ConsumerState<GenerateBulkFeesScreen>
                   (i) => DropdownMenuItem(
                       value: i + 1,
                       child: Text(
-                          DateTime(2000, i + 1).month.toString().padLeft(2, '0') + ' - ' +
-                              [
+                          '${DateTime(2000, i + 1).month.toString().padLeft(2, '0')} - ${[
                                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-                              ][i]))),
+                              ][i]}')),
+              ),
               onChanged: (v) => setState(() => _month = v ?? _month),
             ),
             const SizedBox(height: 12),

@@ -22,6 +22,9 @@ class FeeStructureHomeScreen extends StatelessWidget {
                 title: 'Create Fee Structure',
                 description: 'Set a class\'s fee for an academic year',
                 buttonLabel: 'Create Now',
+                backgroundColor: const Color(0xFFE3F4F6),
+                iconColor: const Color(0xFF0795A5),
+                buttonColor: const Color(0xFF0795A5),
                 onPressed: () => Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const AddFeeStructureScreen())),
               ),
@@ -30,6 +33,9 @@ class FeeStructureHomeScreen extends StatelessWidget {
                 title: 'View Fee Structure',
                 description: 'Browse by class and year — tap a row to update',
                 buttonLabel: 'View Now',
+                backgroundColor: const Color(0xFFF6FBFF),
+                iconColor: const Color(0xFF1769D1),
+                buttonColor: const Color(0xFF1265D4),
                 onPressed: () => Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const ViewFeeStructuresScreen())),
               ),

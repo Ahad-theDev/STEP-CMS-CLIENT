@@ -70,8 +70,8 @@ class LectureRepository {
     final response = await dio.get(
       ApiConstants.lecturesMySchedule,
       queryParameters: {
-        if (day != null) 'day': day,
-        if (date != null) 'date': date.toIso8601String().split('T').first,
+        ...? (day != null ? {'day': day} : null),
+        ...? (date != null ? {'date': date.toIso8601String().split('T').first} : null),
       },
     );
     return MyScheduleResponse.fromJson(response.data);

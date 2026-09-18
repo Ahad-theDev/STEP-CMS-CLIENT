@@ -20,8 +20,8 @@ class StaffAttendanceRepository {
     final response = await dio.get(
       ApiConstants.attendanceStaff,
       queryParameters: {
-        if (date != null) 'date': date.toIso8601String().split('T').first,
-        if (personId != null) 'staff_id': personId,
+        ...? (date != null ? {'date': date.toIso8601String().split('T').first} : null),
+        ...? (personId != null ? {'staff_id': personId} : null),
       },
     );
     return (response.data as List).map((e) => StaffAttendance.fromJson(e)).toList();

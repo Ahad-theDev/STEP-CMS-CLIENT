@@ -21,10 +21,10 @@ class FeeRecordRepository {
     final response = await dio.get(
       ApiConstants.fees,
       queryParameters: {
-        if (studentId != null) 'student_id': studentId,
-        if (month != null) 'month': month,
-        if (year != null) 'year': year,
-        if (status != null) 'status': status,
+        ...? (studentId != null ? {'student_id': studentId} : null),
+        ...? (month != null ? {'month': month} : null),
+        ...? (year != null ? {'year': year} : null),
+        ...? (status != null ? {'status': status} : null),
       },
     );
     return (response.data as List).map((e) => FeeRecord.fromJson(e)).toList();
@@ -64,9 +64,9 @@ Future<FeeReminderResponse> getUpcoming(int days) async {
 
 Future<FeeDefaultersResponse> getDefaulters({String? classId, int? month, int? year}) async {
   final response = await dio.get(ApiConstants.feesDefaulters, queryParameters: {
-    if (classId != null) 'class_id': classId,
-    if (month != null) 'month': month,
-    if (year != null) 'year': year,
+    ...? (classId != null ? {'class_id': classId} : null),
+    ...? (month != null ? {'month': month} : null),
+    ...? (year != null ? {'year': year} : null),
   });
   return FeeDefaultersResponse.fromJson(response.data);
 }
@@ -80,12 +80,12 @@ Future<FeeSummaryResponse> getSummary({
   String? groupBy,
 }) async {
   final response = await dio.get(ApiConstants.feesSummary, queryParameters: {
-    if (classId != null) 'class_id': classId,
-    if (fromMonth != null) 'from_month': fromMonth,
-    if (fromYear != null) 'from_year': fromYear,
-    if (toMonth != null) 'to_month': toMonth,
-    if (toYear != null) 'to_year': toYear,
-    if (groupBy != null) 'group_by': groupBy,
+    ...? (classId != null ? {'class_id': classId} : null),
+    ...? (fromMonth != null ? {'from_month': fromMonth} : null),
+    ...? (fromYear != null ? {'from_year': fromYear} : null),
+    ...? (toMonth != null ? {'to_month': toMonth} : null),
+    ...? (toYear != null ? {'to_year': toYear} : null),
+    ...? (groupBy != null ? {'group_by': groupBy} : null),
   });
   return FeeSummaryResponse.fromJson(response.data);
 }

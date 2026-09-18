@@ -179,9 +179,9 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
       width: 140,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1, red: color.r, green: color.g, blue: color.b),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3, red: color.r, green: color.g, blue: color.b)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

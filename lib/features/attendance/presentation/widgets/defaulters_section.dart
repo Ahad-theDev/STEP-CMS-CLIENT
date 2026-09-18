@@ -109,7 +109,7 @@ class _DefaultersSectionState extends ConsumerState<DefaultersSection> {
 
         return ListView.separated(
           itemCount: sorted.length,
-          separatorBuilder: (_, __) => const Divider(height: 1),
+          separatorBuilder: (_, unused) => const Divider(height: 1),
           itemBuilder: (context, index) {
             final d = sorted[index];
             return ListTile(
