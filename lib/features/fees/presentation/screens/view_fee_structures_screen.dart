@@ -44,7 +44,7 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
 
     return Scaffold(
       appBar: AppBar(title: const Text('View Fee Structure')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,33 +87,51 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
               onChanged: (v) => setState(() => _showInactive = v),
             ),
             const SizedBox(height: 12),
-            Expanded(child: _buildTable()),
+            classesAsync.when(
+              loading: () => const SizedBox.shrink(),
+              error: (e, _) => const SizedBox.shrink(),
+              data: (classes) {
+                final classNameById = {
+                  for (final c in classes) c.id: '${c.name} - ${c.section}',
+                };
+                return _buildTable(classNameById);
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTable() {
+  Widget _buildTable(Map<String, String> classNameById) {
     final structuresAsync = ref.watch(feeStructuresListControllerProvider(
       classId: _selectedClass?.id,
       academicYear: (_appliedYear?.isEmpty ?? true) ? null : _appliedYear,
     ));
 
     return structuresAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
+      loading: () => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text('Failed to load: ${friendlyErrorMessage(e)}',
+            style: const TextStyle(color: Colors.red)),
+      ),
       data: (structures) {
         final visible =
             _showInactive ? structures : structures.where((s) => s.isActive).toList();
         if (visible.isEmpty) {
-          return const Center(child: Text('No fee structures found'));
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: Text('No fee structures found')),
+          );
         }
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const [
-              DataColumn(label: Text('Class ID')),
+              DataColumn(label: Text('Class')),
               DataColumn(label: Text('Year')),
               DataColumn(label: Text('Amount')),
               DataColumn(label: Text('Status')),
@@ -124,7 +142,7 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
                         if (selected == true) _openUpdate(s);
                       },
                       cells: [
-                        DataCell(Text(s.classId)),
+                        DataCell(Text(classNameById[s.classId] ?? s.classId)),
                         DataCell(Text(s.academicYear)),
                         DataCell(Text(s.amount.toStringAsFixed(0))),
                         DataCell(Text(

@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import '../widgets/fee_action_card.dart';
 import 'fee_structure_home_screen.dart';
 import 'fee_records_home_screen.dart';
+import 'pay_fee_screen.dart';
+import 'fee_due_students_screen.dart';
+import 'fee_defaulters_screen.dart';
+import 'fee_summary_screen.dart';
 
 class FeeHomeScreen extends StatelessWidget {
   const FeeHomeScreen({super.key});
 
   void _comingSoon(BuildContext context, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$feature — coming soon')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$feature — coming soon')));
   }
 
   @override
@@ -26,44 +32,63 @@ class FeeHomeScreen extends StatelessWidget {
                 title: 'Pay Fee',
                 description: 'Record a payment for a student\'s fee',
                 buttonLabel: 'Open',
-                onPressed: () => _comingSoon(context, 'Pay Fee'),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const PayFeeScreen())),
               ),
               FeeActionCard(
                 icon: Icons.calendar_month_outlined,
                 title: 'Academic Year Fee',
-                description: 'Set, view, and update each class\'s fee structure',
+                description:
+                    'Set, view, and update each class\'s fee structure',
                 buttonLabel: 'Open',
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const FeeStructureHomeScreen())),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const FeeStructureHomeScreen(),
+                  ),
+                ),
               ),
               FeeActionCard(
                 icon: Icons.receipt_long_outlined,
                 title: 'Records',
                 description: 'Generate and view monthly fee records',
                 buttonLabel: 'Open',
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const FeeRecordsHomeScreen())),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const FeeRecordsHomeScreen(),
+                  ),
+                ),
               ),
               FeeActionCard(
                 icon: Icons.event_busy_outlined,
                 title: 'Fee Due Students',
                 description: 'Due today, overdue, and upcoming payments',
                 buttonLabel: 'Open',
-                onPressed: () => _comingSoon(context, 'Fee Due Students'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const FeeDueStudentsScreen(),
+                  ),
+                ),
               ),
               FeeActionCard(
                 icon: Icons.warning_amber_rounded,
                 title: 'Fee Defaulters',
                 description: 'Students with unpaid or partial fees',
                 buttonLabel: 'Open',
-                onPressed: () => _comingSoon(context, 'Fee Defaulters'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const FeeDefaultersScreen(),
+                  ),
+                ),
               ),
               FeeActionCard(
                 icon: Icons.summarize_outlined,
                 title: 'Fee Summary',
                 description: 'Collection totals and efficiency by class',
                 buttonLabel: 'Open',
-                onPressed: () => _comingSoon(context, 'Fee Summary'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const FeeSummaryScreen()),
+                ),
               ),
             ],
           ),
