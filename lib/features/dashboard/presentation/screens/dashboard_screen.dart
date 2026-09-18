@@ -1,4 +1,5 @@
 import 'package:cms/core/network/dio_client.dart';
+import 'package:cms/features/fees/presentation/screens/fee_home_screen.dart';
 import 'package:cms/features/auth/data/models/auth_user.dart';
 import 'package:cms/features/auth/presentation/screens/login_screen.dart';
 import 'package:cms/features/auth/presentation/screens/register_screen.dart';
@@ -117,6 +118,18 @@ class DashboardScreen extends ConsumerWidget {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => const AttendanceHomeScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.payments_outlined),
+                            title: const Text('Fees'),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const FeeHomeScreen(),
                                 ),
                               );
                             },

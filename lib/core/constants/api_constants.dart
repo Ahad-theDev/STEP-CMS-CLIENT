@@ -1,6 +1,6 @@
 class ApiConstants {
-//   static const String baseUrl = 'http://10.0.2.2:8000/';
-  static const String baseUrl = 'http://127.0.0.1:8000/';
+  static const String baseUrl = 'http://10.0.2.2:8000/';
+  // static const String baseUrl = 'http://127.0.0.1:8000/';
   // static const String baseUrl =
   // 'https://overhand-nebula-appliance.ngrok-free.dev/';
   static const String register = 'auth/register';
@@ -37,4 +37,9 @@ class ApiConstants {
   static const String attendanceStudentsMark = 'attendance/students/mark';
   static String lectureRoster(String lectureId) =>
       'lectures/$lectureId/students';
+
+static const String feeStructures = 'fee-structures';
+static const String fees = 'fees';
+static const String feesGenerateBulk = 'fees/generate-bulk';
+static String feesGenerateStudent(String studentId) => 'fees/generate-student/$studentId';
 }
