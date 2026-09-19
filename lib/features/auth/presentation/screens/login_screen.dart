@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/features/auth/application/auth_repository_provider.dart';
 import 'package:cms/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:cms/features/auth/presentation/screens/request_password_reset_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -105,18 +106,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _handleForgotPassword() {
-    // TODO: Implement forgot password flow
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Forgot password flow - coming soon'),
-        behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(
-          label: 'Dismiss',
-          onPressed: () {},
-        ),
-      ),
-    );
-  }
+  Navigator.of(context).push(
+    MaterialPageRoute(builder: (_) => const RequestPasswordResetScreen()),
+  );
+}
 
   @override
   Widget build(BuildContext context) {

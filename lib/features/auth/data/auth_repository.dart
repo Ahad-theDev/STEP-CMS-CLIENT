@@ -40,6 +40,26 @@ class AuthRepository {
       ApiConstants.refresh,
       queryParameters: {'refresh_token': refreshToken},
     );
-    return response.data['access_token'] as String;
+    final accessTokenData = response.data['access_token'];
+    // Handle case where backend returns [token, jti] array
+    if (accessTokenData is List && accessTokenData.isNotEmpty) {
+      return accessTokenData[0] as String;
+    }
+    return accessTokenData as String;
   }
+  Future<String> requestPasswordReset(String identifier) async {
+  final response = await dio.post(
+    ApiConstants.requestPasswordReset,
+    queryParameters: {'identifier': identifier},
+  );
+  return response.data['message'] as String;
+}
+
+Future<String> resetPassword({required String token, required String newPassword}) async {
+  final response = await dio.post(
+    ApiConstants.resetPassword,
+    queryParameters: {'token': token, 'new_password': newPassword},
+  );
+  return response.data['message'] as String;
+}
 }
