@@ -14,6 +14,7 @@ import 'package:cms/features/subjects/presentation/screens/subject_management_sc
 import 'package:cms/features/teachers/presentation/screens/teacher_management_screen.dart';
 import 'package:cms/features/lectures/presentation/screens/lecture_management_screen.dart';
 import 'package:cms/features/attendance/presentation/screens/attendance_home_screen.dart';
+import 'package:cms/features/notifications/presentation/widgets/notification_bell.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final AuthUser user;
@@ -42,6 +43,7 @@ class DashboardScreen extends ConsumerWidget {
             )
           : null,
       actions: [
+        const NotificationBell(),
         IconButton(
           onPressed: () => _logout(context, ref),
           icon: const Icon(Icons.logout),
