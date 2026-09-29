@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
 import '../../application/add_student_controller.dart';
 import '../../data/models/student_create_request.dart';
-import '../../../classes/application/classes_list_controller.dart';
+import '../../../classes/application/all_classes_controller.dart';
 import '../../../classes/data/models/school_class.dart';
 
 class AddStudentScreen extends ConsumerStatefulWidget {
@@ -80,7 +80,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(addStudentControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final isLoading = state.isLoading;
 
     return Scaffold(
@@ -112,7 +112,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                   children: [
                     Expanded(child: Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red))),
                     TextButton(
-                      onPressed: () => ref.read(classesListControllerProvider(page: 1).notifier).refresh(page: 1),
+                      onPressed: () => ref.read(allClassesControllerProvider.notifier).refresh(),
                       child: const Text('Retry'),
                     ),
                   ],

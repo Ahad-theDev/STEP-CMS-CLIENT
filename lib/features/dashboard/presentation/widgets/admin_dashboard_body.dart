@@ -1,9 +1,10 @@
 import 'package:cms/features/subjects/application/all_students_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/staff/application/all_staff_list_controller.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/features/fees/application/fee_summary_controller.dart';
 import 'package:cms/features/fees/application/fee_defaulters_controller.dart';
@@ -53,7 +54,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
     final studentsAsync = ref.watch(allStudentsControllerProvider);
     final teachersAsync = ref.watch(teachersListControllerProvider);
     final staffAsync = ref.watch(allStaffListControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final subjectsAsync = ref.watch(subjectsListControllerProvider);
     final feeSummaryAsync = ref.watch(feeSummaryControllerProvider());
     final feeDefaultersAsync = ref.watch(feeDefaultersControllerProvider());
@@ -67,7 +68,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
         ref.invalidate(allStudentsControllerProvider);
         ref.invalidate(teachersListControllerProvider);
         ref.invalidate(allStaffListControllerProvider);
-        ref.invalidate(classesListControllerProvider);
+        ref.invalidate(allClassesControllerProvider);
         ref.invalidate(subjectsListControllerProvider);
         ref.invalidate(feeSummaryControllerProvider);
         ref.invalidate(feeDefaultersControllerProvider);
@@ -91,7 +92,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.groups_outlined,
                   label: 'Students',
                   value: '${studentsAsync.valueOrNull?.length ?? 0}',
-                  color: Colors.indigo,
+                  color: const Color(0xFF4F46E5),
                   isLoading: studentsAsync.isLoading,
                   hasError: studentsAsync.hasError,
                 ),
@@ -99,7 +100,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.school_outlined,
                   label: 'Teachers',
                   value: '${teachersAsync.valueOrNull?.length ?? 0}',
-                  color: Colors.teal,
+                  color: const Color(0xFF0D9488),
                   isLoading: teachersAsync.isLoading,
                   hasError: teachersAsync.hasError,
                 ),
@@ -107,7 +108,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.badge_outlined,
                   label: 'Staff',
                   value: '${staffAsync.valueOrNull?.length ?? 0}',
-                  color: Colors.brown,
+                  color: const Color(0xFF8B5CF6),
                   isLoading: staffAsync.isLoading,
                   hasError: staffAsync.hasError,
                 ),
@@ -115,7 +116,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.class_outlined,
                   label: 'Classes',
                   value: '${classesAsync.valueOrNull?.length ?? 0}',
-                  color: Colors.deepPurple,
+                  color: AppColors.primary,
                   isLoading: classesAsync.isLoading,
                   hasError: classesAsync.hasError,
                 ),
@@ -123,7 +124,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.menu_book_outlined,
                   label: 'Subjects',
                   value: '${subjectsAsync.valueOrNull?.length ?? 0}',
-                  color: Colors.blueGrey,
+                  color: const Color(0xFF2563EB),
                   isLoading: subjectsAsync.isLoading,
                   hasError: subjectsAsync.hasError,
                 ),
@@ -133,7 +134,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   value: feeSummaryAsync.valueOrNull != null
                       ? '${feeSummaryAsync.valueOrNull!.summary.collectionEfficiency.toStringAsFixed(0)}%'
                       : '0%',
-                  color: Colors.green,
+                  color: const Color(0xFF10B981),
                   isLoading: feeSummaryAsync.isLoading,
                   hasError: feeSummaryAsync.hasError,
                 ),
@@ -141,7 +142,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.warning_amber_rounded,
                   label: 'Fee Defaulters',
                   value: '${feeDefaultersAsync.valueOrNull?.count ?? 0}',
-                  color: Colors.red,
+                  color: AppColors.error,
                   isLoading: feeDefaultersAsync.isLoading,
                   hasError: feeDefaultersAsync.hasError,
                 ),
@@ -149,7 +150,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.event_busy_outlined,
                   label: 'Attendance <75% (30d)',
                   value: '${attendanceDefaultersAsync.valueOrNull?.defaulters.length ?? 0}',
-                  color: Colors.orange,
+                  color: AppColors.warning,
                   isLoading: attendanceDefaultersAsync.isLoading,
                   hasError: attendanceDefaultersAsync.hasError,
                 ),
@@ -157,7 +158,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   icon: Icons.notifications_outlined,
                   label: 'Unread Alerts',
                   value: '${unreadAsync.valueOrNull?.length ?? 0}',
-                  color: Colors.blue,
+                  color: const Color(0xFF0EA5E9),
                   isLoading: unreadAsync.isLoading,
                   hasError: unreadAsync.hasError,
                 ),
