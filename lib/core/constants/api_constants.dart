@@ -1,6 +1,6 @@
 class ApiConstants {
-  static const String baseUrl = 'http://10.0.2.2:8000/';
-    // static const String baseUrl = 'http://127.0.0.1:8000/';
+//   static const String baseUrl = 'http://10.0.2.2:8000/';
+    static const String baseUrl = 'http://127.0.0.1:8000/';
   // static const String baseUrl =
   // 'https://overhand-nebula-appliance.ngrok-free.dev/';
   static const String register = 'auth/register';
@@ -55,4 +55,6 @@ class ApiConstants {
   static const String notificationsUnread = 'notifications/unread';
   static String notificationRead(String id) => 'notifications/$id/read';
   static const String notificationsReadAll = 'notifications/read-all';
+  static const String aiQuery = 'ai/query';
+  static const String aiSuggestions = 'ai/suggestions';
 }

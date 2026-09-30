@@ -22,6 +22,7 @@ import 'package:cms/features/calendar/presentation/screens/calendar_screen.dart'
 import 'package:cms/features/attendance/presentation/screens/attendance_home_screen.dart';
 import 'package:cms/features/fees/presentation/screens/fee_home_screen.dart';
 import 'package:cms/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
 import '../widgets/dashboard_stat_card.dart';
 import '../widgets/dashboard_shortcut_tile.dart';
 
@@ -172,6 +173,11 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
               builder: (context, constraints) {
                 final crossAxisCount = (constraints.maxWidth / 150).floor().clamp(2, 6);
                 final shortcuts = <Widget>[
+                  DashboardShortcutTile(
+                    icon: Icons.auto_awesome_rounded,
+                    label: 'AI Assistant',
+                    onTap: () => _push(const AiAssistantScreen()),
+                  ),
                   DashboardShortcutTile(
                     icon: Icons.person_add_alt_1_rounded,
                     label: 'Create User',

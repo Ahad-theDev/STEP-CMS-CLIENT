@@ -15,6 +15,8 @@ import 'package:cms/features/teachers/presentation/screens/teacher_management_sc
 import 'package:cms/features/lectures/presentation/screens/lecture_management_screen.dart';
 import 'package:cms/features/attendance/presentation/screens/attendance_home_screen.dart';
 import 'package:cms/features/notifications/presentation/widgets/notification_bell.dart';
+import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
+import 'package:cms/core/theme/app_colors.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final AuthUser user;
@@ -32,6 +34,7 @@ class DashboardScreen extends ConsumerWidget {
 
   PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
     final bool isAdmin = user.role == 'management' || user.role == 'principal';
+    final bool canAccessAi = isAdmin || user.role == 'teacher';
     return AppBar(
       title: Text("Welcome, ${user.fullName}"),
       leading: isAdmin
@@ -43,6 +46,18 @@ class DashboardScreen extends ConsumerWidget {
             )
           : null,
       actions: [
+        if (canAccessAi)
+          IconButton(
+            tooltip: 'AI Assistant',
+            icon: const Icon(Icons.auto_awesome_rounded, color: AppColors.primary),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AiAssistantScreen(),
+                ),
+              );
+            },
+          ),
         const NotificationBell(),
         IconButton(
           onPressed: () => _logout(context, ref),
@@ -100,6 +115,24 @@ class DashboardScreen extends ConsumerWidget {
                     Expanded(
                       child: ListView(
                         children: [
+                          ListTile(
+                            leading: const Icon(
+                              Icons.auto_awesome_rounded,
+                              color: AppColors.primary,
+                            ),
+                            title: const Text(
+                              'AI Assistant',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const AiAssistantScreen(),
+                                ),
+                              );
+                            },
+                          ),
                           ListTile(
                             leading: const Icon(Icons.person_add_alt_1_rounded),
                             title: const Text('User+'),
