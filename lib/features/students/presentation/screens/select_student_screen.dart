@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/core/utils/error_utils.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/student_search_controller.dart';
 
@@ -19,7 +20,7 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
@@ -30,23 +31,42 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
           children: [
             classesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (e, _) =>
-                  Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
-              data: (classes) => DropdownButtonFormField<SchoolClass>(
-                initialValue: _selectedClass,
-                decoration: const InputDecoration(labelText: 'Select Class'),
-                items: classes
-                    .map((c) => DropdownMenuItem(
-                          value: c,
-                          child: Text('${c.name} - ${c.section} (${c.academicYear})'),
-                        ))
-                    .toList(),
-                onChanged: (v) => setState(() {
-                  _selectedClass = v;
-                  _page = 1;
-                  _query = '';
-                }),
+              error: (e, _) => Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Failed to load classes: ${friendlyErrorMessage(e)}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        ref.read(allClassesControllerProvider.notifier).refresh(),
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
+              data: (classes) {
+                if (classes.isEmpty) {
+                  return const Text('No classes found — create one first.',
+                      style: TextStyle(color: Colors.grey));
+                }
+                return DropdownButtonFormField<SchoolClass>(
+                  initialValue: _selectedClass,
+                  decoration: const InputDecoration(labelText: 'Select Class'),
+                  items: classes
+                      .map((c) => DropdownMenuItem(
+                            value: c,
+                            child: Text('${c.name} - ${c.section} (${c.academicYear})'),
+                          ))
+                      .toList(),
+                  onChanged: (v) => setState(() {
+                    _selectedClass = v;
+                    _page = 1;
+                    _query = '';
+                  }),
+                );
+              },
             ),
             const SizedBox(height: 12),
             if (_selectedClass != null) ...[

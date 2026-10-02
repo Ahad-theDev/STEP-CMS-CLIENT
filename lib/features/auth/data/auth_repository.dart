@@ -38,6 +38,7 @@ class AuthRepository {
   Future<String> refreshAccessToken(String refreshToken) async {
     final response = await dio.post(
       ApiConstants.refresh,
+      data: {'refresh_token': refreshToken},
       queryParameters: {'refresh_token': refreshToken},
     );
     final accessTokenData = response.data['access_token'];
@@ -47,19 +48,22 @@ class AuthRepository {
     }
     return accessTokenData as String;
   }
-  Future<String> requestPasswordReset(String identifier) async {
-  final response = await dio.post(
-    ApiConstants.requestPasswordReset,
-    queryParameters: {'identifier': identifier},
-  );
-  return response.data['message'] as String;
-}
 
-Future<String> resetPassword({required String token, required String newPassword}) async {
-  final response = await dio.post(
-    ApiConstants.resetPassword,
-    queryParameters: {'token': token, 'new_password': newPassword},
-  );
-  return response.data['message'] as String;
-}
+  Future<String> requestPasswordReset(String identifier) async {
+    final response = await dio.post(
+      ApiConstants.requestPasswordReset,
+      data: {'identifier': identifier},
+      queryParameters: {'identifier': identifier},
+    );
+    return response.data['message'] as String;
+  }
+
+  Future<String> resetPassword({required String token, required String newPassword}) async {
+    final response = await dio.post(
+      ApiConstants.resetPassword,
+      data: {'token': token, 'new_password': newPassword},
+      queryParameters: {'token': token, 'new_password': newPassword},
+    );
+    return response.data['message'] as String;
+  }
 }

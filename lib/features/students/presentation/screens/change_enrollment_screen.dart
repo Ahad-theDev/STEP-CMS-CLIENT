@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/change_enrollment_controller.dart';
 import '../../data/models/enrollment_change_request.dart';
@@ -58,7 +58,7 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(changeEnrollmentControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final isLoading = state.isLoading;
 
     return Scaffold(
@@ -74,10 +74,27 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
               const SizedBox(height: 20),
               classesAsync.when(
                 loading: () => const LinearProgressIndicator(),
-                error: (e, _) =>
-                    Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
+                error: (e, _) => Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Failed to load classes: ${friendlyErrorMessage(e)}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () =>
+                          ref.read(allClassesControllerProvider.notifier).refresh(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
                 data: (classes) {
                   final options = classes.where((c) => c.id != widget.student.classId).toList();
+                  if (options.isEmpty) {
+                    return const Text('No other classes available to move to.',
+                        style: TextStyle(color: Colors.grey));
+                  }
                   return DropdownButtonFormField<SchoolClass>(
                     initialValue: _selectedClass,
                     decoration: const InputDecoration(labelText: 'New Class'),

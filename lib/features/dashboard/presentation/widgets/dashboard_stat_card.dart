@@ -29,24 +29,20 @@ class DashboardStatCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? colorScheme.surfaceContainer
-            : color.withValues(alpha: 0.05),
+            ? Color.alphaBlend(color.withValues(alpha: 0.12), colorScheme.surfaceContainer)
+            : Color.alphaBlend(color.withValues(alpha: 0.08), colorScheme.surface),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark
-              ? color.withValues(alpha: 0.35)
-              : color.withValues(alpha: 0.2),
-          width: 1.2,
+          color: color.withValues(alpha: isDark ? 0.45 : 0.28),
+          width: 1.3,
         ),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: isDark ? 0.14 : 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

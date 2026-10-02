@@ -10,8 +10,8 @@ class TokenRefreshInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final requestOptions = err.requestOptions;
-    final isAuthCall = requestOptions.path.contains('/auth/login') ||
-        requestOptions.path.contains('/auth/refresh');
+    final isAuthCall = requestOptions.path.contains('auth/login') ||
+        requestOptions.path.contains('auth/refresh');
     final alreadyRetried = requestOptions.extra['retriedAfterRefresh'] == true;
 
     if (err.response?.statusCode != 401 || isAuthCall || alreadyRetried) {
@@ -27,6 +27,7 @@ class TokenRefreshInterceptor extends Interceptor {
     try {
       final refreshResponse = await dio.post(
         ApiConstants.refresh,
+        data: {'refresh_token': refreshToken},
         queryParameters: {'refresh_token': refreshToken},
       );
       final accessTokenData = refreshResponse.data['access_token'];
