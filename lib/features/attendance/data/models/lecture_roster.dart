@@ -2,17 +2,20 @@ class RosterStudent {
   final String id;
   final String name;
   final String rollNumber;
+  final String? status;
 
   RosterStudent({
     required this.id,
     required this.name,
     required this.rollNumber,
+    this.status,
   });
 
   factory RosterStudent.fromJson(Map<String, dynamic> json) => RosterStudent(
     id: json['id'] as String,
     name: json['full_name'] as String,
     rollNumber: json['roll_number'] as String,
+    status: json['status'] as String?,
   );
 }
 

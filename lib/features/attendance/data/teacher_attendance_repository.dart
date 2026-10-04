@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:cms/core/constants/api_constants.dart';
 import 'models/lecture_roster.dart';
 import 'models/attendance_mark_request.dart';
+import 'models/attendance_mark_all_request.dart';
 import 'models/attendance_mark_response.dart';
 
 class TeacherAttendanceRepository {
@@ -18,6 +19,11 @@ class TeacherAttendanceRepository {
 
   Future<AttendanceMarkResponse> markAttendance(AttendanceMarkRequest request) async {
     final response = await dio.post(ApiConstants.attendanceStudentsMark, data: request.toJson());
+    return AttendanceMarkResponse.fromJson(response.data);
+  }
+
+  Future<AttendanceMarkResponse> markAllAttendance(AttendanceMarkAllRequest request) async {
+    final response = await dio.post(ApiConstants.attendanceStudentsMarkAll, data: request.toJson());
     return AttendanceMarkResponse.fromJson(response.data);
   }
 }

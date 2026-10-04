@@ -22,6 +22,7 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
   // null day + null date = full week, no filter (per backend docs)
   String? _selectedDay;
   bool _todayMode = true;
+  DateTime? _customDate;
   late final DateTime _todayDate;
 
   @override
@@ -31,10 +32,14 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
     _todayDate = DateTime(now.year, now.month, now.day); // stable for the life of this screen
   }
 
+  String _fmt(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
   void _selectToday() {
     setState(() {
       _todayMode = true;
       _selectedDay = null;
+      _customDate = null;
     });
   }
 
@@ -42,20 +47,63 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
     setState(() {
       _todayMode = false;
       _selectedDay = null;
+      _customDate = null;
     });
   }
 
-  Future<void> _openMarkAttendance(MyScheduleLecture lecture) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => MarkLectureAttendanceScreen(lectureId: lecture.id)),
+  Future<void> _pickCustomDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _customDate ?? _todayDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
     );
+    if (picked != null) {
+      setState(() {
+        _todayMode = false;
+        _selectedDay = null;
+        _customDate = DateTime(picked.year, picked.month, picked.day);
+      });
+    }
+  }
+
+  DateTime get _effectiveDate {
+    if (_customDate != null) return _customDate!;
+    if (_todayMode) return _todayDate;
+    if (_selectedDay != null) {
+      final mondayOffset = _todayDate.weekday == DateTime.sunday
+          ? -1
+          : (_todayDate.weekday - DateTime.monday);
+      final monday = _todayDate.subtract(Duration(days: mondayOffset));
+      final dayIndex = _weekDays.indexOf(_selectedDay!);
+      if (dayIndex >= 0) {
+        return monday.add(Duration(days: dayIndex));
+      }
+    }
+    return _todayDate;
+  }
+
+  Future<void> _openMarkAttendance(MyScheduleLecture lecture) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MarkLectureAttendanceScreen(
+          lectureId: lecture.id,
+          initialDate: _effectiveDate,
+        ),
+      ),
+    );
+    if (result == true) {
+      ref.invalidate(myScheduleControllerProvider);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final effectiveFilterDate = _todayMode ? _todayDate : _customDate;
+
     final scheduleAsync = ref.watch(myScheduleControllerProvider(
       day: _selectedDay,
-      date: _todayMode ? _todayDate : null,
+      date: effectiveFilterDate,
     ));
     final subjectsAsync = ref.watch(subjectsListControllerProvider);
     final subjectNameById = {
@@ -63,7 +111,16 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
     };
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Schedule')),
+      appBar: AppBar(
+        title: const Text('My Schedule'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month_rounded),
+            tooltip: 'Pick Date',
+            onPressed: _pickCustomDate,
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -73,17 +130,30 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
               children: [
                 Wrap(
                   spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    ChoiceChip(label: const Text('Today'), selected: _todayMode, onSelected: (_) => _selectToday()),
                     ChoiceChip(
-                        label: const Text('Full Week'),
-                        selected: !_todayMode && _selectedDay == null,
-                        onSelected: (_) => _selectFullWeek()),
+                      label: const Text('Today'),
+                      selected: _todayMode,
+                      onSelected: (_) => _selectToday(),
+                    ),
+                    ChoiceChip(
+                      label: const Text('Full Week'),
+                      selected: !_todayMode && _selectedDay == null && _customDate == null,
+                      onSelected: (_) => _selectFullWeek(),
+                    ),
+                    ChoiceChip(
+                      avatar: const Icon(Icons.event, size: 16),
+                      label: Text(_customDate != null ? _fmt(_customDate!) : 'Pick Date'),
+                      selected: _customDate != null,
+                      onSelected: (_) => _pickCustomDate(),
+                    ),
                     ..._weekDays.map((d) => ChoiceChip(
                           label: Text(d[0].toUpperCase() + d.substring(1)),
-                          selected: !_todayMode && _selectedDay == d,
+                          selected: !_todayMode && _selectedDay == d && _customDate == null,
                           onSelected: (_) => setState(() {
                             _todayMode = false;
+                            _customDate = null;
                             _selectedDay = d;
                           }),
                         )),
@@ -91,8 +161,11 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'This is your regular weekly timetable — substitutions or cancellations '
-                  'for a specific date aren\'t reflected here.',
+                  _customDate != null
+                      ? 'Showing timetable for ${_fmt(_customDate!)}. Tap any lecture to mark attendance.'
+                      : _todayMode
+                          ? 'Showing lectures scheduled for today. Tap any lecture to mark attendance.'
+                          : 'Weekly timetable template. Tap any lecture to mark attendance.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                 ),
               ],
@@ -120,14 +193,53 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
                   itemBuilder: (context, index) {
                     final lec = sorted[index];
                     return ListTile(
-                      title: Text(subjectNameById[lec.subjectId] ?? 'Subject ${lec.subjectId}'),
-                      subtitle: Text(
-                        '${lec.dayOfWeek[0].toUpperCase()}${lec.dayOfWeek.substring(1)} • '
-                        '${TimeOfDayUtils.displayLabel(lec.startTime)} - ${TimeOfDayUtils.displayLabel(lec.endTime)} • '
-                        'Room ${lec.roomNumber}',
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      leading: CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                        child: Icon(
+                          Icons.menu_book_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
-                      trailing: Text('${lec.studentCount} students',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      title: Text(
+                        subjectNameById[lec.subjectId] ?? 'Subject ${lec.subjectId}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 2),
+                          Text(
+                            '${lec.dayOfWeek[0].toUpperCase()}${lec.dayOfWeek.substring(1)} • '
+                            '${TimeOfDayUtils.displayLabel(lec.startTime)} - ${TimeOfDayUtils.displayLabel(lec.endTime)} • '
+                            'Room ${lec.roomNumber}',
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.how_to_reg_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Tap to mark attendance',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('${lec.studentCount} students',
+                              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey),
+                        ],
+                      ),
                       onTap: () => _openMarkAttendance(lec),
                     );
                   },
