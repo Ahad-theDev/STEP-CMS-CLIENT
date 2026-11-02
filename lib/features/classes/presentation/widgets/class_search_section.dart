@@ -118,6 +118,31 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
           }).toList();
 
     if (classes.isEmpty) {
+      if (_page > 1) {
+        return Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(child: Text('No classes on this page')),
+            ),
+            if (_query.isEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () => setState(() => _page -= 1),
+                  ),
+                  Text('Page $_page'),
+                  const IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: null,
+                  ),
+                ],
+              ),
+          ],
+        );
+      }
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
         child: Center(child: Text('No classes yet')),
@@ -182,7 +207,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
               Text('Page $_page'),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
-                onPressed: classes.length == classPageSize
+                onPressed: classes.length >= classPageSize
                     ? () => setState(() => _page += 1)
                     : null,
               ),

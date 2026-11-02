@@ -103,6 +103,30 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
               }).toList();
 
         if (students.isEmpty) {
+          if (_page > 1) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('No more students on this page'),
+                const SizedBox(height: 12),
+                if (_query.isEmpty)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: () => setState(() => _page -= 1),
+                      ),
+                      Text('Page $_page'),
+                      const IconButton(
+                        icon: Icon(Icons.chevron_right),
+                        onPressed: null,
+                      ),
+                    ],
+                  ),
+              ],
+            );
+          }
           return const Center(child: Text('No students in this class'));
         }
 
@@ -133,7 +157,7 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
                   Text('Page $_page'),
                   IconButton(
                     icon: const Icon(Icons.chevron_right),
-                    onPressed: students.length == studentSearchPageSize
+                    onPressed: students.length >= studentSearchPageSize
                         ? () => setState(() => _page += 1)
                         : null,
                   ),

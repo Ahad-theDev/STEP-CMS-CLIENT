@@ -6,8 +6,6 @@ import '../../../classes/data/models/school_class.dart';
 import '../../application/student_search_controller.dart';
 import '../../data/models/student.dart';
 
-const int studentSearchPageSize = 10;
-
 class StudentSearchSection extends ConsumerStatefulWidget {
   const StudentSearchSection({
     super.key,
@@ -182,6 +180,31 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
           }).toList();
 
     if (students.isEmpty) {
+      if (_page > 1) {
+        return Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32),
+              child: Center(child: Text('No students on this page')),
+            ),
+            if (_query.isEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () => setState(() => _page -= 1),
+                  ),
+                  Text('Page $_page'),
+                  const IconButton(
+                    icon: Icon(Icons.chevron_right),
+                    onPressed: null,
+                  ),
+                ],
+              ),
+          ],
+        );
+      }
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 32),
         child: Center(child: Text('No students in this class yet')),
@@ -224,7 +247,7 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
               Text('Page $_page'),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
-                onPressed: students.length == studentSearchPageSize
+                onPressed: students.length >= studentSearchPageSize
                     ? () => setState(() => _page += 1)
                     : null,
               ),
