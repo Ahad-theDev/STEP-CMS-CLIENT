@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DashboardStatCard extends StatelessWidget {
+  final double width;
   final IconData icon;
   final String label;
   final String value;
@@ -10,6 +11,7 @@ class DashboardStatCard extends StatelessWidget {
 
   const DashboardStatCard({
     super.key,
+    this.width = 170,
     required this.icon,
     required this.label,
     required this.value,
@@ -25,12 +27,18 @@ class DashboardStatCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      width: 170,
+      width: width,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Color.alphaBlend(color.withValues(alpha: 0.12), colorScheme.surfaceContainer)
-            : Color.alphaBlend(color.withValues(alpha: 0.08), colorScheme.surface),
+            ? Color.alphaBlend(
+                color.withValues(alpha: 0.12),
+                colorScheme.surfaceContainer,
+              )
+            : Color.alphaBlend(
+                color.withValues(alpha: 0.08),
+                colorScheme.surface,
+              ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: color.withValues(alpha: isDark ? 0.45 : 0.28),
@@ -62,13 +70,20 @@ class DashboardStatCard extends StatelessWidget {
                 SizedBox(
                   height: 16,
                   width: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: color),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: color,
+                  ),
                 ),
             ],
           ),
           const SizedBox(height: 14),
           Text(
-            hasError ? '-' : value,
+            hasError
+                ? '—'
+                : isLoading
+                ? '…'
+                : value,
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.bold,
@@ -84,7 +99,7 @@ class DashboardStatCard extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: colorScheme.onSurfaceVariant,
             ),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],

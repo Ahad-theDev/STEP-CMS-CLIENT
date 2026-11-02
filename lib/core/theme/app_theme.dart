@@ -132,7 +132,7 @@ class AppTheme {
         fontWeight: FontWeight.w400,
       ),
       hintStyle: TextStyle(
-        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+        color: colorScheme.onSurfaceVariant,
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
@@ -169,7 +169,10 @@ class AppTheme {
       ),
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.outline.withValues(alpha: 0.5), width: 1),
+        borderSide: BorderSide(
+          color: colorScheme.outline.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
     );
   }
@@ -188,9 +191,7 @@ class AppTheme {
         elevation: 0,
         shadowColor: Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -207,9 +208,7 @@ class AppTheme {
         disabledForegroundColor: colorScheme.onSurface.withValues(alpha: 0.38),
         side: BorderSide(color: colorScheme.outline, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -225,9 +224,7 @@ class AppTheme {
         foregroundColor: colorScheme.primary,
         disabledForegroundColor: colorScheme.onSurface.withValues(alpha: 0.38),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -244,7 +241,7 @@ class AppTheme {
   static CardThemeData _cardTheme(ColorScheme colorScheme) {
     return CardThemeData(
       color: colorScheme.surface,
-      surfaceTintColor: colorScheme.surfaceTint,
+      surfaceTintColor: Colors.transparent,
       shadowColor: AppColors.shadow,
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -263,25 +260,19 @@ class AppTheme {
     return AppBarTheme(
       backgroundColor: colorScheme.surface,
       foregroundColor: colorScheme.onSurface,
-      surfaceTintColor: colorScheme.surfaceTint,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 1,
       shadowColor: AppColors.shadow,
-      centerTitle: true,
+      centerTitle: false,
       titleTextStyle: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: colorScheme.onSurface,
         letterSpacing: 0.15,
       ),
-      iconTheme: IconThemeData(
-        color: colorScheme.onSurface,
-        size: 24,
-      ),
-      actionsIconTheme: IconThemeData(
-        color: colorScheme.onSurface,
-        size: 24,
-      ),
+      iconTheme: IconThemeData(color: colorScheme.onSurface, size: 24),
+      actionsIconTheme: IconThemeData(color: colorScheme.onSurface, size: 24),
     );
   }
 
@@ -318,7 +309,7 @@ class AppTheme {
         fontSize: 13,
         fontWeight: FontWeight.w500,
       ),
-      brightness: Brightness.light,
+      brightness: colorScheme.brightness,
       elevation: 0,
       pressElevation: 0,
       shape: RoundedRectangleBorder(
@@ -339,7 +330,8 @@ class AppTheme {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       tileColor: Colors.transparent,
       selectedTileColor: colorScheme.primaryContainer,
-      iconColor: colorScheme.onSurfaceVariant,
+      iconColor: colorScheme.primary,
+      selectedColor: colorScheme.primary,
       textColor: colorScheme.onSurface,
       titleTextStyle: TextStyle(
         fontSize: 16,
@@ -361,7 +353,7 @@ class AppTheme {
   static BottomSheetThemeData _bottomSheetTheme(ColorScheme colorScheme) {
     return BottomSheetThemeData(
       backgroundColor: colorScheme.surface,
-      surfaceTintColor: colorScheme.surfaceTint,
+      surfaceTintColor: Colors.transparent,
       elevation: 8,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -378,11 +370,9 @@ class AppTheme {
   static DialogThemeData _dialogTheme(ColorScheme colorScheme) {
     return DialogThemeData(
       backgroundColor: colorScheme.surface,
-      surfaceTintColor: colorScheme.surfaceTint,
+      surfaceTintColor: Colors.transparent,
       elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       titleTextStyle: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
@@ -411,9 +401,7 @@ class AppTheme {
       ),
       actionTextColor: colorScheme.secondary,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 6,
     );
   }
@@ -460,40 +448,10 @@ class AppTheme {
   );
 
   /// Dark color scheme based on Academy palette - Navy theme
-  static const ColorScheme _darkColorScheme = ColorScheme(
+  static final ColorScheme _darkColorScheme = ColorScheme.fromSeed(
+    seedColor: AppColors.primary,
     brightness: Brightness.dark,
-    primary: AppColors.primary,           // #7C6FF2 - Soft purple
-    onPrimary: AppColors.onPrimary,       // White text on purple
-    primaryContainer: AppColors.primaryContainer, // #D4CDFF - Light purple
-    onPrimaryContainer: AppColors.onPrimaryContainer, // #2A225D - Dark purple text
-    secondary: AppColors.secondary,       // #9B8AFB - Light violet
-    onSecondary: AppColors.onSecondary,   // #0D1F42 - Navy text on violet
-    secondaryContainer: AppColors.secondaryContainer, // #EDE9FF - Very light violet
-    onSecondaryContainer: AppColors.onSecondaryContainer, // #4A3D7A - Purple-ish text
-    tertiary: AppColors.tertiary,         // #6A8DFF - Soft blue
-    onTertiary: AppColors.onTertiary,     // White text on blue
-    tertiaryContainer: AppColors.tertiaryContainer, // #E3E9FF - Light blue container
-    onTertiaryContainer: AppColors.onTertiaryContainer, // #1A345D - Navy-blue text
-    error: AppColors.error,               // #EF6B73 - Muted red
-    onError: AppColors.onError,           // White text on red
-    errorContainer: AppColors.errorContainer, // #F9CED2 - Light red container
-    onErrorContainer: AppColors.onErrorContainer, // #9B0025 - Dark red text
-    surface: AppColors.surface,           // #0D1F42 - Main card/surface color
-    onSurface: AppColors.onSurface,       // #F5F5F2 - Primary text
-    onSurfaceVariant: AppColors.onSurfaceVariant, // #AEB9D0 - Secondary text
-    surfaceContainer: AppColors.surfaceContainer, // #0E2147 - Input background
-    surfaceContainerHigh: AppColors.surfaceContainerHigh, // #0F234F - Elevated input
-    surfaceContainerHighest: AppColors.surfaceContainerHighest, // #112663 - More elevated
-    surfaceContainerLow: AppColors.surfaceContainerLow, // #0C1D3D - Lowered surface
-    surfaceContainerLowest: AppColors.surfaceContainerLowest, // #0A1A33 - Lowest surface
-    outline: AppColors.outline,           // #2A4170 - Border color
-    outlineVariant: AppColors.outlineVariant, // #344F8A - Subtle border
-    shadow: AppColors.shadow,             // Shadow
-    scrim: AppColors.scrim,               // Modal scrim
-    inverseSurface: AppColors.onSurface,  // For snack bars etc.
-    onInverseSurface: AppColors.surface,  // inverse text
-    inversePrimary: AppColors.primaryContainer, // inverse primary
-    surfaceTint: AppColors.primaryContainer, // surface tint
+    surface: const Color(0xFF111A30),
   );
 
   // =========================================================================
@@ -521,17 +479,29 @@ class AppTheme {
       dividerTheme: _dividerTheme(colorScheme),
       chipTheme: _chipTheme(colorScheme),
       listTileTheme: _listTileTheme(colorScheme),
+      expansionTileTheme: ExpansionTileThemeData(
+        textColor: colorScheme.primary,
+        collapsedTextColor: colorScheme.onSurface,
+        iconColor: colorScheme.primary,
+        collapsedIconColor: colorScheme.primary,
+      ),
+      drawerTheme: DrawerThemeData(
+        backgroundColor: colorScheme.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: colorScheme.surface,
+        textStyle: TextStyle(color: colorScheme.onSurface),
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        textStyle: TextStyle(color: colorScheme.onSurface),
+      ),
+
       bottomSheetTheme: _bottomSheetTheme(colorScheme),
       dialogTheme: _dialogTheme(colorScheme),
       snackBarTheme: _snackBarTheme(colorScheme),
-      iconTheme: IconThemeData(
-        color: colorScheme.onSurface,
-        size: 24,
-      ),
-      primaryIconTheme: IconThemeData(
-        color: colorScheme.onPrimary,
-        size: 24,
-      ),
+      iconTheme: IconThemeData(color: colorScheme.onSurface, size: 24),
+      primaryIconTheme: IconThemeData(color: colorScheme.onPrimary, size: 24),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: colorScheme.primary,
         linearTrackColor: colorScheme.surfaceContainerHigh,
@@ -582,7 +552,7 @@ class AppTheme {
 
   /// Dark theme for the Academy app - Navy theme
   static ThemeData get darkTheme {
-    const colorScheme = _darkColorScheme;
+    final colorScheme = _darkColorScheme;
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
@@ -590,7 +560,7 @@ class AppTheme {
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
       ),
-      scaffoldBackgroundColor: AppColors.background, // #071633 - Deep navy background
+      scaffoldBackgroundColor: const Color(0xFF0C1426),
       canvasColor: colorScheme.surface,
       inputDecorationTheme: _inputDecorationTheme(colorScheme),
       elevatedButtonTheme: _elevatedButtonTheme(colorScheme),
@@ -601,17 +571,29 @@ class AppTheme {
       dividerTheme: _dividerTheme(colorScheme),
       chipTheme: _chipTheme(colorScheme),
       listTileTheme: _listTileTheme(colorScheme),
+      expansionTileTheme: ExpansionTileThemeData(
+        textColor: colorScheme.primary,
+        collapsedTextColor: colorScheme.onSurface,
+        iconColor: colorScheme.primary,
+        collapsedIconColor: colorScheme.primary,
+      ),
+      drawerTheme: DrawerThemeData(
+        backgroundColor: colorScheme.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: colorScheme.surface,
+        textStyle: TextStyle(color: colorScheme.onSurface),
+      ),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        textStyle: TextStyle(color: colorScheme.onSurface),
+      ),
+
       bottomSheetTheme: _bottomSheetTheme(colorScheme),
       dialogTheme: _dialogTheme(colorScheme),
       snackBarTheme: _snackBarTheme(colorScheme),
-      iconTheme: IconThemeData(
-        color: colorScheme.onSurface,
-        size: 24,
-      ),
-      primaryIconTheme: IconThemeData(
-        color: colorScheme.onPrimary,
-        size: 24,
-      ),
+      iconTheme: IconThemeData(color: colorScheme.onSurface, size: 24),
+      primaryIconTheme: IconThemeData(color: colorScheme.onPrimary, size: 24),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: colorScheme.primary,
         linearTrackColor: colorScheme.surfaceContainerHigh,

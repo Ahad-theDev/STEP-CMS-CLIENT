@@ -23,6 +23,7 @@ class DashboardShortcutTile extends StatelessWidget {
 
     return Card(
       elevation: 0,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
@@ -31,13 +32,19 @@ class DashboardShortcutTile extends StatelessWidget {
         ),
       ),
       color: isDark
-          ? Color.alphaBlend(accentColor.withValues(alpha: 0.08), colorScheme.surfaceContainer)
-          : Color.alphaBlend(accentColor.withValues(alpha: 0.04), colorScheme.surface),
+          ? Color.alphaBlend(
+              accentColor.withValues(alpha: 0.08),
+              colorScheme.surfaceContainer,
+            )
+          : Color.alphaBlend(
+              accentColor.withValues(alpha: 0.04),
+              colorScheme.surface,
+            ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -45,7 +52,7 @@ class DashboardShortcutTile extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: accentColor.withValues(alpha: isDark ? 0.22 : 0.12),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: accentColor, size: 26),
               ),
@@ -54,7 +61,7 @@ class DashboardShortcutTile extends StatelessWidget {
                 label,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: colorScheme.onSurface,
                 ),

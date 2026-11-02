@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_style.dart';
 import 'package:cms/features/auth/application/auth_controller.dart';
 import 'package:cms/features/auth/data/models/register_request.dart';
 import 'package:cms/features/auth/data/models/register_response.dart';
@@ -53,7 +54,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.error_rounded, color: Theme.of(context).colorScheme.error, size: 28),
+            Icon(
+              Icons.error_rounded,
+              color: Theme.of(context).colorScheme.error,
+              size: 28,
+            ),
             const SizedBox(width: 12),
             const Text('Error'),
           ],
@@ -80,7 +85,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         qualification: _qualificationController.text.trim().isNotEmpty
             ? _qualificationController.text.trim()
             : null,
-        subjectSpecializationId: _subjectSpecializationController.text.trim().isNotEmpty
+        subjectSpecializationId:
+            _subjectSpecializationController.text.trim().isNotEmpty
             ? _subjectSpecializationController.text.trim()
             : null,
       );
@@ -110,7 +116,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         builder: (context) => AlertDialog(
           title: Row(
             children: [
-              Icon(Icons.check_circle_rounded, color: Theme.of(context).colorScheme.tertiary, size: 28),
+              Icon(
+                Icons.check_circle_rounded,
+                color: Theme.of(context).colorScheme.tertiary,
+                size: 28,
+              ),
               const SizedBox(width: 12),
               const Text('Success'),
             ],
@@ -147,217 +157,249 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('Create User'),
-        centerTitle: true,
+        centerTitle: false,
+        backgroundColor: const Color(0xFFE4DDF3),
         elevation: 0,
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _HeaderSection(colorScheme: colorScheme),
-                    const SizedBox(height: 32),
-                    // Responsive layout: two fields per row on larger screens
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWideScreen = constraints.maxWidth > 500;
-                        if (isWideScreen) {
-                          return Column(
-                            children: [
-                              // First row: Username and Email
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _UsernameField(
-                                      controller: _usernameController,
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: _EmailField(
-                                      controller: _emailController,
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // Second row: Phone and FullName
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _PhoneField(
-                                      controller: _phoneController,
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: _FullNameField(
-                                      controller: _fullNameController,
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // Third row: Password and Role
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _PasswordField(
-                                      controller: _passwordController,
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: _RoleDropdown(
-                                      initialValue: _role,
-                                      onChanged: (v) => setState(() => _role = v ?? 'teacher'),
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // Teacher-specific fields (visible only when role is teacher)
-                              if (_role == 'teacher') ...[
-                                Column(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          const Positioned.fill(child: CampusBackground()),
+          const Positioned.fill(
+            child: IgnorePointer(child: ColoredBox(color: Color(0x14504488))),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width < 480 ? 16 : 24,
+                vertical: 32,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Container(
+                    decoration: CampusStyle.card,
+                    padding: EdgeInsets.all(
+                      MediaQuery.sizeOf(context).width < 480 ? 20 : 32,
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _HeaderSection(colorScheme: colorScheme),
+                          const SizedBox(height: 32),
+                          // Responsive layout: two fields per row on larger screens
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isWideScreen = constraints.maxWidth > 500;
+                              if (isWideScreen) {
+                                return Column(
                                   children: [
-                                    // First row: Department and Hire Date
+                                    // First row: Username and Email
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: _DepartmentField(
-                                            controller: _departmentController,
+                                          child: _UsernameField(
+                                            controller: _usernameController,
                                             colorScheme: colorScheme,
                                           ),
                                         ),
                                         const SizedBox(width: 16),
                                         Expanded(
-                                          child: _HireDateField(
-                                            controller: _hireDateController,
+                                          child: _EmailField(
+                                            controller: _emailController,
                                             colorScheme: colorScheme,
                                           ),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 16),
-                                    // Second row: Qualification and Subject Specialization
+                                    // Second row: Phone and FullName
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: _QualificationField(
-                                            controller: _qualificationController,
+                                          child: _PhoneField(
+                                            controller: _phoneController,
                                             colorScheme: colorScheme,
                                           ),
                                         ),
                                         const SizedBox(width: 16),
                                         Expanded(
-                                          child: _SubjectSpecializationField(
-                                            controller: _subjectSpecializationController,
+                                          child: _FullNameField(
+                                            controller: _fullNameController,
                                             colorScheme: colorScheme,
                                           ),
                                         ),
                                       ],
                                     ),
+                                    const SizedBox(height: 16),
+                                    // Third row: Password and Role
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _PasswordField(
+                                            controller: _passwordController,
+                                            colorScheme: colorScheme,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: _RoleDropdown(
+                                            initialValue: _role,
+                                            onChanged: (v) => setState(
+                                              () => _role = v ?? 'teacher',
+                                            ),
+                                            colorScheme: colorScheme,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    // Teacher-specific fields (visible only when role is teacher)
+                                    if (_role == 'teacher') ...[
+                                      const _TeacherSectionLabel(),
+                                      Column(
+                                        children: [
+                                          // First row: Department and Hire Date
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: _DepartmentField(
+                                                  controller:
+                                                      _departmentController,
+                                                  colorScheme: colorScheme,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: _HireDateField(
+                                                  controller:
+                                                      _hireDateController,
+                                                  colorScheme: colorScheme,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          // Second row: Qualification and Subject Specialization
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: _QualificationField(
+                                                  controller:
+                                                      _qualificationController,
+                                                  colorScheme: colorScheme,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: _SubjectSpecializationField(
+                                                  controller:
+                                                      _subjectSpecializationController,
+                                                  colorScheme: colorScheme,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 24),
+                                    ],
+                                    // Submit button full width
+                                    _SubmitButton(
+                                      isLoading: isLoading,
+                                      onPressed: _submit,
+                                      colorScheme: colorScheme,
+                                    ),
                                   ],
-                                ),
-                                const SizedBox(height: 24),
-                              ],
-                              // Submit button full width
-                              _SubmitButton(
-                                isLoading: isLoading,
-                                onPressed: _submit,
-                                colorScheme: colorScheme,
-                              ),
-                            ],
-                          );
-                        } else {
-                          // Original single column layout for narrow screens
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _UsernameField(
-                                controller: _usernameController,
-                                colorScheme: colorScheme,
-                              ),
-                              const SizedBox(height: 16),
-                              _EmailField(
-                                controller: _emailController,
-                                colorScheme: colorScheme,
-                              ),
-                              const SizedBox(height: 16),
-                              _PhoneField(
-                                controller: _phoneController,
-                                colorScheme: colorScheme,
-                              ),
-                              const SizedBox(height: 16),
-                              _FullNameField(
-                                controller: _fullNameController,
-                                colorScheme: colorScheme,
-                              ),
-                              const SizedBox(height: 16),
-                              _PasswordField(
-                                controller: _passwordController,
-                                colorScheme: colorScheme,
-                              ),
-                              const SizedBox(height: 16),
-                              _RoleDropdown(
-                                initialValue: _role,
-                                onChanged: (v) => setState(() => _role = v ?? 'teacher'),
-                                colorScheme: colorScheme,
-                              ),
-                              const SizedBox(height: 16),
-                              // Teacher-specific fields (visible only when role is teacher)
-                              if (_role == 'teacher') ...[
-                                _DepartmentField(
-                                  controller: _departmentController,
-                                  colorScheme: colorScheme,
-                                ),
-                                const SizedBox(height: 16),
-                                _HireDateField(
-                                  controller: _hireDateController,
-                                  colorScheme: colorScheme,
-                                ),
-                                const SizedBox(height: 16),
-                                _QualificationField(
-                                  controller: _qualificationController,
-                                  colorScheme: colorScheme,
-                                ),
-                                const SizedBox(height: 16),
-                                _SubjectSpecializationField(
-                                  controller: _subjectSpecializationController,
-                                  colorScheme: colorScheme,
-                                ),
-                                const SizedBox(height: 24),
-                              ],
-                              _SubmitButton(
-                                isLoading: isLoading,
-                                onPressed: _submit,
-                                colorScheme: colorScheme,
-                              ),
-                            ],
-                          );
-                        }
-                      },
+                                );
+                              } else {
+                                // Original single column layout for narrow screens
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    _UsernameField(
+                                      controller: _usernameController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _EmailField(
+                                      controller: _emailController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _PhoneField(
+                                      controller: _phoneController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _FullNameField(
+                                      controller: _fullNameController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _PasswordField(
+                                      controller: _passwordController,
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _RoleDropdown(
+                                      initialValue: _role,
+                                      onChanged: (v) => setState(
+                                        () => _role = v ?? 'teacher',
+                                      ),
+                                      colorScheme: colorScheme,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    // Teacher-specific fields (visible only when role is teacher)
+                                    if (_role == 'teacher') ...[
+                                      const _TeacherSectionLabel(),
+                                      _DepartmentField(
+                                        controller: _departmentController,
+                                        colorScheme: colorScheme,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      _HireDateField(
+                                        controller: _hireDateController,
+                                        colorScheme: colorScheme,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      _QualificationField(
+                                        controller: _qualificationController,
+                                        colorScheme: colorScheme,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      _SubjectSpecializationField(
+                                        controller:
+                                            _subjectSpecializationController,
+                                        colorScheme: colorScheme,
+                                      ),
+                                      const SizedBox(height: 24),
+                                    ],
+                                    _SubmitButton(
+                                      isLoading: isLoading,
+                                      onPressed: _submit,
+                                      colorScheme: colorScheme,
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -369,47 +411,58 @@ class _HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(16),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF253E7A), Color(0xFF554490)],
+        ),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0x24FFFFFF),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.person_add_alt_1_rounded,
+              color: Colors.white,
+              size: 26,
+            ),
           ),
-          child: Icon(
-            Icons.person_add_alt_1_rounded,
-            size: 28,
-            color: colorScheme.primary,
+          const SizedBox(height: 18),
+          const Text(
+            'Add New User',
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Add New User',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
-              ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Fill in the details below to create a new account',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+          const SizedBox(height: 8),
+          const Text(
+            'Fill in the details below to create a new campus account.',
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: Color(0xFFE2E6FF),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class _UsernameField extends StatelessWidget {
-  const _UsernameField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _UsernameField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -419,9 +472,13 @@ class _UsernameField extends StatelessWidget {
       controller: controller,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Username',
         hintText: 'Enter username',
-        prefixIcon: Icon(Icons.person_outline_rounded, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.person_outline_rounded,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
@@ -437,10 +494,7 @@ class _UsernameField extends StatelessWidget {
 }
 
 class _EmailField extends StatelessWidget {
-  const _EmailField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _EmailField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -451,9 +505,13 @@ class _EmailField extends StatelessWidget {
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Email',
         hintText: 'Enter email address',
-        prefixIcon: Icon(Icons.email_outlined, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.email_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
@@ -469,10 +527,7 @@ class _EmailField extends StatelessWidget {
 }
 
 class _PhoneField extends StatelessWidget {
-  const _PhoneField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _PhoneField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -483,9 +538,13 @@ class _PhoneField extends StatelessWidget {
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Phone',
         hintText: 'Enter phone number',
-        prefixIcon: Icon(Icons.phone_outlined, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.phone_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
@@ -501,10 +560,7 @@ class _PhoneField extends StatelessWidget {
 }
 
 class _FullNameField extends StatelessWidget {
-  const _FullNameField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _FullNameField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -514,9 +570,13 @@ class _FullNameField extends StatelessWidget {
       controller: controller,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Full Name',
         hintText: 'Enter full name',
-        prefixIcon: Icon(Icons.badge_outlined, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.badge_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
@@ -532,10 +592,7 @@ class _FullNameField extends StatelessWidget {
 }
 
 class _PasswordField extends StatefulWidget {
-  const _PasswordField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _PasswordField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -556,12 +613,18 @@ class _PasswordFieldState extends State<_PasswordField> {
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (_) => _onSubmit(),
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Password',
         hintText: 'Enter password',
-        prefixIcon: Icon(Icons.lock_outline_rounded, color: widget.colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.lock_outline_rounded,
+          color: widget.colorScheme.onSurfaceVariant,
+        ),
         suffixIcon: IconButton(
           icon: Icon(
-            _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            _obscureText
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
             color: widget.colorScheme.onSurfaceVariant,
           ),
           onPressed: () => setState(() => _obscureText = !_obscureText),
@@ -614,8 +677,12 @@ class _RoleDropdownState extends ConsumerState<_RoleDropdown> {
     return DropdownButtonFormField<String>(
       initialValue: _selectedValue,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Role',
-        prefixIcon: Icon(Icons.admin_panel_settings_outlined, color: widget.colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.admin_panel_settings_outlined,
+          color: widget.colorScheme.onSurfaceVariant,
+        ),
       ),
       items: const [
         DropdownMenuItem(value: 'teacher', child: Text('Teacher')),
@@ -634,10 +701,7 @@ class _RoleDropdownState extends ConsumerState<_RoleDropdown> {
 }
 
 class _DepartmentField extends StatelessWidget {
-  const _DepartmentField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _DepartmentField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -647,9 +711,13 @@ class _DepartmentField extends StatelessWidget {
       controller: controller,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Department',
         hintText: 'Enter department',
-        prefixIcon: Icon(Icons.business_outlined, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.business_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
@@ -662,10 +730,7 @@ class _DepartmentField extends StatelessWidget {
 }
 
 class _HireDateField extends StatefulWidget {
-  const _HireDateField({
-    required this.controller,
-    required this.colorScheme,
-  });
+  const _HireDateField({required this.controller, required this.colorScheme});
   final TextEditingController controller;
   final ColorScheme colorScheme;
 
@@ -687,7 +752,8 @@ class _HireDateFieldState extends State<_HireDateField> {
       lastDate: DateTime.now(),
     );
     if (picked != null && mounted) {
-      final String formatted = "${picked.year.toString().padLeft(4, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      final String formatted =
+          "${picked.year.toString().padLeft(4, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       widget.controller.text = formatted;
     }
   }
@@ -699,10 +765,17 @@ class _HireDateFieldState extends State<_HireDateField> {
       readOnly: true,
       onTap: () => _selectDate(context),
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Hire Date (YYYY-MM-DD)',
         hintText: 'Enter hire date',
-        prefixIcon: Icon(Icons.calendar_today_outlined, color: widget.colorScheme.onSurfaceVariant),
-        suffixIcon: Icon(Icons.calendar_month_outlined, color: widget.colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.calendar_today_outlined,
+          color: widget.colorScheme.onSurfaceVariant,
+        ),
+        suffixIcon: Icon(
+          Icons.calendar_month_outlined,
+          color: widget.colorScheme.onSurfaceVariant,
+        ),
       ),
       validator: (v) {
         if (v == null || v.trim().isEmpty) {
@@ -732,9 +805,13 @@ class _QualificationField extends StatelessWidget {
       controller: controller,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Qualification',
         hintText: 'Enter qualification (optional)',
-        prefixIcon: Icon(Icons.school_outlined, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.school_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }
@@ -754,9 +831,13 @@ class _SubjectSpecializationField extends StatelessWidget {
       controller: controller,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
+        fillColor: Colors.white,
         labelText: 'Subject Specialization ID',
         hintText: 'Enter subject specialization ID (optional)',
-        prefixIcon: Icon(Icons.subject_outlined, color: colorScheme.onSurfaceVariant),
+        prefixIcon: Icon(
+          Icons.subject_outlined,
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }
@@ -792,7 +873,9 @@ class _SubmitButton extends StatelessWidget {
                 width: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    colorScheme.onPrimary,
+                  ),
                 ),
               )
             : const Text(
@@ -806,4 +889,23 @@ class _SubmitButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TeacherSectionLabel extends StatelessWidget {
+  const _TeacherSectionLabel();
+  @override
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.only(top: 8, bottom: 18),
+    child: Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        'Teacher details',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: CampusStyle.accent,
+        ),
+      ),
+    ),
+  );
 }

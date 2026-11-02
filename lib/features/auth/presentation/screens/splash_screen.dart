@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -53,14 +54,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _scaleAnimation = TweenSequence<double>([
       // Scale up with overshoot (bounce effect)
       TweenSequenceItem(
-        tween: Tween<double>(begin: _minScale, end: _maxScale)
-            .chain(CurveTween(curve: Curves.easeOutBack)),
+        tween: Tween<double>(
+          begin: _minScale,
+          end: _maxScale,
+        ).chain(CurveTween(curve: Curves.easeOutBack)),
         weight: 50,
       ),
       // Settle back to 1.0
       TweenSequenceItem(
-        tween: Tween<double>(begin: _maxScale, end: 1.0)
-            .chain(CurveTween(curve: Curves.elasticOut)),
+        tween: Tween<double>(
+          begin: _maxScale,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.elasticOut)),
         weight: 50,
       ),
     ]).animate(_animationController);
@@ -127,7 +132,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (refreshToken != null) {
         try {
           final newAccess = await repo.refreshAccessToken(refreshToken);
-          await storage.saveToken(accessToken: newAccess, refreshToken: refreshToken);
+          await storage.saveToken(
+            accessToken: newAccess,
+            refreshToken: refreshToken,
+          );
           final user = await repo.getCurrentUser();
           _goToDashboard(user);
           return;
@@ -149,9 +157,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _goToLogin() async {
     if (!mounted || _hasNavigated) return;
     _hasNavigated = true;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
   }
 
   Future<void> _goToDashboard(AuthUser user) async {
@@ -170,100 +178,141 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _opacityAnimation.value.clamp(0.0, 1.0),
-              child: Transform.scale(
-                scale: _scaleAnimation.value.clamp(0.0, double.infinity),
-                child: child,
+      body: Stack(
+        children: [
+          const Positioned.fill(child: CampusBackground()),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 40,
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) => Opacity(
+                          opacity: _prefersReducedMotion
+                              ? 1
+                              : _opacityAnimation.value.clamp(0.0, 1.0),
+                          child: Transform.scale(
+                            scale: _prefersReducedMotion
+                                ? 1
+                                : _scaleAnimation.value.clamp(
+                                    0.0,
+                                    double.infinity,
+                                  ),
+                            child: child,
+                          ),
+                        ),
+                        child: _buildLogo(context),
+                      ),
+                      const SizedBox(height: 32),
+                      const Text(
+                        'STEP ACADEMY',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                          color: CampusStyle.ink,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Daroghawala Campus',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: CampusStyle.muted,
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      if (!_prefersReducedMotion)
+                        const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: CampusStyle.primary,
+                            backgroundColor: Color(0xFFDADDF4),
+                            semanticsLabel: 'Opening your campus portal',
+                          ),
+                        )
+                      else
+                        const Icon(
+                          Icons.school_outlined,
+                          color: CampusStyle.primary,
+                          size: 22,
+                        ),
+                      const SizedBox(height: 14),
+                      const Text(
+                        'Opening your campus portal…',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: CampusStyle.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            );
-          },
-          child: _buildLogo(context),
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildLogo(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Logo with container for visual consistency
-        Container(
-          width: _logoSize,
-          height: _logoSize,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: _logoSize),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF153D79), Color(0xFF2867A9)],
+            ),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: const Color(0x8060A5FA), width: 1.5),
+            boxShadow: const [
               BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.15),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-                spreadRadius: -4,
+                color: Color(0x28243C78),
+                blurRadius: 32,
+                offset: Offset(0, 12),
               ),
               BoxShadow(
-                color: colorScheme.shadow.withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: Color(0x183B82F6),
+                blurRadius: 12,
+                offset: Offset(0, 4),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
             child: Image.asset(
               'lib/core/assets/logo/CMS-LOGO-F.png',
-              fit: BoxFit.contain, // Changed to contain to show full image
-              width: _logoSize,
-              height: _logoSize,
-              // Error handling for missing/corrupt asset
-              errorBuilder: (context, error, stackTrace) {
-                // Log error in debug mode
-                assert(() {
-                  debugPrint('SplashScreen: Failed to load logo asset: $error');
-                  return true;
-                }());
-                // Fallback to icon
-                return Icon(
-                  Icons.school_rounded,
-                  size: _logoSize * 0.5,
-                  color: colorScheme.primary,
-                );
-              },
-              // Loading builder for smoother UX
-              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                if (wasSynchronouslyLoaded) return child;
-                return AnimatedOpacity(
-                  opacity: frame == null ? 0.0 : 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  child: child,
-                );
-              },
+              fit: BoxFit.contain,
+              semanticLabel: 'STEP Academy logo',
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.school_rounded,
+                size: 90,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
-        // Optional: App name below logo (can be removed if not needed)
-        // const SizedBox(height: 24),
-        // Text(
-        //   'STEP CMS',
-        //   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-        //         fontWeight: FontWeight.w700,
-        //         color: colorScheme.onSurface,
-        //         letterSpacing: -0.5,
-        //       ),
-        // ),
-      ],
+      ),
     );
   }
 }

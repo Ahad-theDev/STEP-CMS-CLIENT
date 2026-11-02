@@ -18,10 +18,10 @@ class AppColors {
 
   /// Primary brand color - Soft purple accent
   /// Used for: primary buttons, key actions, headers, focus states
-  static const Color primary = Color(0xFF7C6FF2);
+  static const Color primary = Color(0xFF4345A6);
 
   /// Primary container - Lighter version for backgrounds, chips, cards
-  static const Color primaryContainer = Color(0xFFD4CDFF);
+  static const Color primaryContainer = Color(0xFFE1DDF5);
 
   /// On-primary - Text/icons on primary backgrounds
   static const Color onPrimary = Color(0xFFFFFFFF);
@@ -35,13 +35,13 @@ class AppColors {
 
   /// Secondary brand color - Light violet accent
   /// Used for: highlights, accents, secondary actions
-  static const Color secondary = Color(0xFF9B8AFB);
+  static const Color secondary = Color(0xFF6250B8);
 
   /// Secondary container - Subtle violet background
-  static const Color secondaryContainer = Color(0xFFEDE9FF);
+  static const Color secondaryContainer = Color(0xFFE8E0F8);
 
   /// On-secondary - Text/icons on secondary backgrounds
-  static const Color onSecondary = Color(0xFF0D1F42);
+  static const Color onSecondary = Color(0xFFFFFFFF);
 
   /// On-secondary-container - Text on secondary container backgrounds
   static const Color onSecondaryContainer = Color(0xFF4A3D7A);
@@ -51,10 +51,10 @@ class AppColors {
   // =========================================================================
 
   /// Tertiary - Soft blue for subtle accents
-  static const Color tertiary = Color(0xFF6A8DFF);
+  static const Color tertiary = Color(0xFF326DA0);
 
   /// Tertiary container - Light blue backgrounds
-  static const Color tertiaryContainer = Color(0xFFE3E9FF);
+  static const Color tertiaryContainer = Color(0xFFD8E6FA);
 
   /// On-tertiary - Text on tertiary backgrounds
   static const Color onTertiary = Color(0xFFFFFFFF);
@@ -67,7 +67,7 @@ class AppColors {
   // =========================================================================
 
   /// Error - For destructive actions, validation errors
-  static const Color error = Color(0xFFEF6B73);
+  static const Color error = Color(0xFFB43C50);
   static const Color errorContainer = Color(0xFFF9CED2);
   static const Color onError = Color(0xFFFFFFFF);
   static const Color onErrorContainer = Color(0xFF9B0025);
@@ -79,7 +79,7 @@ class AppColors {
   static const Color onWarningContainer = Color(0xFFBF360C);
 
   /// Info - For informational messages, links
-  static const Color info = Color(0xFF64B5F6);
+  static const Color info = Color(0xFF326DA0);
   static const Color infoContainer = Color(0xFFE3F2FD);
   static const Color onInfo = Color(0xFFFFFFFF);
   static const Color onInfoContainer = Color(0xFF0D47A1);
@@ -89,57 +89,57 @@ class AppColors {
   // =========================================================================
 
   /// Surface - Main background for cards, sheets, dialogs
-  static const Color surface = Color(0xFF0D1F42);
+  static const Color surface = Color(0xFFFCFAFF);
 
   /// Surface variant - Subtle contrast for alternate rows, inputs
-  static const Color surfaceVariant = Color(0xFF102451);
+  static const Color surfaceVariant = Color(0xFFEEF0FC);
 
   /// Surface container - Elevated surfaces (cards on cards)
-  static const Color surfaceContainer = Color(0xFF0E2147);
+  static const Color surfaceContainer = Color(0xFFF4F1FC);
 
   /// Surface container high - Highest elevation surfaces
-  static const Color surfaceContainerHigh = Color(0xFF0F234F);
+  static const Color surfaceContainerHigh = Color(0xFFEBE7F6);
 
   /// Surface container highest - Even higher elevation
-  static const Color surfaceContainerHighest = Color(0xFF112663);
+  static const Color surfaceContainerHighest = Color(0xFFE1DDF0);
 
   /// Surface container low - Lower elevation surfaces
-  static const Color surfaceContainerLow = Color(0xFF0C1D3D);
+  static const Color surfaceContainerLow = Color(0xFFF8F6FD);
 
   /// Surface container lowest - Lowest elevation
-  static const Color surfaceContainerLowest = Color(0xFF0A1A33);
+  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
 
   /// On-surface - Primary text on surfaces
-  static const Color onSurface = Color(0xFFF5F5F2);
+  static const Color onSurface = Color(0xFF0F172A);
 
   /// On-surface variant - Secondary text, hints, labels
-  static const Color onSurfaceVariant = Color(0xFFAEB9D0);
+  static const Color onSurfaceVariant = Color(0xFF526079);
 
   /// On-surface disabled - Disabled text/icons
-  static const Color onSurfaceDisabled = Color(0xFF8A97B0);
+  static const Color onSurfaceDisabled = Color(0xFF737F95);
 
   // =========================================================================
   // BACKGROUND COLORS
   // =========================================================================
 
   /// App background - Main scaffold background
-  static const Color background = Color(0xFF071633);
+  static const Color background = Color(0xFFEEF0FC);
 
   /// On-background - Text on app background
-  static const Color onBackground = Color(0xFFF5F5F2);
+  static const Color onBackground = Color(0xFF0F172A);
 
   // =========================================================================
   // OUTLINE / BORDER COLORS
   // =========================================================================
 
   /// Outline - Default border color for inputs, cards, dividers
-  static const Color outline = Color(0xFF2A4170);
+  static const Color outline = Color(0xFF858BA5);
 
   /// Outline variant - Subtle borders, focus rings
-  static const Color outlineVariant = Color(0xFF344F8A);
+  static const Color outlineVariant = Color(0xFFD9DFF0);
 
   /// Outline strong - Emphasized borders
-  static const Color outlineStrong = Color(0xFF1E324D);
+  static const Color outlineStrong = Color(0xFF6250B8);
 
   // =========================================================================
   // SHADOW / ELEVATION

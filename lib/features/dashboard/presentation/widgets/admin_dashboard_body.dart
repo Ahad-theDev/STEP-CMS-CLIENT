@@ -1,7 +1,7 @@
 import 'package:cms/features/subjects/application/all_students_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cms/core/theme/app_colors.dart';
+import 'package:cms/core/theme/campus_style.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/staff/application/all_staff_list_controller.dart';
 import 'package:cms/features/classes/application/all_classes_controller.dart';
@@ -60,7 +60,11 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
     final feeSummaryAsync = ref.watch(feeSummaryControllerProvider());
     final feeDefaultersAsync = ref.watch(feeDefaultersControllerProvider());
     final attendanceDefaultersAsync = ref.watch(
-      defaultersControllerProvider(threshold: 75.0, dateFrom: _rangeFrom, dateTo: _rangeTo),
+      defaultersControllerProvider(
+        threshold: 75.0,
+        dateFrom: _rangeFrom,
+        dateTo: _rangeTo,
+      ),
     );
     final unreadAsync = ref.watch(unreadNotificationsControllerProvider);
 
@@ -78,193 +82,287 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Overview',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+        padding: EdgeInsets.all(
+          MediaQuery.sizeOf(context).width < 480 ? 16 : 24,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1192),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DashboardStatCard(
-                  icon: Icons.groups_outlined,
-                  label: 'Students',
-                  value: '${studentsAsync.valueOrNull?.length ?? 0}',
-                  color: const Color(0xFF818CF8),
-                  isLoading: studentsAsync.isLoading,
-                  hasError: studentsAsync.hasError,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(26),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x20253E7A),
+                        blurRadius: 24,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'STEP ACADEMY  /  ADMINISTRATION',
+                        style: TextStyle(
+                          color: Color(0xFFD9DFFF),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'Your campus, at a glance.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          height: 1.2,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Manage your people, plan classes, and keep track of campus activity.',
+                        style: TextStyle(
+                          color: Color(0xFFE2E6FF),
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                DashboardStatCard(
-                  icon: Icons.school_outlined,
-                  label: 'Teachers',
-                  value: '${teachersAsync.valueOrNull?.length ?? 0}',
-                  color: const Color(0xFF2DD4BF),
-                  isLoading: teachersAsync.isLoading,
-                  hasError: teachersAsync.hasError,
+                const SizedBox(height: 28),
+                Text(
+                  'Campus overview',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                DashboardStatCard(
-                  icon: Icons.badge_outlined,
-                  label: 'Staff',
-                  value: '${staffAsync.valueOrNull?.length ?? 0}',
-                  color: const Color(0xFFA78BFA),
-                  isLoading: staffAsync.isLoading,
-                  hasError: staffAsync.hasError,
+                const SizedBox(height: 12),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final columns = (constraints.maxWidth / 190).floor().clamp(
+                      1,
+                      5,
+                    );
+                    final cardWidth =
+                        (constraints.maxWidth - (columns - 1) * 12) / columns;
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.groups_outlined,
+                          label: 'Students',
+                          value: '${studentsAsync.valueOrNull?.length ?? 0}',
+                          color: const Color(0xFF5458B5),
+                          isLoading: studentsAsync.isLoading,
+                          hasError: studentsAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.school_outlined,
+                          label: 'Teachers',
+                          value: '${teachersAsync.valueOrNull?.length ?? 0}',
+                          color: const Color(0xFF326DA0),
+                          isLoading: teachersAsync.isLoading,
+                          hasError: teachersAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.badge_outlined,
+                          label: 'Staff',
+                          value: '${staffAsync.valueOrNull?.length ?? 0}',
+                          color: const Color(0xFF7856A6),
+                          isLoading: staffAsync.isLoading,
+                          hasError: staffAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.class_outlined,
+                          label: 'Classes',
+                          value: '${classesAsync.valueOrNull?.length ?? 0}',
+                          color: CampusStyle.primary,
+                          isLoading: classesAsync.isLoading,
+                          hasError: classesAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.menu_book_outlined,
+                          label: 'Subjects',
+                          value: '${subjectsAsync.valueOrNull?.length ?? 0}',
+                          color: const Color(0xFF326DA0),
+                          isLoading: subjectsAsync.isLoading,
+                          hasError: subjectsAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.percent_rounded,
+                          label: 'Fee Collection',
+                          value: feeSummaryAsync.valueOrNull != null
+                              ? '${feeSummaryAsync.valueOrNull!.summary.collectionEfficiency.toStringAsFixed(0)}%'
+                              : '0%',
+                          color: const Color(0xFF287B70),
+                          isLoading: feeSummaryAsync.isLoading,
+                          hasError: feeSummaryAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.warning_amber_rounded,
+                          label: 'Fee Defaulters',
+                          value:
+                              '${feeDefaultersAsync.valueOrNull?.count ?? 0}',
+                          color: const Color(0xFFAF4C64),
+                          isLoading: feeDefaultersAsync.isLoading,
+                          hasError: feeDefaultersAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.event_busy_outlined,
+                          label: 'Attendance <75% (30d)',
+                          value:
+                              '${attendanceDefaultersAsync.valueOrNull?.defaulters.length ?? 0}',
+                          color: const Color(0xFF94651D),
+                          isLoading: attendanceDefaultersAsync.isLoading,
+                          hasError: attendanceDefaultersAsync.hasError,
+                        ),
+                        DashboardStatCard(
+                          width: cardWidth,
+                          icon: Icons.notifications_outlined,
+                          label: 'Unread Alerts',
+                          value: '${unreadAsync.valueOrNull?.length ?? 0}',
+                          color: const Color(0xFF326DA0),
+                          isLoading: unreadAsync.isLoading,
+                          hasError: unreadAsync.hasError,
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                DashboardStatCard(
-                  icon: Icons.class_outlined,
-                  label: 'Classes',
-                  value: '${classesAsync.valueOrNull?.length ?? 0}',
-                  color: AppColors.primary,
-                  isLoading: classesAsync.isLoading,
-                  hasError: classesAsync.hasError,
+                const SizedBox(height: 28),
+                Text(
+                  'Campus workspace',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                DashboardStatCard(
-                  icon: Icons.menu_book_outlined,
-                  label: 'Subjects',
-                  value: '${subjectsAsync.valueOrNull?.length ?? 0}',
-                  color: AppColors.tertiary,
-                  isLoading: subjectsAsync.isLoading,
-                  hasError: subjectsAsync.hasError,
+                const SizedBox(height: 12),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = (constraints.maxWidth / 190)
+                        .floor()
+                        .clamp(1, 5);
+                    final shortcuts = <Widget>[
+                      DashboardShortcutTile(
+                        icon: Icons.auto_awesome_rounded,
+                        label: 'AI Assistant',
+                        color: CampusStyle.primary,
+                        onTap: () => _push(const AiAssistantScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.person_add_alt_1_rounded,
+                        label: 'Create User',
+                        color: const Color(0xFF326DA0),
+                        onTap: () => _push(const RegisterScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.people_alt_rounded,
+                        label: 'Students',
+                        color: const Color(0xFF5458B5),
+                        onTap: () => _push(const StudentManagementScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.badge_outlined,
+                        label: 'Staff',
+                        color: const Color(0xFF7856A6),
+                        onTap: () => _push(const StaffManagementScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.class_outlined,
+                        label: 'Classes',
+                        color: CampusStyle.accent,
+                        onTap: () => _push(const ClassManagementScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.menu_book_outlined,
+                        label: 'Subjects',
+                        color: const Color(0xFF326DA0),
+                        onTap: () => _push(const SubjectManagementScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.school_outlined,
+                        label: 'Teachers',
+                        color: const Color(0xFF326DA0),
+                        onTap: () => _push(const TeacherManagementScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.event_note_outlined,
+                        label: 'Lectures',
+                        color: const Color(0xFF6250B8),
+                        onTap: () => _push(const LectureManagementScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.calendar_month_outlined,
+                        label: 'Schedule',
+                        color: const Color(0xFF326DA0),
+                        onTap: () => _push(const ScheduleScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.event_outlined,
+                        label: 'Calendar',
+                        color: const Color(0xFF7856A6),
+                        onTap: () => _push(const CalendarScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.fact_check_outlined,
+                        label: 'Attendance',
+                        color: const Color(0xFF287B70),
+                        onTap: () => _push(const AttendanceHomeScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.payments_outlined,
+                        label: 'Fees',
+                        color: const Color(0xFF326DA0),
+                        onTap: () => _push(const FeeHomeScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.notifications_outlined,
+                        label: 'Notifications',
+                        color: const Color(0xFF94651D),
+                        onTap: () => _push(const NotificationsScreen()),
+                      ),
+                    ];
+                    final tileWidth =
+                        (constraints.maxWidth - (crossAxisCount - 1) * 12) /
+                        crossAxisCount;
+                    return Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: shortcuts
+                          .map(
+                            (tile) => SizedBox(width: tileWidth, child: tile),
+                          )
+                          .toList(),
+                    );
+                  },
                 ),
-                DashboardStatCard(
-                  icon: Icons.percent_rounded,
-                  label: 'Fee Collection',
-                  value: feeSummaryAsync.valueOrNull != null
-                      ? '${feeSummaryAsync.valueOrNull!.summary.collectionEfficiency.toStringAsFixed(0)}%'
-                      : '0%',
-                  color: const Color(0xFF34D399),
-                  isLoading: feeSummaryAsync.isLoading,
-                  hasError: feeSummaryAsync.hasError,
-                ),
-                DashboardStatCard(
-                  icon: Icons.warning_amber_rounded,
-                  label: 'Fee Defaulters',
-                  value: '${feeDefaultersAsync.valueOrNull?.count ?? 0}',
-                  color: const Color(0xFFF87171),
-                  isLoading: feeDefaultersAsync.isLoading,
-                  hasError: feeDefaultersAsync.hasError,
-                ),
-                DashboardStatCard(
-                  icon: Icons.event_busy_outlined,
-                  label: 'Attendance <75% (30d)',
-                  value: '${attendanceDefaultersAsync.valueOrNull?.defaulters.length ?? 0}',
-                  color: const Color(0xFFFBBF24),
-                  isLoading: attendanceDefaultersAsync.isLoading,
-                  hasError: attendanceDefaultersAsync.hasError,
-                ),
-                DashboardStatCard(
-                  icon: Icons.notifications_outlined,
-                  label: 'Unread Alerts',
-                  value: '${unreadAsync.valueOrNull?.length ?? 0}',
-                  color: const Color(0xFF38BDF8),
-                  isLoading: unreadAsync.isLoading,
-                  hasError: unreadAsync.hasError,
-                ),
+                const SizedBox(height: 16),
               ],
             ),
-            const SizedBox(height: 28),
-            Text('Quick Access',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final crossAxisCount = (constraints.maxWidth / 150).floor().clamp(2, 6);
-                final shortcuts = <Widget>[
-                  DashboardShortcutTile(
-                    icon: Icons.auto_awesome_rounded,
-                    label: 'AI Assistant',
-                    color: AppColors.primary,
-                    onTap: () => _push(const AiAssistantScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.person_add_alt_1_rounded,
-                    label: 'Create User',
-                    color: const Color(0xFF38BDF8),
-                    onTap: () => _push(const RegisterScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.people_alt_rounded,
-                    label: 'Students',
-                    color: const Color(0xFF818CF8),
-                    onTap: () => _push(const StudentManagementScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.badge_outlined,
-                    label: 'Staff',
-                    color: const Color(0xFFA78BFA),
-                    onTap: () => _push(const StaffManagementScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.class_outlined,
-                    label: 'Classes',
-                    color: AppColors.secondary,
-                    onTap: () => _push(const ClassManagementScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.menu_book_outlined,
-                    label: 'Subjects',
-                    color: AppColors.tertiary,
-                    onTap: () => _push(const SubjectManagementScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.school_outlined,
-                    label: 'Teachers',
-                    color: const Color(0xFF2DD4BF),
-                    onTap: () => _push(const TeacherManagementScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.event_note_outlined,
-                    label: 'Lectures',
-                    color: const Color(0xFFF59E0B),
-                    onTap: () => _push(const LectureManagementScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.calendar_month_outlined,
-                    label: 'Schedule',
-                    color: const Color(0xFF60A5FA),
-                    onTap: () => _push(const ScheduleScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.event_outlined,
-                    label: 'Calendar',
-                    color: const Color(0xFFF472B6),
-                    onTap: () => _push(const CalendarScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.fact_check_outlined,
-                    label: 'Attendance',
-                    color: const Color(0xFF34D399),
-                    onTap: () => _push(const AttendanceHomeScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.payments_outlined,
-                    label: 'Fees',
-                    color: const Color(0xFF10B981),
-                    onTap: () => _push(const FeeHomeScreen()),
-                  ),
-                  DashboardShortcutTile(
-                    icon: Icons.notifications_outlined,
-                    label: 'Notifications',
-                    color: const Color(0xFFFBBF24),
-                    onTap: () => _push(const NotificationsScreen()),
-                  ),
-                ];
-                return GridView.count(
-                  crossAxisCount: crossAxisCount,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1.1,
-                  children: shortcuts,
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
+          ),
         ),
       ),
     );
