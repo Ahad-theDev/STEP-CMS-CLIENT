@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/features/students/application/students_list_controller.dart';
 import 'package:cms/features/students/presentation/screens/add_student_screen.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ class StudentsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final studentAsync = ref.watch(studentsListControllerProvider);
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text("Students")),
       body: studentAsync.when(
         data: (students) {

@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cms/features/students/data/models/student.dart';
 
@@ -8,12 +9,17 @@ class StudentDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: Text(student.fullName)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            const CampusSectionIntro(
+              title: 'Student profile',
+              subtitle: 'Contact, fee, and account details.',
+            ),
+            const SizedBox(height: 22),
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Full Name'),

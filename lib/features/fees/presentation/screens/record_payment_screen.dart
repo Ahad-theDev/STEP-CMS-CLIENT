@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -10,7 +11,8 @@ class RecordPaymentScreen extends ConsumerStatefulWidget {
   const RecordPaymentScreen({super.key, required this.record});
 
   @override
-  ConsumerState<RecordPaymentScreen> createState() => _RecordPaymentScreenState();
+  ConsumerState<RecordPaymentScreen> createState() =>
+      _RecordPaymentScreenState();
 }
 
 class _RecordPaymentScreenState extends ConsumerState<RecordPaymentScreen> {
@@ -21,7 +23,9 @@ class _RecordPaymentScreenState extends ConsumerState<RecordPaymentScreen> {
   void initState() {
     super.initState();
     final remaining = widget.record.amountDue - widget.record.amountPaid;
-    _amountController = TextEditingController(text: remaining.toStringAsFixed(0));
+    _amountController = TextEditingController(
+      text: remaining.toStringAsFixed(0),
+    );
   }
 
   @override
@@ -46,17 +50,22 @@ class _RecordPaymentScreenState extends ConsumerState<RecordPaymentScreen> {
   Future<void> _submit() async {
     final amount = double.tryParse(_amountController.text.trim());
     if (amount == null || amount <= 0) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Enter a valid amount')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a valid amount')));
       return;
     }
 
     final request = PaymentRequest(amount: amount, paymentDate: _paymentDate);
-    final result = await ref.read(payFeeControllerProvider.notifier).pay(widget.record.id, request);
+    final result = await ref
+        .read(payFeeControllerProvider.notifier)
+        .pay(widget.record.id, request);
     if (!mounted || result == null) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment recorded — status is now ${result.status}')),
+      SnackBar(
+        content: Text('Payment recorded — status is now ${result.status}'),
+      ),
     );
     Navigator.of(context).pop(true);
   }
@@ -67,19 +76,28 @@ class _RecordPaymentScreenState extends ConsumerState<RecordPaymentScreen> {
     final isLoading = state.isLoading;
     final remaining = widget.record.amountDue - widget.record.amountPaid;
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Record Payment')),
-      body: SingleChildScrollView(
+      body: FeeScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${widget.record.month}/${widget.record.year}',
-                style: Theme.of(context).textTheme.titleMedium),
+            const FeeSectionIntro(
+              title: 'Record a payment',
+              subtitle: 'Review the fee balance and enter payment details.',
+            ),
+            const SizedBox(height: 22),
+            Text(
+              '${widget.record.month}/${widget.record.year}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 4),
-            Text('Due: ${widget.record.amountDue.toStringAsFixed(0)} • '
-                'Paid so far: ${widget.record.amountPaid.toStringAsFixed(0)} • '
-                'Remaining: ${remaining.toStringAsFixed(0)}'),
+            Text(
+              'Due: ${widget.record.amountDue.toStringAsFixed(0)} • '
+              'Paid so far: ${widget.record.amountPaid.toStringAsFixed(0)} • '
+              'Remaining: ${remaining.toStringAsFixed(0)}',
+            ),
             const SizedBox(height: 20),
             TextField(
               controller: _amountController,
@@ -98,13 +116,19 @@ class _RecordPaymentScreenState extends ConsumerState<RecordPaymentScreen> {
             if (state.hasError)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             ElevatedButton(
               onPressed: isLoading ? null : _submit,
               child: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Text('Record Payment'),
             ),
           ],

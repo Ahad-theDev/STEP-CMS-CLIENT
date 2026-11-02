@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -48,13 +49,15 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_admissionDate == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Admission date is required')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Admission date is required')),
+      );
       return;
     }
     if (_selectedClass == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please select a class')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a class')));
       return;
     }
 
@@ -69,11 +72,14 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       discount: double.tryParse(_discountController.text.trim()) ?? 0,
     );
 
-    final student = await ref.read(addStudentControllerProvider.notifier).createStudent(request);
+    final student = await ref
+        .read(addStudentControllerProvider.notifier)
+        .createStudent(request);
     if (!mounted || student == null) return;
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('${student.fullName} added')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${student.fullName} added')));
     Navigator.of(context).pop(true);
   }
 
@@ -83,7 +89,7 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
     final classesAsync = ref.watch(allClassesControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Add Student')),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -91,6 +97,11 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              const CampusSectionIntro(
+                title: 'Welcome a new student',
+                subtitle: 'Add student, guardian, and enrollment details.',
+              ),
+              const SizedBox(height: 22),
               TextFormField(
                 controller: _fullNameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
@@ -110,29 +121,43 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                 ),
                 error: (e, _) => Row(
                   children: [
-                    Expanded(child: Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red))),
+                    Expanded(
+                      child: Text(
+                        'Failed to load classes: ${friendlyErrorMessage(e)}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
                     TextButton(
-                      onPressed: () => ref.read(allClassesControllerProvider.notifier).refresh(),
+                      onPressed: () => ref
+                          .read(allClassesControllerProvider.notifier)
+                          .refresh(),
                       child: const Text('Retry'),
                     ),
                   ],
                 ),
                 data: (classes) {
                   if (classes.isEmpty) {
-                    return const Text('No classes found — create one first.',
-                        style: TextStyle(color: Colors.grey));
+                    return const Text(
+                      'No classes found — create one first.',
+                      style: TextStyle(color: Colors.grey),
+                    );
                   }
                   return DropdownButtonFormField<SchoolClass>(
                     initialValue: _selectedClass,
                     decoration: const InputDecoration(labelText: 'Class'),
                     items: classes
-                        .map((c) => DropdownMenuItem(
-                              value: c,
-                              child: Text('${c.name} - ${c.section} (${c.academicYear})'),
-                            ))
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(
+                              '${c.name} - ${c.section} (${c.academicYear})',
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: (v) => setState(() => _selectedClass = v),
-                    validator: (v) => v == null ? 'Please select a class' : null,
+                    validator: (v) =>
+                        v == null ? 'Please select a class' : null,
                   );
                 },
               ),
@@ -152,7 +177,9 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
               InkWell(
                 onTap: _pickAdmissionDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Admission Date'),
+                  decoration: const InputDecoration(
+                    labelText: 'Admission Date',
+                  ),
                   child: Text(
                     _admissionDate == null
                         ? 'Tap to select'
@@ -185,7 +212,11 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Add Student'),
               ),
             ],

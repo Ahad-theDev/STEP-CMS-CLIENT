@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -10,17 +11,21 @@ class UpdateFeeStructureScreen extends ConsumerStatefulWidget {
   const UpdateFeeStructureScreen({super.key, required this.structure});
 
   @override
-  ConsumerState<UpdateFeeStructureScreen> createState() => _UpdateFeeStructureScreenState();
+  ConsumerState<UpdateFeeStructureScreen> createState() =>
+      _UpdateFeeStructureScreenState();
 }
 
-class _UpdateFeeStructureScreenState extends ConsumerState<UpdateFeeStructureScreen> {
+class _UpdateFeeStructureScreenState
+    extends ConsumerState<UpdateFeeStructureScreen> {
   late final TextEditingController _amountController;
   late bool _isActive;
 
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController(text: widget.structure.amount.toStringAsFixed(0));
+    _amountController = TextEditingController(
+      text: widget.structure.amount.toStringAsFixed(0),
+    );
     _isActive = widget.structure.isActive;
   }
 
@@ -41,7 +46,9 @@ class _UpdateFeeStructureScreenState extends ConsumerState<UpdateFeeStructureScr
         .updateFeeStructure(widget.structure.id, request);
     if (!mounted || result == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fee structure updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Fee structure updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -50,14 +57,21 @@ class _UpdateFeeStructureScreenState extends ConsumerState<UpdateFeeStructureScr
     final state = ref.watch(updateFeeStructureControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Update Fee Structure')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: ListView(
           children: [
-            Text('Academic Year: ${widget.structure.academicYear}',
-                style: Theme.of(context).textTheme.titleMedium),
+            const FeeSectionIntro(
+              title: 'Update fee structure',
+              subtitle: 'Review the class fee details before saving changes.',
+            ),
+            const SizedBox(height: 22),
+            Text(
+              'Academic Year: ${widget.structure.academicYear}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 20),
             TextFormField(
               controller: _amountController,
@@ -68,7 +82,9 @@ class _UpdateFeeStructureScreenState extends ConsumerState<UpdateFeeStructureScr
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('Active'),
-              subtitle: const Text('Turn off to deactivate — no hard delete exists for this'),
+              subtitle: const Text(
+                'Turn off to deactivate — no hard delete exists for this',
+              ),
               value: _isActive,
               onChanged: (v) => setState(() => _isActive = v),
             ),
@@ -76,13 +92,19 @@ class _UpdateFeeStructureScreenState extends ConsumerState<UpdateFeeStructureScr
             if (state.hasError)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             ElevatedButton(
               onPressed: isLoading ? null : _submit,
               child: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Text('Save Changes'),
             ),
           ],

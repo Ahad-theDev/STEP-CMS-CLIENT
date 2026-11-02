@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -11,10 +12,12 @@ class ViewFeeStructuresScreen extends ConsumerStatefulWidget {
   const ViewFeeStructuresScreen({super.key});
 
   @override
-  ConsumerState<ViewFeeStructuresScreen> createState() => _ViewFeeStructuresScreenState();
+  ConsumerState<ViewFeeStructuresScreen> createState() =>
+      _ViewFeeStructuresScreenState();
 }
 
-class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScreen> {
+class _ViewFeeStructuresScreenState
+    extends ConsumerState<ViewFeeStructuresScreen> {
   SchoolClass? _selectedClass;
   final _yearController = TextEditingController();
   String? _appliedYear;
@@ -28,13 +31,17 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
 
   Future<void> _openUpdate(FeeStructure structure) async {
     final updated = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => UpdateFeeStructureScreen(structure: structure)),
+      MaterialPageRoute(
+        builder: (_) => UpdateFeeStructureScreen(structure: structure),
+      ),
     );
     if (updated == true) {
-      ref.invalidate(feeStructuresListControllerProvider(
-        classId: _selectedClass?.id,
-        academicYear: _appliedYear,
-      ));
+      ref.invalidate(
+        feeStructuresListControllerProvider(
+          classId: _selectedClass?.id,
+          academicYear: _appliedYear,
+        ),
+      );
     }
   }
 
@@ -42,24 +49,41 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(classesListControllerProvider(page: 1));
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('View Fee Structure')),
-      body: SingleChildScrollView(
+      body: FeeScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const FeeSectionIntro(
+              title: 'Class fee structures',
+              subtitle:
+                  'Find and review the academic year fees for each class.',
+            ),
+            const SizedBox(height: 22),
             classesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red)),
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
               data: (classes) => DropdownButtonFormField<SchoolClass?>(
                 initialValue: _selectedClass,
-                decoration: const InputDecoration(labelText: 'Class (optional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Class (optional)',
+                ),
                 items: [
-                  const DropdownMenuItem<SchoolClass?>(value: null, child: Text('All Classes')),
+                  const DropdownMenuItem<SchoolClass?>(
+                    value: null,
+                    child: Text('All Classes'),
+                  ),
                   ...classes.map(
-                      (c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}'))),
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text('${c.name} - ${c.section}'),
+                    ),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _selectedClass = v),
               ),
@@ -70,12 +94,16 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
                 Expanded(
                   child: TextField(
                     controller: _yearController,
-                    decoration: const InputDecoration(labelText: 'Academic Year (optional)'),
+                    decoration: const InputDecoration(
+                      labelText: 'Academic Year (optional)',
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () => setState(() => _appliedYear = _yearController.text.trim()),
+                  onPressed: () => setState(
+                    () => _appliedYear = _yearController.text.trim(),
+                  ),
                   child: const Text('Apply'),
                 ),
               ],
@@ -104,23 +132,29 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
   }
 
   Widget _buildTable(Map<String, String> classNameById) {
-    final structuresAsync = ref.watch(feeStructuresListControllerProvider(
-      classId: _selectedClass?.id,
-      academicYear: (_appliedYear?.isEmpty ?? true) ? null : _appliedYear,
-    ));
+    final structuresAsync = ref.watch(
+      feeStructuresListControllerProvider(
+        classId: _selectedClass?.id,
+        academicYear: (_appliedYear?.isEmpty ?? true) ? null : _appliedYear,
+      ),
+    );
 
     return structuresAsync.when(
       loading: () => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 32),
-          child: Center(child: CircularProgressIndicator())),
+        padding: EdgeInsets.symmetric(vertical: 32),
+        child: Center(child: CircularProgressIndicator()),
+      ),
       error: (e, _) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Text('Failed to load: ${friendlyErrorMessage(e)}',
-            style: const TextStyle(color: Colors.red)),
+        child: Text(
+          'Failed to load: ${friendlyErrorMessage(e)}',
+          style: const TextStyle(color: Colors.red),
+        ),
       ),
       data: (structures) {
-        final visible =
-            _showInactive ? structures : structures.where((s) => s.isActive).toList();
+        final visible = _showInactive
+            ? structures
+            : structures.where((s) => s.isActive).toList();
         if (visible.isEmpty) {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 32),
@@ -137,20 +171,26 @@ class _ViewFeeStructuresScreenState extends ConsumerState<ViewFeeStructuresScree
               DataColumn(label: Text('Status')),
             ],
             rows: visible
-                .map((s) => DataRow(
-                      onSelectChanged: (selected) {
-                        if (selected == true) _openUpdate(s);
-                      },
-                      cells: [
-                        DataCell(Text(classNameById[s.classId] ?? s.classId)),
-                        DataCell(Text(s.academicYear)),
-                        DataCell(Text(s.amount.toStringAsFixed(0))),
-                        DataCell(Text(
+                .map(
+                  (s) => DataRow(
+                    onSelectChanged: (selected) {
+                      if (selected == true) _openUpdate(s);
+                    },
+                    cells: [
+                      DataCell(Text(classNameById[s.classId] ?? s.classId)),
+                      DataCell(Text(s.academicYear)),
+                      DataCell(Text(s.amount.toStringAsFixed(0))),
+                      DataCell(
+                        Text(
                           s.isActive ? 'Active' : 'Inactive',
-                          style: TextStyle(color: s.isActive ? Colors.green : Colors.grey),
-                        )),
-                      ],
-                    ))
+                          style: TextStyle(
+                            color: s.isActive ? Colors.green : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         );

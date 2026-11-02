@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -10,7 +11,8 @@ class AddFeeStructureScreen extends ConsumerStatefulWidget {
   const AddFeeStructureScreen({super.key});
 
   @override
-  ConsumerState<AddFeeStructureScreen> createState() => _AddFeeStructureScreenState();
+  ConsumerState<AddFeeStructureScreen> createState() =>
+      _AddFeeStructureScreenState();
 }
 
 class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
@@ -38,7 +40,9 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedClass == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a class')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a class')));
       return;
     }
 
@@ -48,10 +52,14 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
       academicYear: _yearController.text.trim(),
     );
 
-    final result = await ref.read(addFeeStructureControllerProvider.notifier).createFeeStructure(request);
+    final result = await ref
+        .read(addFeeStructureControllerProvider.notifier)
+        .createFeeStructure(request);
     if (!mounted || result == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fee structure created')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Fee structure created')));
     Navigator.of(context).pop(true);
   }
 
@@ -61,7 +69,7 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
     final classesAsync = ref.watch(classesListControllerProvider(page: 1));
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Create Fee Structure')),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -69,18 +77,30 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              const FeeSectionIntro(
+                title: 'Create a fee structure',
+                subtitle: 'Choose a class, academic year, and fee amount.',
+              ),
+              const SizedBox(height: 22),
               classesAsync.when(
                 loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8), child: LinearProgressIndicator()),
-                error: (e, _) =>
-                    Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                        style: const TextStyle(color: Colors.red)),
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                ),
+                error: (e, _) => Text(
+                  'Failed to load classes: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 data: (classes) => DropdownButtonFormField<SchoolClass>(
                   initialValue: _selectedClass,
                   decoration: const InputDecoration(labelText: 'Class'),
                   items: classes
-                      .map((c) =>
-                          DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text('${c.name} - ${c.section}'),
+                        ),
+                      )
                       .toList(),
                   onChanged: _onClassChanged,
                   validator: (v) => v == null ? 'Required' : null,
@@ -103,13 +123,19 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    'Failed: ${friendlyErrorMessage(state.error!)}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Create Fee Structure'),
               ),
             ],

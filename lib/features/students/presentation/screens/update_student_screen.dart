@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -10,7 +11,8 @@ class UpdateStudentScreen extends ConsumerStatefulWidget {
   const UpdateStudentScreen({super.key, required this.student});
 
   @override
-  ConsumerState<UpdateStudentScreen> createState() => _UpdateStudentScreenState();
+  ConsumerState<UpdateStudentScreen> createState() =>
+      _UpdateStudentScreenState();
 }
 
 class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
@@ -29,9 +31,15 @@ class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
     _fullNameController = TextEditingController(text: s.fullName);
     _rollNumberController = TextEditingController(text: s.rollNumber);
     _guardianNameController = TextEditingController(text: s.guardianName ?? '');
-    _guardianPhoneController = TextEditingController(text: s.guardianPhone ?? '');
-    _monthlyFeeController = TextEditingController(text: s.monthlyFee.toStringAsFixed(0));
-    _discountController = TextEditingController(text: s.discount.toStringAsFixed(0));
+    _guardianPhoneController = TextEditingController(
+      text: s.guardianPhone ?? '',
+    );
+    _monthlyFeeController = TextEditingController(
+      text: s.monthlyFee.toStringAsFixed(0),
+    );
+    _discountController = TextEditingController(
+      text: s.discount.toStringAsFixed(0),
+    );
   }
 
   @override
@@ -62,7 +70,9 @@ class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
         .updateStudent(widget.student.id, request);
     if (!mounted || updated == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${updated.fullName} updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${updated.fullName} updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -71,7 +81,7 @@ class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
     final state = ref.watch(updateStudentControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Update Student')),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -79,6 +89,11 @@ class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              const CampusSectionIntro(
+                title: 'Update student details',
+                subtitle: 'Review and update the student profile.',
+              ),
+              const SizedBox(height: 22),
               TextFormField(
                 controller: _fullNameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
@@ -116,19 +131,27 @@ class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
               Text(
                 'To move this student to a different class, use Change Enrollment instead — '
                 'it keeps enrollment history consistent.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey),
               ),
               const SizedBox(height: 24),
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    'Failed: ${friendlyErrorMessage(state.error!)}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Save Changes'),
               ),
             ],

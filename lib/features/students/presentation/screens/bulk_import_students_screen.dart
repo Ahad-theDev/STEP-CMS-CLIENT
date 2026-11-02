@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,10 +10,12 @@ class BulkImportStudentsScreen extends ConsumerStatefulWidget {
   const BulkImportStudentsScreen({super.key});
 
   @override
-  ConsumerState<BulkImportStudentsScreen> createState() => _BulkImportStudentsScreenState();
+  ConsumerState<BulkImportStudentsScreen> createState() =>
+      _BulkImportStudentsScreenState();
 }
 
-class _BulkImportStudentsScreenState extends ConsumerState<BulkImportStudentsScreen> {
+class _BulkImportStudentsScreenState
+    extends ConsumerState<BulkImportStudentsScreen> {
   String? _pickedPath;
   String? _pickedName;
   BulkImportResult? _result;
@@ -44,22 +47,31 @@ class _BulkImportStudentsScreenState extends ConsumerState<BulkImportStudentsScr
     final state = ref.watch(bulkImportStudentsControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Bulk Import Students')),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: ListView(
           children: [
+            const CampusSectionIntro(
+              title: 'Import student records',
+              subtitle: 'Upload a CSV file and review the import results.',
+            ),
+            const SizedBox(height: 22),
             Text(
               'CSV columns required: full_name, roll_number, class_id, guardian_name, '
               'guardian_phone, admission_date (YYYY-MM-DD), monthly_fee, discount (optional).',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
             ),
             const SizedBox(height: 16),
             Text(
               'Note: class_id must be the class\'s UUID, not its name — '
               'export the class list first if you need to look these up.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.orange),
             ),
             const SizedBox(height: 20),
             OutlinedButton.icon(
@@ -71,13 +83,19 @@ class _BulkImportStudentsScreenState extends ConsumerState<BulkImportStudentsScr
             if (state.hasError)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             ElevatedButton(
               onPressed: (isLoading || _pickedPath == null) ? null : _submit,
               child: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Text('Import'),
             ),
             if (_result != null) ...[
@@ -102,9 +120,16 @@ class _BulkImportStudentsScreenState extends ConsumerState<BulkImportStudentsScr
           spacing: 16,
           children: [
             Text('Total: ${result.total}'),
-            Text('Success: ${result.success}', style: const TextStyle(color: Colors.green)),
-            Text('Failed: ${result.failed}',
-                style: TextStyle(color: result.failed > 0 ? Colors.red : Colors.grey)),
+            Text(
+              'Success: ${result.success}',
+              style: const TextStyle(color: Colors.green),
+            ),
+            Text(
+              'Failed: ${result.failed}',
+              style: TextStyle(
+                color: result.failed > 0 ? Colors.red : Colors.grey,
+              ),
+            ),
           ],
         ),
         if (result.errors.isNotEmpty) ...[
@@ -114,7 +139,10 @@ class _BulkImportStudentsScreenState extends ConsumerState<BulkImportStudentsScr
           ...result.errors.map(
             (e) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text('Row ${e.row}: ${e.error}', style: const TextStyle(color: Colors.red)),
+              child: Text(
+                'Row ${e.row}: ${e.error}',
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
           ),
         ],

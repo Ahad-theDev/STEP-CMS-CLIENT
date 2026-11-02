@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/features/students/data/models/student.dart';
 import 'package:cms/features/students/presentation/widgets/student_search_section.dart';
 import 'package:cms/features/students/presentation/screens/student_detail_screen.dart';
@@ -19,11 +20,9 @@ class _SearchStudentScreenState extends State<SearchStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Search Students')),
-      body: StudentSearchSection(
-        onStudentTap: _openStudentDetailScreen,
-      ),
+      body: StudentSearchSection(onStudentTap: _openStudentDetailScreen),
     );
   }
 }

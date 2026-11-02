@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -10,7 +11,8 @@ class SelectStudentScreen extends ConsumerStatefulWidget {
   const SelectStudentScreen({super.key, required this.title});
 
   @override
-  ConsumerState<SelectStudentScreen> createState() => _SelectStudentScreenState();
+  ConsumerState<SelectStudentScreen> createState() =>
+      _SelectStudentScreenState();
 }
 
 class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
@@ -22,7 +24,7 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(allClassesControllerProvider);
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: Text(widget.title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -40,25 +42,32 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () =>
-                        ref.read(allClassesControllerProvider.notifier).refresh(),
+                    onPressed: () => ref
+                        .read(allClassesControllerProvider.notifier)
+                        .refresh(),
                     child: const Text('Retry'),
                   ),
                 ],
               ),
               data: (classes) {
                 if (classes.isEmpty) {
-                  return const Text('No classes found — create one first.',
-                      style: TextStyle(color: Colors.grey));
+                  return const Text(
+                    'No classes found — create one first.',
+                    style: TextStyle(color: Colors.grey),
+                  );
                 }
                 return DropdownButtonFormField<SchoolClass>(
                   initialValue: _selectedClass,
                   decoration: const InputDecoration(labelText: 'Select Class'),
                   items: classes
-                      .map((c) => DropdownMenuItem(
-                            value: c,
-                            child: Text('${c.name} - ${c.section} (${c.academicYear})'),
-                          ))
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text(
+                            '${c.name} - ${c.section} (${c.academicYear})',
+                          ),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() {
                     _selectedClass = v;
@@ -80,7 +89,11 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
               const SizedBox(height: 12),
               Expanded(child: _buildStudentList()),
             ] else
-              const Expanded(child: Center(child: Text('Select a class to see its students'))),
+              const Expanded(
+                child: Center(
+                  child: Text('Select a class to see its students'),
+                ),
+              ),
           ],
         ),
       ),
@@ -88,8 +101,9 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
   }
 
   Widget _buildStudentList() {
-    final studentsAsync =
-        ref.watch(studentSearchControllerProvider(classId: _selectedClass!.id, page: _page));
+    final studentsAsync = ref.watch(
+      studentSearchControllerProvider(classId: _selectedClass!.id, page: _page),
+    );
 
     return studentsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -99,7 +113,8 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
             ? students
             : students.where((s) {
                 final q = _query.toLowerCase();
-                return s.fullName.toLowerCase().contains(q) || s.rollNumber.toLowerCase().contains(q);
+                return s.fullName.toLowerCase().contains(q) ||
+                    s.rollNumber.toLowerCase().contains(q);
               }).toList();
 
         if (students.isEmpty) {
@@ -152,7 +167,9 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.chevron_left),
-                    onPressed: _page > 1 ? () => setState(() => _page -= 1) : null,
+                    onPressed: _page > 1
+                        ? () => setState(() => _page -= 1)
+                        : null,
                   ),
                   Text('Page $_page'),
                   IconButton(

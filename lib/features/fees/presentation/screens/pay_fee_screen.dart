@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -19,7 +20,9 @@ class _PayFeeScreenState extends ConsumerState<PayFeeScreen> {
 
   Future<void> _pickStudent() async {
     final selected = await Navigator.of(context).push<Student>(
-      MaterialPageRoute(builder: (_) => const SelectStudentScreen(title: 'Select Student')),
+      MaterialPageRoute(
+        builder: (_) => const SelectStudentScreen(title: 'Select Student'),
+      ),
     );
     if (selected != null) setState(() => _selectedStudent = selected);
   }
@@ -29,7 +32,9 @@ class _PayFeeScreenState extends ConsumerState<PayFeeScreen> {
       MaterialPageRoute(builder: (_) => RecordPaymentScreen(record: record)),
     );
     if (paid == true) {
-      ref.invalidate(feeRecordsListControllerProvider(studentId: _selectedStudent!.id));
+      ref.invalidate(
+        feeRecordsListControllerProvider(studentId: _selectedStudent!.id),
+      );
     }
   }
 
@@ -46,22 +51,35 @@ class _PayFeeScreenState extends ConsumerState<PayFeeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Pay Fee')),
-      body: SingleChildScrollView(
+      body: FeeScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const FeeSectionIntro(
+              title: 'Student payments',
+              subtitle:
+                  'Select a student to view fee records and record a payment.',
+            ),
+            const SizedBox(height: 22),
             InkWell(
               onTap: _pickStudent,
               child: InputDecorator(
                 decoration: const InputDecoration(labelText: 'Student'),
-                child: Text(_selectedStudent == null ? 'Tap to select' : _selectedStudent!.fullName),
+                child: Text(
+                  _selectedStudent == null
+                      ? 'Tap to select'
+                      : _selectedStudent!.fullName,
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            if (_selectedStudent != null) _buildRecordsList() else const SizedBox.shrink(),
+            if (_selectedStudent != null)
+              _buildRecordsList()
+            else
+              const SizedBox.shrink(),
           ],
         ),
       ),
@@ -69,15 +87,19 @@ class _PayFeeScreenState extends ConsumerState<PayFeeScreen> {
   }
 
   Widget _buildRecordsList() {
-    final recordsAsync =
-        ref.watch(feeRecordsListControllerProvider(studentId: _selectedStudent!.id));
+    final recordsAsync = ref.watch(
+      feeRecordsListControllerProvider(studentId: _selectedStudent!.id),
+    );
 
     return recordsAsync.when(
       loading: () => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 32),
-          child: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Text('Failed to load: ${friendlyErrorMessage(e)}',
-          style: const TextStyle(color: Colors.red)),
+        padding: EdgeInsets.symmetric(vertical: 32),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text(
+        'Failed to load: ${friendlyErrorMessage(e)}',
+        style: const TextStyle(color: Colors.red),
+      ),
       data: (records) {
         if (records.isEmpty) {
           return const Padding(
@@ -95,11 +117,15 @@ class _PayFeeScreenState extends ConsumerState<PayFeeScreen> {
             final isPaid = r.status == 'paid';
             return ListTile(
               title: Text('${r.month}/${r.year}'),
-              subtitle: Text('Due: ${r.amountDue.toStringAsFixed(0)} • '
-                  'Paid: ${r.amountPaid.toStringAsFixed(0)}'),
+              subtitle: Text(
+                'Due: ${r.amountDue.toStringAsFixed(0)} • '
+                'Paid: ${r.amountPaid.toStringAsFixed(0)}',
+              ),
               trailing: Chip(
-                label: Text(r.status[0].toUpperCase() + r.status.substring(1),
-                    style: const TextStyle(color: Colors.white, fontSize: 12)),
+                label: Text(
+                  r.status[0].toUpperCase() + r.status.substring(1),
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
                 backgroundColor: _statusColor(r.status),
                 padding: EdgeInsets.zero,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

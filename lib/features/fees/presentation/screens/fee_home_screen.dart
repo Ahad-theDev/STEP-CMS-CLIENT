@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_style.dart';
 import 'package:flutter/material.dart';
 import '../widgets/fee_action_card.dart';
 import 'fee_structure_home_screen.dart';
@@ -13,98 +14,185 @@ class FeeHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Fees')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              FeeActionCard(
-                icon: Icons.payments_outlined,
-                title: 'Pay Fee',
-                description: 'Record a payment for a student\'s fee',
-                buttonLabel: 'Open',
-                backgroundColor: const Color(0xFFE8F5E9),
-                iconColor: const Color(0xFF43A047),
-                buttonColor: const Color(0xFF388E3C),
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const PayFeeScreen())),
+      appBar: AppBar(
+        title: const Text('Fees'),
+        backgroundColor: const Color(0xFFE4DDF3),
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          const Positioned.fill(child: CampusBackground()),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(
+                MediaQuery.sizeOf(context).width < 480 ? 16 : 24,
               ),
-              FeeActionCard(
-                icon: Icons.calendar_month_outlined,
-                title: 'Academic Year Fee',
-                description:
-                    'Set, view, and update each class\'s fee structure',
-                buttonLabel: 'Open',
-                backgroundColor: const Color(0xFFF6FBFF),
-                iconColor: const Color(0xFF1769D1),
-                buttonColor: const Color(0xFF1265D4),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const FeeStructureHomeScreen(),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1192),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(26),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.account_balance_wallet_outlined,
+                              color: Color(0xFFDBE7FF),
+                              size: 30,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Campus fees, in one place.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Record payments, manage fee structures, and review outstanding balances.',
+                              style: TextStyle(
+                                color: Color(0xFFE2E6FF),
+                                fontSize: 14,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 26),
+                      const Text(
+                        'Fee management',
+                        style: TextStyle(
+                          color: CampusStyle.ink,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Choose a task to get started.',
+                        style: TextStyle(
+                          color: CampusStyle.muted,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final columns = (constraints.maxWidth / 260)
+                              .floor()
+                              .clamp(1, 3);
+                          final cardWidth =
+                              (constraints.maxWidth - (columns - 1) * 14) /
+                              columns;
+                          return Wrap(
+                            spacing: 14,
+                            runSpacing: 14,
+                            children: [
+                              FeeActionCard(
+                                width: cardWidth,
+                                icon: Icons.payments_outlined,
+                                title: 'Pay Fee',
+                                description:
+                                    'Record a payment for a student\'s fee',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const PayFeeScreen(),
+                                  ),
+                                ),
+                              ),
+                              FeeActionCard(
+                                width: cardWidth,
+                                icon: Icons.calendar_month_outlined,
+                                title: 'Academic Year Fee',
+                                description:
+                                    'Set, view, and update each class\'s fee structure',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const FeeStructureHomeScreen(),
+                                  ),
+                                ),
+                              ),
+                              FeeActionCard(
+                                width: cardWidth,
+                                icon: Icons.receipt_long_outlined,
+                                title: 'Records',
+                                description:
+                                    'Generate and view monthly fee records',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const FeeRecordsHomeScreen(),
+                                  ),
+                                ),
+                              ),
+                              FeeActionCard(
+                                width: cardWidth,
+                                icon: Icons.event_busy_outlined,
+                                title: 'Fee Due Students',
+                                description:
+                                    'Due today, overdue, and upcoming payments',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const FeeDueStudentsScreen(),
+                                  ),
+                                ),
+                              ),
+                              FeeActionCard(
+                                width: cardWidth,
+                                icon: Icons.warning_amber_rounded,
+                                title: 'Fee Defaulters',
+                                description:
+                                    'Students with unpaid or partial fees',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const FeeDefaultersScreen(),
+                                  ),
+                                ),
+                              ),
+                              FeeActionCard(
+                                width: cardWidth,
+                                icon: Icons.summarize_outlined,
+                                title: 'Fee Summary',
+                                description:
+                                    'Collection totals and efficiency by class',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const FeeSummaryScreen(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                   ),
                 ),
               ),
-              FeeActionCard(
-                icon: Icons.receipt_long_outlined,
-                title: 'Records',
-                description: 'Generate and view monthly fee records',
-                buttonLabel: 'Open',
-                backgroundColor: const Color(0xFFEAE8F4),
-                iconColor: const Color(0xFF7941C4),
-                buttonColor: const Color(0xFF7335C5),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const FeeRecordsHomeScreen(),
-                  ),
-                ),
-              ),
-              FeeActionCard(
-                icon: Icons.event_busy_outlined,
-                title: 'Fee Due Students',
-                description: 'Due today, overdue, and upcoming payments',
-                buttonLabel: 'Open',
-                backgroundColor: const Color(0xFFFFF8E1),
-                iconColor: const Color(0xFFF9A825),
-                buttonColor: const Color(0xFFF57F17),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const FeeDueStudentsScreen(),
-                  ),
-                ),
-              ),
-              FeeActionCard(
-                icon: Icons.warning_amber_rounded,
-                title: 'Fee Defaulters',
-                description: 'Students with unpaid or partial fees',
-                buttonLabel: 'Open',
-                backgroundColor: const Color(0xFFF3E9E8),
-                iconColor: const Color(0xFFE84245),
-                buttonColor: const Color(0xFFED4043),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const FeeDefaultersScreen(),
-                  ),
-                ),
-              ),
-              FeeActionCard(
-                icon: Icons.summarize_outlined,
-                title: 'Fee Summary',
-                description: 'Collection totals and efficiency by class',
-                buttonLabel: 'Open',
-                backgroundColor: const Color(0xFFE3F4F6),
-                iconColor: const Color(0xFF0795A5),
-                buttonColor: const Color(0xFF0795A5),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const FeeSummaryScreen()),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import '../widgets/fee_action_card.dart';
 import 'add_fee_structure_screen.dart';
@@ -8,39 +9,59 @@ class FeeStructureHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Academic Year Fee')),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              FeeActionCard(
-                icon: Icons.add_chart_rounded,
-                title: 'Create Fee Structure',
-                description: 'Set a class\'s fee for an academic year',
-                buttonLabel: 'Create Now',
-                backgroundColor: const Color(0xFFE3F4F6),
-                iconColor: const Color(0xFF0795A5),
-                buttonColor: const Color(0xFF0795A5),
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const AddFeeStructureScreen())),
-              ),
-              FeeActionCard(
-                icon: Icons.list_alt_rounded,
-                title: 'View Fee Structure',
-                description: 'Browse by class and year — tap a row to update',
-                buttonLabel: 'View Now',
-                backgroundColor: const Color(0xFFF6FBFF),
-                iconColor: const Color(0xFF1769D1),
-                buttonColor: const Color(0xFF1265D4),
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const ViewFeeStructuresScreen())),
-              ),
-            ],
-          ),
+      body: FeeScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const FeeSectionIntro(
+              title: 'Academic year fees',
+              subtitle: 'Create and manage fee structures for your classes.',
+            ),
+            const SizedBox(height: 22),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = (constraints.maxWidth / 260).floor().clamp(
+                  1,
+                  3,
+                );
+                final cardWidth =
+                    (constraints.maxWidth - (columns - 1) * 14) / columns;
+                return Wrap(
+                  spacing: 14,
+                  runSpacing: 14,
+                  children: [
+                    FeeActionCard(
+                      width: cardWidth,
+                      icon: Icons.add_chart_rounded,
+                      title: 'Create Fee Structure',
+                      description: 'Set a class\'s fee for an academic year',
+                      buttonLabel: 'Create Now',
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AddFeeStructureScreen(),
+                        ),
+                      ),
+                    ),
+                    FeeActionCard(
+                      width: cardWidth,
+                      icon: Icons.list_alt_rounded,
+                      title: 'View Fee Structure',
+                      description:
+                          'Browse by class and year — tap a row to update',
+                      buttonLabel: 'View Now',
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ViewFeeStructuresScreen(),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

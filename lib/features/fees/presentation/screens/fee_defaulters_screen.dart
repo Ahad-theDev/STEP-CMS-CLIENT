@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -12,7 +13,8 @@ class FeeDefaultersScreen extends ConsumerStatefulWidget {
   const FeeDefaultersScreen({super.key});
 
   @override
-  ConsumerState<FeeDefaultersScreen> createState() => _FeeDefaultersScreenState();
+  ConsumerState<FeeDefaultersScreen> createState() =>
+      _FeeDefaultersScreenState();
 }
 
 class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
@@ -30,12 +32,18 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
     }
   }
 
-  List<FeeDefaulterItem> _sorted(List<FeeDefaulterItem> items, Map<String, String> classNameById) {
+  List<FeeDefaulterItem> _sorted(
+    List<FeeDefaulterItem> items,
+    Map<String, String> classNameById,
+  ) {
     final sorted = [...items];
     switch (_sortBy) {
       case _SortBy.className:
-        sorted.sort((a, b) =>
-            (classNameById[a.classId] ?? '').compareTo(classNameById[b.classId] ?? ''));
+        sorted.sort(
+          (a, b) => (classNameById[a.classId] ?? '').compareTo(
+            classNameById[b.classId] ?? '',
+          ),
+        );
         break;
       case _SortBy.month:
         sorted.sort((a, b) => a.month.compareTo(b.month));
@@ -54,24 +62,40 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(classesListControllerProvider(page: 1));
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Fee Defaulters')),
-      body: SingleChildScrollView(
+      body: FeeScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const FeeSectionIntro(
+              title: 'Outstanding balances',
+              subtitle: 'Filter students with unpaid or partially paid fees.',
+            ),
+            const SizedBox(height: 22),
             classesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red)),
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
               data: (classes) => DropdownButtonFormField<SchoolClass?>(
                 initialValue: _selectedClass,
-                decoration: const InputDecoration(labelText: 'Class (optional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Class (optional)',
+                ),
                 items: [
-                  const DropdownMenuItem<SchoolClass?>(value: null, child: Text('All Classes')),
+                  const DropdownMenuItem<SchoolClass?>(
+                    value: null,
+                    child: Text('All Classes'),
+                  ),
                   ...classes.map(
-                      (c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}'))),
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text('${c.name} - ${c.section}'),
+                    ),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _selectedClass = v),
               ),
@@ -87,9 +111,17 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
                     initialValue: _month,
                     decoration: const InputDecoration(labelText: 'Month'),
                     items: [
-                      const DropdownMenuItem<int?>(value: null, child: Text('Any')),
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('Any'),
+                      ),
                       ...List.generate(
-                          12, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
+                        12,
+                        (i) => DropdownMenuItem(
+                          value: i + 1,
+                          child: Text('${i + 1}'),
+                        ),
+                      ),
                     ],
                     onChanged: (v) => setState(() => _month = v),
                   ),
@@ -100,7 +132,10 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
                     initialValue: _year,
                     decoration: const InputDecoration(labelText: 'Year'),
                     items: [
-                      const DropdownMenuItem<int?>(value: null, child: Text('Any')),
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('Any'),
+                      ),
                       ...List.generate(6, (i) {
                         final y = DateTime.now().year - 2 + i;
                         return DropdownMenuItem(value: y, child: Text('$y'));
@@ -115,10 +150,22 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
                     initialValue: _sortBy,
                     decoration: const InputDecoration(labelText: 'Sort By'),
                     items: const [
-                      DropdownMenuItem(value: _SortBy.daysOverdue, child: Text('Days Overdue')),
-                      DropdownMenuItem(value: _SortBy.className, child: Text('Class')),
-                      DropdownMenuItem(value: _SortBy.month, child: Text('Month')),
-                      DropdownMenuItem(value: _SortBy.year, child: Text('Year')),
+                      DropdownMenuItem(
+                        value: _SortBy.daysOverdue,
+                        child: Text('Days Overdue'),
+                      ),
+                      DropdownMenuItem(
+                        value: _SortBy.className,
+                        child: Text('Class'),
+                      ),
+                      DropdownMenuItem(
+                        value: _SortBy.month,
+                        child: Text('Month'),
+                      ),
+                      DropdownMenuItem(
+                        value: _SortBy.year,
+                        child: Text('Year'),
+                      ),
                     ],
                     onChanged: (v) => setState(() => _sortBy = v ?? _sortBy),
                   ),
@@ -143,18 +190,23 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
   }
 
   Widget _buildTable(Map<String, String> classNameById) {
-    final defaultersAsync = ref.watch(feeDefaultersControllerProvider(
-      classId: _selectedClass?.id,
-      month: _month,
-      year: _year,
-    ));
+    final defaultersAsync = ref.watch(
+      feeDefaultersControllerProvider(
+        classId: _selectedClass?.id,
+        month: _month,
+        year: _year,
+      ),
+    );
 
     return defaultersAsync.when(
       loading: () => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 32),
-          child: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Text('Failed to load defaulters: ${friendlyErrorMessage(e)}',
-          style: const TextStyle(color: Colors.red)),
+        padding: EdgeInsets.symmetric(vertical: 32),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text(
+        'Failed to load defaulters: ${friendlyErrorMessage(e)}',
+        style: const TextStyle(color: Colors.red),
+      ),
       data: (response) {
         if (response.defaulters.isEmpty) {
           return const Padding(
@@ -175,20 +227,32 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
               DataColumn(label: Text('Days Overdue')),
             ],
             rows: sorted
-                .map((d) => DataRow(cells: [
+                .map(
+                  (d) => DataRow(
+                    cells: [
                       DataCell(Text(d.studentName)),
                       DataCell(Text(classNameById[d.classId] ?? '-')),
                       DataCell(Text('${d.month}/${d.year}')),
                       DataCell(Text(d.remaining.toStringAsFixed(0))),
-                      DataCell(Chip(
-                        label: Text(d.status[0].toUpperCase() + d.status.substring(1),
-                            style: const TextStyle(color: Colors.white, fontSize: 12)),
-                        backgroundColor: _statusColor(d.status),
-                        padding: EdgeInsets.zero,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      )),
+                      DataCell(
+                        Chip(
+                          label: Text(
+                            d.status[0].toUpperCase() + d.status.substring(1),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                          backgroundColor: _statusColor(d.status),
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
                       DataCell(Text('${d.daysOverdue}')),
-                    ]))
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         );

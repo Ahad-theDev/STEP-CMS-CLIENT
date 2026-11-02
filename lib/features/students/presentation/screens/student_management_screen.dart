@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/delete_student_controller.dart';
@@ -135,19 +136,25 @@ class _StudentManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Students')),
-      body: SingleChildScrollView(
+      body: CampusScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const CampusSectionIntro(
+              title: 'Student workspace',
+              subtitle:
+                  'Manage admissions, student profiles, and class enrollment.',
+            ),
+            const SizedBox(height: 22),
             StudentActionCardsRow(
               onCreate: _openAddStudent,
               onUpdate: _openUpdateStudent,
               onChangeEnrollment: _openChangeEnrollment,
               onDelete: _openDeleteStudent,
               onSearch: _openSearchScreen,
-              onBulkImport: _openBulkImport
+              onBulkImport: _openBulkImport,
             ),
             const Divider(height: 1),
             const SizedBox(height: 16),

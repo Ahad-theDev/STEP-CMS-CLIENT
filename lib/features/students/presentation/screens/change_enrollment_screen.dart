@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -12,10 +13,12 @@ class ChangeEnrollmentScreen extends ConsumerStatefulWidget {
   const ChangeEnrollmentScreen({super.key, required this.student});
 
   @override
-  ConsumerState<ChangeEnrollmentScreen> createState() => _ChangeEnrollmentScreenState();
+  ConsumerState<ChangeEnrollmentScreen> createState() =>
+      _ChangeEnrollmentScreenState();
 }
 
-class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen> {
+class _ChangeEnrollmentScreenState
+    extends ConsumerState<ChangeEnrollmentScreen> {
   final _formKey = GlobalKey<FormState>();
   SchoolClass? _selectedClass;
   late final TextEditingController _academicYearController;
@@ -36,8 +39,9 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedClass == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please select the new class')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select the new class')),
+      );
       return;
     }
 
@@ -51,7 +55,9 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
         .changeEnrollment(widget.student.id, request);
     if (!mounted || !success) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enrollment updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Enrollment updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -61,7 +67,7 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
     final classesAsync = ref.watch(allClassesControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Change Enrollment')),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -69,8 +75,15 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
           key: _formKey,
           child: ListView(
             children: [
-              Text('Student: ${widget.student.fullName} (Roll #${widget.student.rollNumber})',
-                  style: Theme.of(context).textTheme.titleMedium),
+              const CampusSectionIntro(
+                title: 'Move to a new class',
+                subtitle: 'Choose the destination class and academic year.',
+              ),
+              const SizedBox(height: 22),
+              Text(
+                'Student: ${widget.student.fullName} (Roll #${widget.student.rollNumber})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 20),
               classesAsync.when(
                 loading: () => const LinearProgressIndicator(),
@@ -83,26 +96,35 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
                       ),
                     ),
                     TextButton(
-                      onPressed: () =>
-                          ref.read(allClassesControllerProvider.notifier).refresh(),
+                      onPressed: () => ref
+                          .read(allClassesControllerProvider.notifier)
+                          .refresh(),
                       child: const Text('Retry'),
                     ),
                   ],
                 ),
                 data: (classes) {
-                  final options = classes.where((c) => c.id != widget.student.classId).toList();
+                  final options = classes
+                      .where((c) => c.id != widget.student.classId)
+                      .toList();
                   if (options.isEmpty) {
-                    return const Text('No other classes available to move to.',
-                        style: TextStyle(color: Colors.grey));
+                    return const Text(
+                      'No other classes available to move to.',
+                      style: TextStyle(color: Colors.grey),
+                    );
                   }
                   return DropdownButtonFormField<SchoolClass>(
                     initialValue: _selectedClass,
                     decoration: const InputDecoration(labelText: 'New Class'),
                     items: options
-                        .map((c) => DropdownMenuItem(
-                              value: c,
-                              child: Text('${c.name} - ${c.section} (${c.academicYear})'),
-                            ))
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(
+                              '${c.name} - ${c.section} (${c.academicYear})',
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: (v) => setState(() => _selectedClass = v),
                     validator: (v) => v == null ? 'Required' : null,
@@ -119,13 +141,19 @@ class _ChangeEnrollmentScreenState extends ConsumerState<ChangeEnrollmentScreen>
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    'Failed: ${friendlyErrorMessage(state.error!)}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Change Enrollment'),
               ),
             ],

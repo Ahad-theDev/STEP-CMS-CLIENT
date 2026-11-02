@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -23,24 +24,41 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(classesListControllerProvider(page: 1));
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Fee Summary')),
-      body: SingleChildScrollView(
+      body: FeeScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const FeeSectionIntro(
+              title: 'Collection overview',
+              subtitle:
+                  'Filter the reporting period to review collections by class.',
+            ),
+            const SizedBox(height: 22),
             classesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red)),
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
               data: (classes) => DropdownButtonFormField<SchoolClass?>(
                 initialValue: _selectedClass,
-                decoration: const InputDecoration(labelText: 'Class (optional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Class (optional)',
+                ),
                 items: [
-                  const DropdownMenuItem<SchoolClass?>(value: null, child: Text('All Classes')),
+                  const DropdownMenuItem<SchoolClass?>(
+                    value: null,
+                    child: Text('All Classes'),
+                  ),
                   ...classes.map(
-                      (c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}'))),
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text('${c.name} - ${c.section}'),
+                    ),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _selectedClass = v),
               ),
@@ -52,8 +70,20 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                SizedBox(width: 120, child: _monthDropdown(_fromMonth, (v) => setState(() => _fromMonth = v))),
-                SizedBox(width: 120, child: _yearDropdown(_fromYear, (v) => setState(() => _fromYear = v))),
+                SizedBox(
+                  width: 120,
+                  child: _monthDropdown(
+                    _fromMonth,
+                    (v) => setState(() => _fromMonth = v),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: _yearDropdown(
+                    _fromYear,
+                    (v) => setState(() => _fromYear = v),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -63,8 +93,20 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
               spacing: 12,
               runSpacing: 8,
               children: [
-                SizedBox(width: 120, child: _monthDropdown(_toMonth, (v) => setState(() => _toMonth = v))),
-                SizedBox(width: 120, child: _yearDropdown(_toYear, (v) => setState(() => _toYear = v))),
+                SizedBox(
+                  width: 120,
+                  child: _monthDropdown(
+                    _toMonth,
+                    (v) => setState(() => _toMonth = v),
+                  ),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: _yearDropdown(
+                    _toYear,
+                    (v) => setState(() => _toYear = v),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -90,7 +132,10 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
       decoration: const InputDecoration(labelText: 'Month'),
       items: [
         const DropdownMenuItem<int?>(value: null, child: Text('Any')),
-        ...List.generate(12, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
+        ...List.generate(
+          12,
+          (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}')),
+        ),
       ],
       onChanged: onChanged,
     );
@@ -112,20 +157,25 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
   }
 
   Widget _buildContent(Map<String, String> classNameById) {
-    final summaryAsync = ref.watch(feeSummaryControllerProvider(
-      classId: _selectedClass?.id,
-      fromMonth: _fromMonth,
-      fromYear: _fromYear,
-      toMonth: _toMonth,
-      toYear: _toYear,
-    ));
+    final summaryAsync = ref.watch(
+      feeSummaryControllerProvider(
+        classId: _selectedClass?.id,
+        fromMonth: _fromMonth,
+        fromYear: _fromYear,
+        toMonth: _toMonth,
+        toYear: _toYear,
+      ),
+    );
 
     return summaryAsync.when(
       loading: () => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 32),
-          child: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Text('Failed to load summary: ${friendlyErrorMessage(e)}',
-          style: const TextStyle(color: Colors.red)),
+        padding: EdgeInsets.symmetric(vertical: 32),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Text(
+        'Failed to load summary: ${friendlyErrorMessage(e)}',
+        style: const TextStyle(color: Colors.red),
+      ),
       data: (response) {
         final s = response.summary;
         return Column(
@@ -135,9 +185,21 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
               spacing: 12,
               runSpacing: 12,
               children: [
-                _statCard('Total Due', s.totalDue.toStringAsFixed(0), Colors.blueGrey),
-                _statCard('Total Collected', s.totalCollected.toStringAsFixed(0), Colors.green),
-                _statCard('Efficiency', '${s.collectionEfficiency.toStringAsFixed(1)}%', Colors.indigo),
+                _statCard(
+                  'Total Due',
+                  s.totalDue.toStringAsFixed(0),
+                  Colors.blueGrey,
+                ),
+                _statCard(
+                  'Total Collected',
+                  s.totalCollected.toStringAsFixed(0),
+                  Colors.green,
+                ),
+                _statCard(
+                  'Efficiency',
+                  '${s.collectionEfficiency.toStringAsFixed(1)}%',
+                  Colors.indigo,
+                ),
                 _statCard('Paid', '${s.studentsPaid}', Colors.green),
                 _statCard('Partial', '${s.studentsPartial}', Colors.orange),
                 _statCard('Unpaid', '${s.studentsUnpaid}', Colors.red),
@@ -159,12 +221,20 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
                     DataColumn(label: Text('Efficiency')),
                   ],
                   rows: response.breakdown
-                      .map((b) => DataRow(cells: [
-                            DataCell(Text(classNameById[b.classId] ?? b.classId)),
+                      .map(
+                        (b) => DataRow(
+                          cells: [
+                            DataCell(
+                              Text(classNameById[b.classId] ?? b.classId),
+                            ),
                             DataCell(Text(b.due.toStringAsFixed(0))),
                             DataCell(Text(b.collected.toStringAsFixed(0))),
-                            DataCell(Text('${b.efficiency.toStringAsFixed(1)}%')),
-                          ]))
+                            DataCell(
+                              Text('${b.efficiency.toStringAsFixed(1)}%'),
+                            ),
+                          ],
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -179,16 +249,35 @@ class _FeeSummaryScreenState extends ConsumerState<FeeSummaryScreen> {
       width: 140,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1, red: color.r, green: color.g, blue: color.b),
+        color: color.withValues(
+          alpha: 0.1,
+          red: color.r,
+          green: color.g,
+          blue: color.b,
+        ),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3, red: color.r, green: color.g, blue: color.b)),
+        border: Border.all(
+          color: color.withValues(
+            alpha: 0.3,
+            red: color.r,
+            green: color.g,
+            blue: color.b,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: TextStyle(fontSize: 12, color: color)),
           const SizedBox(height: 4),
-          Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
         ],
       ),
     );

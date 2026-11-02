@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:cms/features/subjects/application/all_students_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,8 @@ class FeeDueStudentsScreen extends ConsumerStatefulWidget {
   const FeeDueStudentsScreen({super.key});
 
   @override
-  ConsumerState<FeeDueStudentsScreen> createState() => _FeeDueStudentsScreenState();
+  ConsumerState<FeeDueStudentsScreen> createState() =>
+      _FeeDueStudentsScreenState();
 }
 
 class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
@@ -22,7 +24,8 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
     final classesAsync = ref.watch(classesListControllerProvider(page: 1));
 
     final classNameById = {
-      for (final c in classesAsync.valueOrNull ?? []) c.id: '${c.name} - ${c.section}',
+      for (final c in classesAsync.valueOrNull ?? [])
+        c.id: '${c.name} - ${c.section}',
     };
     final studentById = {
       for (final s in studentsAsync.valueOrNull ?? []) s.id: s,
@@ -32,18 +35,32 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
       feeRemindersControllerProvider(mode: _mode, days: _upcomingDays),
     );
 
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('Fee Due Students')),
-      body: SingleChildScrollView(
+      body: FeeScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const FeeSectionIntro(
+              title: 'Upcoming and outstanding fees',
+              subtitle: 'Review payments due today, overdue, or coming up.',
+            ),
+            const SizedBox(height: 22),
             SegmentedButton<FeeReminderMode>(
               segments: const [
-                ButtonSegment(value: FeeReminderMode.dueToday, label: Text('Due Today')),
-                ButtonSegment(value: FeeReminderMode.overdue, label: Text('Overdue')),
-                ButtonSegment(value: FeeReminderMode.upcoming, label: Text('Upcoming')),
+                ButtonSegment(
+                  value: FeeReminderMode.dueToday,
+                  label: Text('Due Today'),
+                ),
+                ButtonSegment(
+                  value: FeeReminderMode.overdue,
+                  label: Text('Overdue'),
+                ),
+                ButtonSegment(
+                  value: FeeReminderMode.upcoming,
+                  label: Text('Upcoming'),
+                ),
               ],
               selected: {_mode},
               onSelectionChanged: (s) => setState(() => _mode = s.first),
@@ -61,7 +78,9 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
                       keyboardType: TextInputType.number,
                       onChanged: (v) {
                         final parsed = int.tryParse(v);
-                        if (parsed != null && parsed > 0) setState(() => _upcomingDays = parsed);
+                        if (parsed != null && parsed > 0) {
+                          setState(() => _upcomingDays = parsed);
+                        }
                       },
                     ),
                   ),
@@ -73,15 +92,20 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
             const SizedBox(height: 16),
             remindersAsync.when(
               loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 32),
-                  child: Center(child: CircularProgressIndicator())),
-              error: (e, _) => Text('Failed to load: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red)),
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => Text(
+                'Failed to load: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
               data: (response) {
                 if (response.records.isEmpty) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: Text('No students found for this filter')),
+                    child: Center(
+                      child: Text('No students found for this filter'),
+                    ),
                   );
                 }
                 return SingleChildScrollView(
@@ -97,17 +121,20 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
                     ],
                     rows: response.records.map((r) {
                       final student = studentById[r.studentId];
-                      final className =
-                          student != null ? (classNameById[student.classId] ?? '-') : '-';
+                      final className = student != null
+                          ? (classNameById[student.classId] ?? '-')
+                          : '-';
                       final phone = student?.guardianPhone ?? '-';
-                      return DataRow(cells: [
-                        DataCell(Text(r.studentName)),
-                        DataCell(Text(className)),
-                        DataCell(Text(phone)),
-                        DataCell(Text('${r.month}/${r.year}')),
-                        DataCell(Text(r.remaining.toStringAsFixed(0))),
-                        DataCell(Text(r.dueDate)),
-                      ]);
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(r.studentName)),
+                          DataCell(Text(className)),
+                          DataCell(Text(phone)),
+                          DataCell(Text('${r.month}/${r.year}')),
+                          DataCell(Text(r.remaining.toStringAsFixed(0))),
+                          DataCell(Text(r.dueDate)),
+                        ],
+                      );
                     }).toList(),
                   ),
                 );

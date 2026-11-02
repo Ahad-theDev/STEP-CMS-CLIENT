@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FeeActionCard extends StatelessWidget {
+  final double width;
   final IconData icon;
   final String title;
   final String description;
@@ -14,6 +15,7 @@ class FeeActionCard extends StatelessWidget {
 
   const FeeActionCard({
     super.key,
+    this.width = 220,
     required this.icon,
     required this.title,
     required this.description,
@@ -29,32 +31,52 @@ class FeeActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 220,
+      width: width,
       child: Card(
-        elevation: 1,
+        elevation: 0,
         color: backgroundColor,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 32, color: iconColor ?? Theme.of(context).colorScheme.primary),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  icon,
+                  size: 26,
+                  color: iconColor ?? Theme.of(context).colorScheme.primary,
+                ),
+              ),
               const SizedBox(height: 12),
-              Text(title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold, color: textColor ?? Colors.black87)),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: descriptionColor ?? Colors.black54)),
+              Text(
+                description,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color:
+                      descriptionColor ??
+                      Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor ?? Theme.of(context).colorScheme.primary,
+                    backgroundColor:
+                        buttonColor ?? Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                   ),
                   onPressed: onPressed,

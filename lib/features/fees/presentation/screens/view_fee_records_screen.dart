@@ -1,3 +1,4 @@
+import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -15,7 +16,8 @@ class ViewFeeRecordsScreen extends ConsumerStatefulWidget {
   const ViewFeeRecordsScreen({super.key});
 
   @override
-  ConsumerState<ViewFeeRecordsScreen> createState() => _ViewFeeRecordsScreenState();
+  ConsumerState<ViewFeeRecordsScreen> createState() =>
+      _ViewFeeRecordsScreenState();
 }
 
 class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
@@ -26,7 +28,9 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
 
   Future<void> _pickStudent() async {
     final selected = await Navigator.of(context).push<Student>(
-      MaterialPageRoute(builder: (_) => const SelectStudentScreen(title: 'Select Student')),
+      MaterialPageRoute(
+        builder: (_) => const SelectStudentScreen(title: 'Select Student'),
+      ),
     );
     if (selected != null) setState(() => _selectedStudent = selected);
   }
@@ -44,7 +48,7 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FeePage(
       appBar: AppBar(title: const Text('View Fee Records')),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -55,7 +59,11 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
               onTap: _pickStudent,
               child: InputDecorator(
                 decoration: const InputDecoration(labelText: 'Student'),
-                child: Text(_selectedStudent == null ? 'Tap to select' : _selectedStudent!.fullName),
+                child: Text(
+                  _selectedStudent == null
+                      ? 'Tap to select'
+                      : _selectedStudent!.fullName,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -70,9 +78,17 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
                       initialValue: _month,
                       decoration: const InputDecoration(labelText: 'Month'),
                       items: [
-                        const DropdownMenuItem<int?>(value: null, child: Text('Any')),
+                        const DropdownMenuItem<int?>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
                         ...List.generate(
-                            12, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
+                          12,
+                          (i) => DropdownMenuItem(
+                            value: i + 1,
+                            child: Text('${i + 1}'),
+                          ),
+                        ),
                       ],
                       onChanged: (v) => setState(() => _month = v),
                     ),
@@ -83,7 +99,10 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
                       initialValue: _year,
                       decoration: const InputDecoration(labelText: 'Year'),
                       items: [
-                        const DropdownMenuItem<int?>(value: null, child: Text('Any')),
+                        const DropdownMenuItem<int?>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
                         ...List.generate(6, (i) {
                           final y = DateTime.now().year - 2 + i;
                           return DropdownMenuItem(value: y, child: Text('$y'));
@@ -98,9 +117,16 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
                       initialValue: _status,
                       decoration: const InputDecoration(labelText: 'Status'),
                       items: [
-                        const DropdownMenuItem<String?>(value: null, child: Text('Any')),
+                        const DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
                         ..._statusOptions.map(
-                            (o) => DropdownMenuItem(value: o['value'], child: Text(o['label']!))),
+                          (o) => DropdownMenuItem(
+                            value: o['value'],
+                            child: Text(o['label']!),
+                          ),
+                        ),
                       ],
                       onChanged: (v) => setState(() => _status = v),
                     ),
@@ -110,7 +136,11 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
               const SizedBox(height: 16),
               Expanded(child: _buildTable()),
             ] else
-              const Expanded(child: Center(child: Text('Select a student to view their fee records'))),
+              const Expanded(
+                child: Center(
+                  child: Text('Select a student to view their fee records'),
+                ),
+              ),
           ],
         ),
       ),
@@ -118,16 +148,19 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
   }
 
   Widget _buildTable() {
-    final recordsAsync = ref.watch(feeRecordsListControllerProvider(
-      studentId: _selectedStudent!.id,
-      month: _month,
-      year: _year,
-      status: _status,
-    ));
+    final recordsAsync = ref.watch(
+      feeRecordsListControllerProvider(
+        studentId: _selectedStudent!.id,
+        month: _month,
+        year: _year,
+        status: _status,
+      ),
+    );
 
     return recordsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
+      error: (e, _) =>
+          Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
       data: (records) {
         if (records.isEmpty) {
           return const Center(child: Text('No fee records found'));
@@ -144,20 +177,32 @@ class _ViewFeeRecordsScreenState extends ConsumerState<ViewFeeRecordsScreen> {
               DataColumn(label: Text('Payment Date')),
             ],
             rows: records
-                .map((r) => DataRow(cells: [
+                .map(
+                  (r) => DataRow(
+                    cells: [
                       DataCell(Text('${r.month}')),
                       DataCell(Text('${r.year}')),
                       DataCell(Text(r.amountDue.toStringAsFixed(0))),
                       DataCell(Text(r.amountPaid.toStringAsFixed(0))),
-                      DataCell(Chip(
-                        label: Text(r.status[0].toUpperCase() + r.status.substring(1),
-                            style: const TextStyle(color: Colors.white, fontSize: 12)),
-                        backgroundColor: _statusColor(r.status),
-                        padding: EdgeInsets.zero,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      )),
+                      DataCell(
+                        Chip(
+                          label: Text(
+                            r.status[0].toUpperCase() + r.status.substring(1),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                          backgroundColor: _statusColor(r.status),
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
                       DataCell(Text(r.paymentDate ?? '-')),
-                    ]))
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         );
