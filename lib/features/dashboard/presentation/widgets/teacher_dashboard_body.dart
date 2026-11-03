@@ -1,3 +1,6 @@
+import 'package:cms/features/attendance/presentation/screens/teacher/unmarked_lectures_screen.dart';
+import 'package:cms/features/attendance/presentation/screens/teacher/my_attendance_screen.dart';
+import 'package:cms/features/attendance/presentation/screens/teacher/teacher_view_attendance_screen.dart';
 import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
@@ -36,6 +39,169 @@ class TeacherDashboardBody extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 16,
                 children: [
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.pending_actions,
+                              color: AppColors.primary,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Unmarked Lectures',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Find today’s lectures with no attendance recorded.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            OutlinedButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const UnmarkedLecturesScreen(),
+                                ),
+                              ),
+                              child: const Text('View pending lectures'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.insights_rounded,
+                              color: AppColors.primary,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'My Attendance',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Student attendance trends across your classes.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            OutlinedButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const MyAttendanceScreen(),
+                                ),
+                              ),
+                              child: const Text('View my trends'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.manage_search,
+                              color: AppColors.primary,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'View Attendance',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Filter student records and view class summaries.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            OutlinedButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const TeacherViewAttendanceScreen(),
+                                ),
+                              ),
+                              child: const Text('View attendance'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.fact_check_outlined,
+                              size: 32,
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Mark Attendance',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Open today’s lectures and mark student attendance.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const MyScheduleScreen(
+                                      markAttendanceOnly: true,
+                                    ),
+                                  ),
+                                ),
+                                child: const Text('Mark attendance'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     width: cardWidth,
                     child: Card(

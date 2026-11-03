@@ -37,10 +37,12 @@ class MarkLectureAttendanceScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MarkLectureAttendanceScreen> createState() => _MarkLectureAttendanceScreenState();
+  ConsumerState<MarkLectureAttendanceScreen> createState() =>
+      _MarkLectureAttendanceScreenState();
 }
 
-class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttendanceScreen> {
+class _MarkLectureAttendanceScreenState
+    extends ConsumerState<MarkLectureAttendanceScreen> {
   late DateTime _date;
   List<_RosterRow>? _rows;
   String _query = '';
@@ -61,7 +63,7 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
         _date = picked;
         _rows = null;
@@ -73,7 +75,7 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
     if (_rows == null) return;
     setState(() {
       for (final row in _rows!) {
-        row.localStatus = 'present';
+        row.localStatus ??= 'present';
       }
     });
   }
@@ -83,10 +85,12 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
 
     final exceptions = _rows!
         .where((r) => r.localStatus != null && r.localStatus != 'present')
-        .map((r) => AttendanceMarkAllExceptionRequest(
-              studentId: r.studentId,
-              status: r.localStatus!,
-            ))
+        .map(
+          (r) => AttendanceMarkAllExceptionRequest(
+            studentId: r.studentId,
+            status: r.localStatus!,
+          ),
+        )
         .toList();
 
     final request = AttendanceMarkAllRequest(
@@ -103,23 +107,28 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
 
     if (result == null) {
       final error = ref.read(markStudentAttendanceControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            'Failed to mark all: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to mark all: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}',
+          ),
+        ),
+      );
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Marked ${result.marked} student(s) Present'
+          'Saved attendance for ${result.marked} student(s)'
           '${exceptions.isNotEmpty ? ' (${exceptions.length} exception(s))' : ''}'
           '${result.skippedAlreadyMarked.isNotEmpty ? ', ${result.skippedAlreadyMarked.length} skipped' : ''}',
         ),
       ),
     );
-    ref.invalidate(lectureRosterControllerProvider(lectureId: widget.lectureId, date: _date));
+    ref.invalidate(
+      lectureRosterControllerProvider(lectureId: widget.lectureId, date: _date),
+    );
     Navigator.of(context).pop(true);
   }
 
@@ -131,31 +140,46 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
       lectureId: widget.lectureId,
       date: _date,
       attendance: toSubmit
-          .map((r) => AttendanceMarkEntryRequest(studentId: r.studentId, status: r.localStatus!))
+          .map(
+            (r) => AttendanceMarkEntryRequest(
+              studentId: r.studentId,
+              status: r.localStatus!,
+            ),
+          )
           .toList(),
     );
 
-    final result = await ref.read(markStudentAttendanceControllerProvider.notifier).submit(request);
+    final result = await ref
+        .read(markStudentAttendanceControllerProvider.notifier)
+        .submit(request);
     if (!mounted) return;
 
     if (result == null) {
       final error = ref.read(markStudentAttendanceControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to save: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}',
+          ),
+        ),
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Marked ${result.marked} student(s)')));
-    ref.invalidate(lectureRosterControllerProvider(lectureId: widget.lectureId, date: _date));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Marked ${result.marked} student(s)')),
+    );
+    ref.invalidate(
+      lectureRosterControllerProvider(lectureId: widget.lectureId, date: _date),
+    );
     Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final rosterAsync =
-        ref.watch(lectureRosterControllerProvider(lectureId: widget.lectureId, date: _date));
+    final rosterAsync = ref.watch(
+      lectureRosterControllerProvider(lectureId: widget.lectureId, date: _date),
+    );
     final submitState = ref.watch(markStudentAttendanceControllerProvider);
 
     return Scaffold(
@@ -165,7 +189,9 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
           IconButton(
             icon: const Icon(Icons.done_all),
             tooltip: 'Fill unmarked as Present',
-            onPressed: _rows == null ? null : _markAllPresentLocally,
+            onPressed: submitState.isLoading || _rows == null
+                ? null
+                : _markAllPresentLocally,
           ),
         ],
       ),
@@ -177,7 +203,7 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: _pickDate,
+                    onTap: submitState.isLoading ? null : _pickDate,
                     child: InputDecorator(
                       decoration: const InputDecoration(labelText: 'Date'),
                       child: Text(_fmt(_date)),
@@ -201,16 +227,21 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
           Expanded(
             child: rosterAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) =>
-                  Center(child: Text('Failed to load roster: ${friendlyErrorMessage(e)}')),
+              error: (e, _) => Center(
+                child: Text(
+                  'Failed to load roster: ${friendlyErrorMessage(e)}',
+                ),
+              ),
               data: (roster) {
                 _rows ??= roster.students
-                    .map((s) => _RosterRow(
-                          studentId: s.id,
-                          name: s.name,
-                          rollNumber: s.rollNumber,
-                          localStatus: s.status,
-                        ))
+                    .map(
+                      (s) => _RosterRow(
+                        studentId: s.id,
+                        name: s.name,
+                        rollNumber: s.rollNumber,
+                        localStatus: s.status,
+                      ),
+                    )
                     .toList();
 
                 if (_rows!.isEmpty) {
@@ -219,27 +250,35 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
 
                 final visible = _query.isEmpty
                     ? _rows!
-                    : _rows!.where((r) =>
-                        r.name.toLowerCase().contains(_query) ||
-                        r.rollNumber.toLowerCase().contains(_query)).toList();
+                    : _rows!
+                          .where(
+                            (r) =>
+                                r.name.toLowerCase().contains(_query) ||
+                                r.rollNumber.toLowerCase().contains(_query),
+                          )
+                          .toList();
 
                 return Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Row(
                         children: [
                           Expanded(
                             child: Text(
                               roster.subject,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Text(
                             '${_rows!.length} students',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
                           ),
                         ],
                       ),
@@ -247,26 +286,41 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
                     const Divider(height: 1),
                     Expanded(
                       child: visible.isEmpty
-                          ? const Center(child: Text('No matching students found'))
+                          ? const Center(
+                              child: Text('No matching students found'),
+                            )
                           : ListView.separated(
                               itemCount: visible.length,
-                              separatorBuilder: (_, unused) => const Divider(height: 1),
+                              separatorBuilder: (_, unused) =>
+                                  const Divider(height: 1),
                               itemBuilder: (context, index) {
                                 final row = visible[index];
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
                                   child: Row(
                                     children: [
                                       Expanded(
                                         flex: 2,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Text(row.name,
-                                                style: const TextStyle(fontWeight: FontWeight.w600)),
-                                            Text('Roll #${row.rollNumber}',
-                                                style: TextStyle(
-                                                    fontSize: 12, color: Colors.grey.shade600)),
+                                            Text(
+                                              row.name,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Roll #${row.rollNumber}',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -276,13 +330,24 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
                                           spacing: 6,
                                           runSpacing: 4,
                                           children: _statusOptions.map((opt) {
-                                            final selected = row.localStatus == opt['value'];
+                                            final selected =
+                                                row.localStatus == opt['value'];
                                             return ChoiceChip(
-                                              label: Text(opt['label']!,
-                                                  style: const TextStyle(fontSize: 12)),
+                                              label: Text(
+                                                opt['label']!,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                ),
+                                              ),
                                               selected: selected,
-                                              onSelected: (_) => setState(() =>
-                                                  row.localStatus = selected ? null : opt['value']),
+                                              onSelected: submitState.isLoading
+                                                  ? null
+                                                  : (_) => setState(
+                                                      () => row.localStatus =
+                                                          selected
+                                                          ? null
+                                                          : opt['value'],
+                                                    ),
                                             );
                                           }).toList(),
                                         ),
@@ -307,7 +372,8 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: submitState.isLoading || _rows == null || _rows!.isEmpty
+                  onPressed:
+                      submitState.isLoading || _rows == null || _rows!.isEmpty
                       ? null
                       : _markAllViaApi,
                   icon: const Icon(Icons.done_all),
@@ -317,7 +383,8 @@ class _MarkLectureAttendanceScreenState extends ConsumerState<MarkLectureAttenda
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: submitState.isLoading ||
+                  onPressed:
+                      submitState.isLoading ||
                           _rows == null ||
                           !_rows!.any((r) => r.localStatus != null)
                       ? null

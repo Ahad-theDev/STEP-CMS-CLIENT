@@ -43,10 +43,18 @@ class DashboardScreen extends ConsumerWidget {
       foregroundColor: isCampusUser ? CampusStyle.ink : null,
       surfaceTintColor: isCampusUser ? Colors.transparent : null,
       elevation: 0,
-      toolbarHeight: isCampusUser ? 72 : kToolbarHeight,
+      toolbarHeight: compact
+          ? kToolbarHeight
+          : isCampusUser
+          ? 72
+          : kToolbarHeight,
       centerTitle: false,
-      titleSpacing: isCampusUser ? 12 : null,
-      leadingWidth: isAdmin ? 68 : null,
+      titleSpacing: compact
+          ? 8
+          : isCampusUser
+          ? 12
+          : null,
+      leadingWidth: isAdmin ? (compact ? 56 : 68) : null,
       iconTheme: isCampusUser
           ? const IconThemeData(color: CampusStyle.primary)
           : null,
@@ -55,12 +63,18 @@ class DashboardScreen extends ConsumerWidget {
           : null,
       title: isCampusUser
           ? (compact
-                ? const Text(
-                    'STEP CMS',
-                    style: TextStyle(
-                      color: CampusStyle.ink,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                ? Tooltip(
+                    message: user.fullName,
+                    child: Text(
+                      user.fullName,
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: CampusStyle.ink,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   )
                 : _dashboardIdentity())
@@ -69,18 +83,6 @@ class DashboardScreen extends ConsumerWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-      bottom: isCampusUser && compact
-          ? PreferredSize(
-              preferredSize: const Size.fromHeight(64),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: _dashboardIdentity(),
-                ),
-              ),
-            )
-          : null,
       leading: isAdmin
           ? Builder(
               builder: (context) => Center(
@@ -106,7 +108,7 @@ class DashboardScreen extends ConsumerWidget {
             )
           : null,
       actions: [
-        if (canAccessAi)
+        if (canAccessAi && !compact)
           IconButton(
             tooltip: 'AI Assistant',
             icon: const Icon(
@@ -129,14 +131,34 @@ class DashboardScreen extends ConsumerWidget {
           ),
           child: const NotificationBell(),
         ),
-        IconButton(
-          tooltip: 'Sign out',
-          onPressed: () => _logout(context, ref),
-          icon: Icon(
-            Icons.logout,
-            color: isCampusUser ? CampusStyle.primary : null,
+        if (compact)
+          PopupMenuButton<String>(
+            tooltip: 'More options',
+            icon: const Icon(Icons.more_vert, color: CampusStyle.primary),
+            onSelected: (action) {
+              if (action == 'ai') {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AiAssistantScreen()),
+                );
+              } else if (action == 'logout') {
+                _logout(context, ref);
+              }
+            },
+            itemBuilder: (_) => [
+              if (canAccessAi)
+                const PopupMenuItem(value: 'ai', child: Text('AI Assistant')),
+              const PopupMenuItem(value: 'logout', child: Text('Sign out')),
+            ],
           ),
-        ),
+        if (!compact)
+          IconButton(
+            tooltip: 'Sign out',
+            onPressed: () => _logout(context, ref),
+            icon: Icon(
+              Icons.logout,
+              color: isCampusUser ? CampusStyle.primary : null,
+            ),
+          ),
       ],
     );
   }
