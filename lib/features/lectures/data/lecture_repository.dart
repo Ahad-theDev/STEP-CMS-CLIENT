@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/fetch_all_pages.dart';
 import 'package:dio/dio.dart';
 import 'package:cms/core/constants/api_constants.dart';
 import 'models/lecture.dart';
@@ -8,6 +9,13 @@ import 'models/lecture_override.dart';
 import 'models/my_schedule_response.dart';
 
 class LectureRepository {
+  Future<List<Lecture>> listAllLectures({String? classId}) =>
+      fetchAllPages<Lecture>(
+        fetch: (page, limit) =>
+            listLectures(page: page, limit: limit, classId: classId),
+        idOf: (item) => item.id,
+      );
+
   final Dio dio;
   LectureRepository(this.dio);
 
@@ -70,8 +78,10 @@ class LectureRepository {
     final response = await dio.get(
       ApiConstants.lecturesMySchedule,
       queryParameters: {
-        ...? (day != null ? {'day': day} : null),
-        ...? (date != null ? {'date': date.toIso8601String().split('T').first} : null),
+        ...?(day != null ? {'day': day} : null),
+        ...?(date != null
+            ? {'date': date.toIso8601String().split('T').first}
+            : null),
       },
     );
     return MyScheduleResponse.fromJson(response.data);

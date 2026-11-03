@@ -1,7 +1,7 @@
 import 'package:cms/features/subjects/data/models/subject.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/teachers/data/models/teacher.dart';
@@ -12,7 +12,13 @@ import '../../application/lecture_search_controller.dart';
 import '../../data/models/lecture.dart';
 
 const List<String> weekDays = [
-  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
 ];
 
 class LectureSearchSection extends ConsumerStatefulWidget {
@@ -20,7 +26,8 @@ class LectureSearchSection extends ConsumerStatefulWidget {
   const LectureSearchSection({super.key, this.onLectureTap});
 
   @override
-  ConsumerState<LectureSearchSection> createState() => LectureSearchSectionState();
+  ConsumerState<LectureSearchSection> createState() =>
+      LectureSearchSectionState();
 }
 
 class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
@@ -31,30 +38,33 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
 
   Future<void> refresh() async {
     await ref
-        .read(lectureSearchControllerProvider(
-          classId: _selectedClass?.id,
-          teacherId: _selectedTeacher?.id,
-          dayOfWeek: _selectedDay,
-          page: _page,
-        ).notifier)
+        .read(
+          lectureSearchControllerProvider(
+            classId: _selectedClass?.id,
+            teacherId: _selectedTeacher?.id,
+            dayOfWeek: _selectedDay,
+            page: _page,
+          ).notifier,
+        )
         .refresh();
   }
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final teachersAsync = ref.watch(teachersListControllerProvider);
     final subjectsAsync = ref.watch(subjectsListControllerProvider);
 
     final Map<String, String> classNameById = {
       for (final c in classesAsync.valueOrNull ?? <SchoolClass>[])
-        c.id: '${c.name}-${c.section}'
+        c.id: '${c.name}-${c.section}',
     };
     final Map<String, String> teacherNameById = {
-      for (final t in teachersAsync.valueOrNull ?? <Teacher>[]) t.id: t.fullName
+      for (final t in teachersAsync.valueOrNull ?? <Teacher>[])
+        t.id: t.fullName,
     };
     final Map<String, String> subjectNameById = {
-      for (final s in subjectsAsync.valueOrNull ?? <Subject>[]) s.id: s.name
+      for (final s in subjectsAsync.valueOrNull ?? <Subject>[]) s.id: s.name,
     };
 
     return Padding(
@@ -62,7 +72,10 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Search Lectures', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Search Lectures',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 12,
@@ -70,7 +83,10 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               classesAsync.when(
-                loading: () => const SizedBox(width: 180, child: LinearProgressIndicator()),
+                loading: () => const SizedBox(
+                  width: 180,
+                  child: LinearProgressIndicator(),
+                ),
                 error: (e, _) => const SizedBox.shrink(),
                 data: (classes) => SizedBox(
                   width: 180,
@@ -79,9 +95,16 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
                     decoration: const InputDecoration(labelText: 'Class'),
                     isExpanded: true,
                     items: [
-                      const DropdownMenuItem<SchoolClass?>(value: null, child: Text('All Classes')),
-                      ...classes.map((c) =>
-                          DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}'))),
+                      const DropdownMenuItem<SchoolClass?>(
+                        value: null,
+                        child: Text('All Classes'),
+                      ),
+                      ...classes.map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text('${c.name} - ${c.section}'),
+                        ),
+                      ),
                     ],
                     onChanged: (v) => setState(() {
                       _selectedClass = v;
@@ -91,7 +114,10 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
                 ),
               ),
               teachersAsync.when(
-                loading: () => const SizedBox(width: 180, child: LinearProgressIndicator()),
+                loading: () => const SizedBox(
+                  width: 180,
+                  child: LinearProgressIndicator(),
+                ),
                 error: (e, _) => const SizedBox.shrink(),
                 data: (teachers) => SizedBox(
                   width: 180,
@@ -100,8 +126,14 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
                     decoration: const InputDecoration(labelText: 'Teacher'),
                     isExpanded: true,
                     items: [
-                      const DropdownMenuItem<Teacher?>(value: null, child: Text('All Teachers')),
-                      ...teachers.map((t) => DropdownMenuItem(value: t, child: Text(t.fullName))),
+                      const DropdownMenuItem<Teacher?>(
+                        value: null,
+                        child: Text('All Teachers'),
+                      ),
+                      ...teachers.map(
+                        (t) =>
+                            DropdownMenuItem(value: t, child: Text(t.fullName)),
+                      ),
                     ],
                     onChanged: (v) => setState(() {
                       _selectedTeacher = v;
@@ -117,9 +149,16 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
                   decoration: const InputDecoration(labelText: 'Day'),
                   isExpanded: true,
                   items: [
-                    const DropdownMenuItem<String?>(value: null, child: Text('All Days')),
-                    ...weekDays.map((d) =>
-                        DropdownMenuItem(value: d, child: Text(d[0].toUpperCase() + d.substring(1)))),
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text('All Days'),
+                    ),
+                    ...weekDays.map(
+                      (d) => DropdownMenuItem(
+                        value: d,
+                        child: Text(d[0].toUpperCase() + d.substring(1)),
+                      ),
+                    ),
                   ],
                   onChanged: (v) => setState(() {
                     _selectedDay = v;
@@ -130,7 +169,12 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildResultsCard(context, classNameById, teacherNameById, subjectNameById),
+          _buildResultsCard(
+            context,
+            classNameById,
+            teacherNameById,
+            subjectNameById,
+          ),
         ],
       ),
     );
@@ -142,12 +186,14 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
     Map<String, String> teacherNameById,
     Map<String, String> subjectNameById,
   ) {
-    final lecturesAsync = ref.watch(lectureSearchControllerProvider(
-      classId: _selectedClass?.id,
-      teacherId: _selectedTeacher?.id,
-      dayOfWeek: _selectedDay,
-      page: _page,
-    ));
+    final lecturesAsync = ref.watch(
+      lectureSearchControllerProvider(
+        classId: _selectedClass?.id,
+        teacherId: _selectedTeacher?.id,
+        dayOfWeek: _selectedDay,
+        page: _page,
+      ),
+    );
 
     return Card(
       elevation: 1,
@@ -156,9 +202,12 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('All Lectures',
-                style:
-                    Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'All Lectures',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             lecturesAsync.when(
               loading: () => const Padding(
@@ -167,11 +216,17 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text('Failed to load lectures: ${friendlyErrorMessage(e)}',
-                    style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Failed to load lectures: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
-              data: (lectures) =>
-                  _buildTableAndPagination(lectures, classNameById, teacherNameById, subjectNameById),
+              data: (lectures) => _buildTableAndPagination(
+                lectures,
+                classNameById,
+                teacherNameById,
+                subjectNameById,
+              ),
             ),
           ],
         ),
@@ -207,22 +262,27 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
               DataColumn(label: Text('Subject')),
             ],
             rows: lectures
-                .map((l) => DataRow(
-                      onSelectChanged: widget.onLectureTap == null
-                          ? null
-                          : (selected) {
-                              if (selected == true) widget.onLectureTap!(l);
-                            },
-                      cells: [
-                        DataCell(Text(l.dayOfWeek)),
-                        DataCell(Text(
-                            '${TimeOfDayUtils.displayLabel(l.startTime)} - ${TimeOfDayUtils.displayLabel(l.endTime)}')),
-                        DataCell(Text(l.roomNumber)),
-                        DataCell(Text(classNameById[l.classId] ?? '-')),
-                        DataCell(Text(teacherNameById[l.teacherId] ?? '-')),
-                        DataCell(Text(subjectNameById[l.subjectId] ?? '-')),
-                      ],
-                    ))
+                .map(
+                  (l) => DataRow(
+                    onSelectChanged: widget.onLectureTap == null
+                        ? null
+                        : (selected) {
+                            if (selected == true) widget.onLectureTap!(l);
+                          },
+                    cells: [
+                      DataCell(Text(l.dayOfWeek)),
+                      DataCell(
+                        Text(
+                          '${TimeOfDayUtils.displayLabel(l.startTime)} - ${TimeOfDayUtils.displayLabel(l.endTime)}',
+                        ),
+                      ),
+                      DataCell(Text(l.roomNumber)),
+                      DataCell(Text(classNameById[l.classId] ?? '-')),
+                      DataCell(Text(teacherNameById[l.teacherId] ?? '-')),
+                      DataCell(Text(subjectNameById[l.subjectId] ?? '-')),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         ),

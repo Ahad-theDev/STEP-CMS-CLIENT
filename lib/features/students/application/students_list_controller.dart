@@ -10,7 +10,7 @@ class StudentsListController extends _$StudentsListController {
   @override
   Future<List<Student>> build() async {
     final repo = ref.read(studentRepositoryProvider);
-    return repo.listStudents();
+    return repo.listAllStudents();
   }
 
   Future<void> refresh() async {

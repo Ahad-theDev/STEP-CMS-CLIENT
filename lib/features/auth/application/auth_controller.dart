@@ -1,3 +1,4 @@
+import 'package:cms/features/auth/data/models/auth_user.dart';
 import 'package:cms/core/exceptions/api_exception.dart';
 import 'package:cms/core/network/dio_client.dart';
 import 'package:cms/features/auth/application/auth_repository_provider.dart';
@@ -9,6 +10,7 @@ part 'auth_controller.g.dart';
 
 @riverpod
 class AuthController extends _$AuthController {
+  AuthUser? signedInUser;
   @override
   FutureOr<void> build() {
     // idle initial state
@@ -18,6 +20,7 @@ class AuthController extends _$AuthController {
     required String username,
     required String password,
   }) async {
+    signedInUser = null;
     state = const AsyncLoading();
     final repo = ref.read(authRepositoryProvider);
     final storage = ref.read(secureStorageProvider);
@@ -27,6 +30,9 @@ class AuthController extends _$AuthController {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       );
+      // Complete identity loading before reporting sign-in success.
+      // Older servers omit the embedded profile; retain a /auth/me fallback.
+      signedInUser = repo.loginProfile ?? await repo.getCurrentUser();
       state = const AsyncData(null);
       return true;
     } catch (e, st) {

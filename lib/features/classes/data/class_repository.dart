@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/fetch_all_pages.dart';
 import 'package:dio/dio.dart';
 import 'package:cms/core/constants/api_constants.dart';
 import 'package:cms/features/students/data/models/bulk_import_result.dart';
@@ -8,11 +9,19 @@ import 'models/class_update_request.dart';
 import 'models/assign_teacher_request.dart';
 
 class ClassRepository {
+  Future<List<SchoolClass>> listAllClasses() => fetchAllPages<SchoolClass>(
+    fetch: (page, limit) => listClasses(page: page, limit: limit),
+    idOf: (item) => item.id,
+  );
+
   final Dio dio;
   ClassRepository(this.dio);
 
   Future<SchoolClass> createClass(ClassCreateRequest request) async {
-    final response = await dio.post(ApiConstants.classes, data: request.toJson());
+    final response = await dio.post(
+      ApiConstants.classes,
+      data: request.toJson(),
+    );
     return SchoolClass.fromJson(response.data);
   }
 
@@ -29,8 +38,14 @@ class ClassRepository {
     return (response.data as List).map((e) => SchoolClass.fromJson(e)).toList();
   }
 
-  Future<SchoolClass> updateClass(String classId, ClassUpdateRequest request) async {
-    final response = await dio.put('${ApiConstants.classes}/$classId', data: request.toJson());
+  Future<SchoolClass> updateClass(
+    String classId,
+    ClassUpdateRequest request,
+  ) async {
+    final response = await dio.put(
+      '${ApiConstants.classes}/$classId',
+      data: request.toJson(),
+    );
     return SchoolClass.fromJson(response.data);
   }
 
@@ -38,14 +53,22 @@ class ClassRepository {
     await dio.delete('${ApiConstants.classes}/$classId');
   }
 
-  Future<void> assignTeacher(String classId, AssignTeacherRequest request) async {
-    await dio.patch('${ApiConstants.classes}/$classId/assign-teacher', data: request.toJson());
+  Future<void> assignTeacher(
+    String classId,
+    AssignTeacherRequest request,
+  ) async {
+    await dio.patch(
+      '${ApiConstants.classes}/$classId/assign-teacher',
+      data: request.toJson(),
+    );
   }
 
   /// Returns null if no teacher is assigned yet (backend 404s in that case).
   Future<Teacher?> getClassTeacher(String classId) async {
     try {
-      final response = await dio.get('${ApiConstants.classes}/$classId/teacher');
+      final response = await dio.get(
+        '${ApiConstants.classes}/$classId/teacher',
+      );
       return Teacher.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) return null;
@@ -53,11 +76,17 @@ class ClassRepository {
     }
   }
 
-  Future<BulkImportResult> bulkImportClasses(String filePath, String fileName) async {
+  Future<BulkImportResult> bulkImportClasses(
+    String filePath,
+    String fileName,
+  ) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath, filename: fileName),
     });
-    final response = await dio.post(ApiConstants.classesBulkImport, data: formData);
+    final response = await dio.post(
+      ApiConstants.classesBulkImport,
+      data: formData,
+    );
     return BulkImportResult.fromJson(response.data);
   }
 }

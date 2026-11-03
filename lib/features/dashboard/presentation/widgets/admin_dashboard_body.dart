@@ -1,3 +1,4 @@
+import 'package:cms/features/dashboard/application/dashboard_counts_provider.dart';
 import 'package:cms/features/subjects/application/all_students_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,11 +53,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
 
   @override
   Widget build(BuildContext context) {
-    final studentsAsync = ref.watch(allStudentsControllerProvider);
-    final teachersAsync = ref.watch(teachersListControllerProvider);
-    final staffAsync = ref.watch(allStaffListControllerProvider);
-    final classesAsync = ref.watch(allClassesControllerProvider);
-    final subjectsAsync = ref.watch(subjectsListControllerProvider);
+    final countsAsync = ref.watch(dashboardCountsProvider);
     final feeSummaryAsync = ref.watch(feeSummaryControllerProvider());
     final feeDefaultersAsync = ref.watch(feeDefaultersControllerProvider());
     final attendanceDefaultersAsync = ref.watch(
@@ -70,6 +67,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
 
     return RefreshIndicator(
       onRefresh: () async {
+        ref.invalidate(dashboardCountsProvider);
         ref.invalidate(allStudentsControllerProvider);
         ref.invalidate(teachersListControllerProvider);
         ref.invalidate(allStaffListControllerProvider);
@@ -166,47 +164,49 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                         DashboardStatCard(
                           width: cardWidth,
                           icon: Icons.groups_outlined,
-                          label: 'Students',
-                          value: '${studentsAsync.valueOrNull?.length ?? 0}',
+                          label:
+                              'Students • ${countsAsync.valueOrNull?['students'] ?? 0} active',
+                          value:
+                              '${countsAsync.valueOrNull?['students_total'] ?? countsAsync.valueOrNull?['students'] ?? 0}',
                           color: const Color(0xFF5458B5),
-                          isLoading: studentsAsync.isLoading,
-                          hasError: studentsAsync.hasError,
+                          isLoading: countsAsync.isLoading,
+                          hasError: countsAsync.hasError,
                         ),
                         DashboardStatCard(
                           width: cardWidth,
                           icon: Icons.school_outlined,
                           label: 'Teachers',
-                          value: '${teachersAsync.valueOrNull?.length ?? 0}',
+                          value: '${countsAsync.valueOrNull?['teachers'] ?? 0}',
                           color: const Color(0xFF326DA0),
-                          isLoading: teachersAsync.isLoading,
-                          hasError: teachersAsync.hasError,
+                          isLoading: countsAsync.isLoading,
+                          hasError: countsAsync.hasError,
                         ),
                         DashboardStatCard(
                           width: cardWidth,
                           icon: Icons.badge_outlined,
                           label: 'Staff',
-                          value: '${staffAsync.valueOrNull?.length ?? 0}',
+                          value: '${countsAsync.valueOrNull?['staff'] ?? 0}',
                           color: const Color(0xFF7856A6),
-                          isLoading: staffAsync.isLoading,
-                          hasError: staffAsync.hasError,
+                          isLoading: countsAsync.isLoading,
+                          hasError: countsAsync.hasError,
                         ),
                         DashboardStatCard(
                           width: cardWidth,
                           icon: Icons.class_outlined,
                           label: 'Classes',
-                          value: '${classesAsync.valueOrNull?.length ?? 0}',
+                          value: '${countsAsync.valueOrNull?['classes'] ?? 0}',
                           color: CampusStyle.primary,
-                          isLoading: classesAsync.isLoading,
-                          hasError: classesAsync.hasError,
+                          isLoading: countsAsync.isLoading,
+                          hasError: countsAsync.hasError,
                         ),
                         DashboardStatCard(
                           width: cardWidth,
                           icon: Icons.menu_book_outlined,
                           label: 'Subjects',
-                          value: '${subjectsAsync.valueOrNull?.length ?? 0}',
+                          value: '${countsAsync.valueOrNull?['subjects'] ?? 0}',
                           color: const Color(0xFF326DA0),
-                          isLoading: subjectsAsync.isLoading,
-                          hasError: subjectsAsync.hasError,
+                          isLoading: countsAsync.isLoading,
+                          hasError: countsAsync.hasError,
                         ),
                         DashboardStatCard(
                           width: cardWidth,

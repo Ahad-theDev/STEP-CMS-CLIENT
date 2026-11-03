@@ -10,7 +10,7 @@ class SubjectsListController extends _$SubjectsListController {
   @override
   Future<List<Subject>> build() async {
     final repo = ref.read(subjectRepositoryProvider);
-    return repo.listSubjects();
+    return repo.listAllSubjects();
   }
 
   Future<void> refresh() async {

@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 
 class AuthRepository {
   final Dio dio;
+  AuthUser? loginProfile;
 
   AuthRepository(this.dio);
 
@@ -14,11 +15,16 @@ class AuthRepository {
     required String username,
     required String password,
   }) async {
+    loginProfile = null;
     final response = await dio.post(
       ApiConstants.login,
       data: {"username": username, "password": password},
       options: Options(contentType: Headers.formUrlEncodedContentType),
     );
+    final profile = response.data['user'];
+    if (profile is Map) {
+      loginProfile = AuthUser.fromJson(Map<String, dynamic>.from(profile));
+    }
     return TokenResponse.fromJson(response.data);
   }
 
@@ -58,7 +64,10 @@ class AuthRepository {
     return response.data['message'] as String;
   }
 
-  Future<String> resetPassword({required String token, required String newPassword}) async {
+  Future<String> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
     final response = await dio.post(
       ApiConstants.resetPassword,
       data: {'token': token, 'new_password': newPassword},

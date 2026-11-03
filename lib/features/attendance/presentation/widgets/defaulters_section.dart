@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/defaulters_controller.dart';
 
@@ -38,7 +38,7 @@ class _DefaultersSectionState extends ConsumerState<DefaultersSection> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -47,14 +47,24 @@ class _DefaultersSectionState extends ConsumerState<DefaultersSection> {
         children: [
           classesAsync.when(
             loading: () => const LinearProgressIndicator(),
-            error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                style: const TextStyle(color: Colors.red)),
+            error: (e, _) => Text(
+              'Failed to load classes: ${friendlyErrorMessage(e)}',
+              style: const TextStyle(color: Colors.red),
+            ),
             data: (classes) => DropdownButtonFormField<SchoolClass?>(
               initialValue: _selectedClass,
               decoration: const InputDecoration(labelText: 'Class (optional)'),
               items: [
-                const DropdownMenuItem<SchoolClass?>(value: null, child: Text('All Classes')),
-                ...classes.map((c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}'))),
+                const DropdownMenuItem<SchoolClass?>(
+                  value: null,
+                  child: Text('All Classes'),
+                ),
+                ...classes.map(
+                  (c) => DropdownMenuItem(
+                    value: c,
+                    child: Text('${c.name} - ${c.section}'),
+                  ),
+                ),
               ],
               onChanged: (v) => setState(() => _selectedClass = v),
             ),
@@ -85,16 +95,20 @@ class _DefaultersSectionState extends ConsumerState<DefaultersSection> {
   }
 
   Widget _buildList() {
-    final defaultersAsync = ref.watch(defaultersControllerProvider(
-      threshold: _threshold,
-      dateFrom: _dateFrom,
-      dateTo: _dateTo,
-      classId: _selectedClass?.id,
-    ));
+    final defaultersAsync = ref.watch(
+      defaultersControllerProvider(
+        threshold: _threshold,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo,
+        classId: _selectedClass?.id,
+      ),
+    );
 
     return defaultersAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load defaulters: ${friendlyErrorMessage(e)}')),
+      error: (e, _) => Center(
+        child: Text('Failed to load defaulters: ${friendlyErrorMessage(e)}'),
+      ),
       data: (response) {
         if (response.defaulters.isEmpty) {
           return Center(
@@ -117,7 +131,11 @@ class _DefaultersSectionState extends ConsumerState<DefaultersSection> {
                 backgroundColor: Colors.red.shade50,
                 child: Text(
                   '${d.percentagePresent.toStringAsFixed(0)}%',
-                  style: const TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               title: Text(d.studentName),

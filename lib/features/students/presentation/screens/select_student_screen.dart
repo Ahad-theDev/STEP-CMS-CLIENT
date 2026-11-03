@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,10 +6,17 @@ import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/student_search_controller.dart';
+import '../../data/models/student.dart';
 
 class SelectStudentScreen extends ConsumerStatefulWidget {
   final String title;
-  const SelectStudentScreen({super.key, required this.title});
+  final FutureOr<void> Function(Student student)? onStudentTap;
+
+  const SelectStudentScreen({
+    super.key,
+    required this.title,
+    this.onStudentTap,
+  });
 
   @override
   ConsumerState<SelectStudentScreen> createState() =>
@@ -156,7 +164,21 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
                     title: Text(s.fullName),
                     subtitle: Text('Roll #${s.rollNumber}'),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.of(context).pop(s),
+                    onTap: () async {
+                      if (widget.onStudentTap != null) {
+                        await widget.onStudentTap!(s);
+                        if (mounted && _selectedClass != null) {
+                          ref.invalidate(
+                            studentSearchControllerProvider(
+                              classId: _selectedClass!.id,
+                              page: _page,
+                            ),
+                          );
+                        }
+                      } else {
+                        Navigator.of(context).pop(s);
+                      }
+                    },
                   );
                 },
               ),

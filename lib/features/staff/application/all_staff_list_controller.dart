@@ -10,6 +10,6 @@ class AllStaffListController extends _$AllStaffListController {
   @override
   Future<List<StaffMember>> build() async {
     final repo = ref.read(staffRepositoryProvider);
-    return repo.listStaff(page: 1, limit: 200);
+    return repo.listAllStaff();
   }
 }

@@ -1,18 +1,12 @@
-import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/features/students/data/models/student.dart';
-import 'package:cms/features/students/presentation/widgets/student_search_section.dart';
+import 'package:cms/features/students/presentation/screens/select_student_screen.dart';
 import 'package:cms/features/students/presentation/screens/student_detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class SearchStudentScreen extends StatefulWidget {
+class SearchStudentScreen extends StatelessWidget {
   const SearchStudentScreen({super.key});
 
-  @override
-  State<SearchStudentScreen> createState() => _SearchStudentScreenState();
-}
-
-class _SearchStudentScreenState extends State<SearchStudentScreen> {
-  Future<void> _openStudentDetailScreen(Student student) async {
+  Future<void> _openStudentDetailScreen(BuildContext context, Student student) async {
     await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => StudentDetailScreen(student: student)),
     );
@@ -20,9 +14,9 @@ class _SearchStudentScreenState extends State<SearchStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CampusPage(
-      appBar: AppBar(title: const Text('Search Students')),
-      body: StudentSearchSection(onStudentTap: _openStudentDetailScreen),
+    return SelectStudentScreen(
+      title: 'Search Students',
+      onStudentTap: (student) => _openStudentDetailScreen(context, student),
     );
   }
 }

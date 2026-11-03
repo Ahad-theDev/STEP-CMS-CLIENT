@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/teachers/data/models/teacher.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import '../../application/teacher_trends_controller.dart';
 import 'trend_pie_chart.dart';
 
@@ -11,7 +11,8 @@ class TeacherTrendsSection extends ConsumerStatefulWidget {
   const TeacherTrendsSection({super.key});
 
   @override
-  ConsumerState<TeacherTrendsSection> createState() => _TeacherTrendsSectionState();
+  ConsumerState<TeacherTrendsSection> createState() =>
+      _TeacherTrendsSectionState();
 }
 
 class _TeacherTrendsSectionState extends ConsumerState<TeacherTrendsSection> {
@@ -48,12 +49,18 @@ class _TeacherTrendsSectionState extends ConsumerState<TeacherTrendsSection> {
         children: [
           teachersAsync.when(
             loading: () => const LinearProgressIndicator(),
-            error: (e, _) => Text('Failed to load teachers: ${friendlyErrorMessage(e)}',
-                style: const TextStyle(color: Colors.red)),
+            error: (e, _) => Text(
+              'Failed to load teachers: ${friendlyErrorMessage(e)}',
+              style: const TextStyle(color: Colors.red),
+            ),
             data: (teachers) => DropdownButtonFormField<Teacher>(
               initialValue: _selectedTeacher,
               decoration: const InputDecoration(labelText: 'Select Teacher'),
-              items: teachers.map((t) => DropdownMenuItem(value: t, child: Text(t.fullName))).toList(),
+              items: teachers
+                  .map(
+                    (t) => DropdownMenuItem(value: t, child: Text(t.fullName)),
+                  )
+                  .toList(),
               onChanged: (v) => setState(() => _selectedTeacher = v),
             ),
           ),
@@ -77,22 +84,29 @@ class _TeacherTrendsSectionState extends ConsumerState<TeacherTrendsSection> {
   }
 
   Widget _buildCharts() {
-    final trendsAsync = ref.watch(teacherTrendsControllerProvider(
-      teacherId: _selectedTeacher!.id,
-      dateFrom: _dateFrom,
-      dateTo: _dateTo,
-    ));
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final trendsAsync = ref.watch(
+      teacherTrendsControllerProvider(
+        teacherId: _selectedTeacher!.id,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo,
+      ),
+    );
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return trendsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load trends: ${friendlyErrorMessage(e)}')),
+      error: (e, _) => Center(
+        child: Text('Failed to load trends: ${friendlyErrorMessage(e)}'),
+      ),
       data: (response) {
         if (response.classes.isEmpty) {
-          return const Center(child: Text('No attendance data for this teacher in this range'));
+          return const Center(
+            child: Text('No attendance data for this teacher in this range'),
+          );
         }
         final classNameById = {
-          for (final c in classesAsync.valueOrNull ?? []) c.id: '${c.name}-${c.section}',
+          for (final c in classesAsync.valueOrNull ?? [])
+            c.id: '${c.name}-${c.section}',
         };
         return ListView(
           children: response.classes.map((classTrend) {
@@ -101,8 +115,10 @@ class _TeacherTrendsSectionState extends ConsumerState<TeacherTrendsSection> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(classNameById[classTrend.classId] ?? classTrend.classId,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    classNameById[classTrend.classId] ?? classTrend.classId,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
                   TrendPieChart(points: classTrend.trends),
                 ],

@@ -2,7 +2,6 @@ import 'package:cms/core/theme/campus_style.dart';
 import 'package:cms/features/auth/application/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cms/features/auth/application/auth_repository_provider.dart';
 import 'package:cms/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:cms/features/auth/presentation/screens/request_password_reset_screen.dart';
 
@@ -138,17 +137,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      final user = ref.read(authControllerProvider.notifier).signedInUser;
+      if (user == null) return;
       await _showSuccessDialog('Welcome back!');
       if (!mounted) return;
-      try {
-        final user = await ref.read(authRepositoryProvider).getCurrentUser();
-        if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => DashboardScreen(user: user)),
-        );
-      } catch (e) {
-        await _showErrorDialog('Failed to get user data. Please log in again.');
-      }
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => DashboardScreen(user: user)),
+      );
     }
   }
 

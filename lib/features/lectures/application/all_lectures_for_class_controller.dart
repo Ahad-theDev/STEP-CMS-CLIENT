@@ -10,6 +10,6 @@ class AllLecturesForClassController extends _$AllLecturesForClassController {
   @override
   Future<List<Lecture>> build({required String classId}) async {
     final repo = ref.read(lectureRepositoryProvider);
-    return repo.listLectures(classId: classId, page: 1, limit: 200);
+    return repo.listAllLectures(classId: classId);
   }
 }

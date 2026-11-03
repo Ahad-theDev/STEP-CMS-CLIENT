@@ -2,7 +2,7 @@ import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import '../../application/bulk_generate_fees_controller.dart';
 import '../../data/models/fee_generate_request.dart';
 import '../../data/models/fee_generate_result.dart';
@@ -67,7 +67,7 @@ class _GenerateBulkFeesScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(bulkGenerateFeesControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final isLoading = state.isLoading;
 
     return FeePage(

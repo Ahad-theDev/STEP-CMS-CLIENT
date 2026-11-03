@@ -10,7 +10,7 @@ class AllClassesController extends _$AllClassesController {
   @override
   Future<List<SchoolClass>> build() async {
     final repo = ref.read(classRepositoryProvider);
-    return repo.listClasses(page: 1, limit: 500);
+    return repo.listAllClasses();
   }
 
   Future<void> refresh() async {

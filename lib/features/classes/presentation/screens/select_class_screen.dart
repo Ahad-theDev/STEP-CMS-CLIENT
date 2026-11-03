@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 // ignore: unused_import
 import '../../data/models/school_class.dart';
 
@@ -17,7 +17,7 @@ class _SelectClassScreenState extends ConsumerState<SelectClassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
@@ -36,7 +36,8 @@ class _SelectClassScreenState extends ConsumerState<SelectClassScreen> {
             Expanded(
               child: classesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Failed to load classes: $e')),
+                error: (e, _) =>
+                    Center(child: Text('Failed to load classes: $e')),
                 data: (classes) {
                   final filtered = _query.isEmpty
                       ? classes

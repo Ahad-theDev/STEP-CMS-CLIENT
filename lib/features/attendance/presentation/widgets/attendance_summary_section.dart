@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/attendance_summary_controller.dart';
 
@@ -9,10 +9,12 @@ class AttendanceSummarySection extends ConsumerStatefulWidget {
   const AttendanceSummarySection({super.key});
 
   @override
-  ConsumerState<AttendanceSummarySection> createState() => _AttendanceSummarySectionState();
+  ConsumerState<AttendanceSummarySection> createState() =>
+      _AttendanceSummarySectionState();
 }
 
-class _AttendanceSummarySectionState extends ConsumerState<AttendanceSummarySection> {
+class _AttendanceSummarySectionState
+    extends ConsumerState<AttendanceSummarySection> {
   SchoolClass? _selectedClass;
   DateTime _dateFrom = DateTime.now().subtract(const Duration(days: 30));
   DateTime _dateTo = DateTime.now();
@@ -43,7 +45,7 @@ class _AttendanceSummarySectionState extends ConsumerState<AttendanceSummarySect
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -52,13 +54,20 @@ class _AttendanceSummarySectionState extends ConsumerState<AttendanceSummarySect
         children: [
           classesAsync.when(
             loading: () => const LinearProgressIndicator(),
-            error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                style: const TextStyle(color: Colors.red)),
+            error: (e, _) => Text(
+              'Failed to load classes: ${friendlyErrorMessage(e)}',
+              style: const TextStyle(color: Colors.red),
+            ),
             data: (classes) => DropdownButtonFormField<SchoolClass>(
               initialValue: _selectedClass,
               decoration: const InputDecoration(labelText: 'Select Class'),
               items: classes
-                  .map((c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                  .map(
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text('${c.name} - ${c.section}'),
+                    ),
+                  )
                   .toList(),
               onChanged: (v) => setState(() => _selectedClass = v),
             ),
@@ -75,7 +84,9 @@ class _AttendanceSummarySectionState extends ConsumerState<AttendanceSummarySect
           Expanded(
             child: _selectedClass != null
                 ? _buildTable()
-                : const Center(child: Text('Select a class to see its summary')),
+                : const Center(
+                    child: Text('Select a class to see its summary'),
+                  ),
           ),
         ],
       ),
@@ -83,15 +94,19 @@ class _AttendanceSummarySectionState extends ConsumerState<AttendanceSummarySect
   }
 
   Widget _buildTable() {
-    final summaryAsync = ref.watch(attendanceSummaryControllerProvider(
-      classId: _selectedClass!.id,
-      dateFrom: _dateFrom,
-      dateTo: _dateTo,
-    ));
+    final summaryAsync = ref.watch(
+      attendanceSummaryControllerProvider(
+        classId: _selectedClass!.id,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo,
+      ),
+    );
 
     return summaryAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load summary: ${friendlyErrorMessage(e)}')),
+      error: (e, _) => Center(
+        child: Text('Failed to load summary: ${friendlyErrorMessage(e)}'),
+      ),
       data: (items) {
         if (items.isEmpty) {
           return const Center(child: Text('No attendance data in this range'));
@@ -109,18 +124,27 @@ class _AttendanceSummarySectionState extends ConsumerState<AttendanceSummarySect
               DataColumn(label: Text('%')),
             ],
             rows: items
-                .map((s) => DataRow(cells: [
+                .map(
+                  (s) => DataRow(
+                    cells: [
                       DataCell(Text(s.studentName)),
                       DataCell(Text('${s.presentCount}')),
                       DataCell(Text('${s.absentCount}')),
                       DataCell(Text('${s.lateCount}')),
                       DataCell(Text('${s.leaveCount}')),
                       DataCell(Text('${s.totalLectures}')),
-                      DataCell(Text(
-                        '${s.percentagePresent.toStringAsFixed(1)}%',
-                        style: TextStyle(color: _pctColor(s.percentagePresent), fontWeight: FontWeight.bold),
-                      )),
-                    ]))
+                      DataCell(
+                        Text(
+                          '${s.percentagePresent.toStringAsFixed(1)}%',
+                          style: TextStyle(
+                            color: _pctColor(s.percentagePresent),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         );

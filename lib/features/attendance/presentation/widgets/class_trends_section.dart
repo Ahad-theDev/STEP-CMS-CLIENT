@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/class_trends_controller.dart';
 import 'trend_pie_chart.dart';
@@ -38,7 +38,7 @@ class _ClassTrendsSectionState extends ConsumerState<ClassTrendsSection> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -47,13 +47,20 @@ class _ClassTrendsSectionState extends ConsumerState<ClassTrendsSection> {
         children: [
           classesAsync.when(
             loading: () => const LinearProgressIndicator(),
-            error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                style: const TextStyle(color: Colors.red)),
+            error: (e, _) => Text(
+              'Failed to load classes: ${friendlyErrorMessage(e)}',
+              style: const TextStyle(color: Colors.red),
+            ),
             data: (classes) => DropdownButtonFormField<SchoolClass>(
               initialValue: _selectedClass,
               decoration: const InputDecoration(labelText: 'Select Class'),
               items: classes
-                  .map((c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                  .map(
+                    (c) => DropdownMenuItem(
+                      value: c,
+                      child: Text('${c.name} - ${c.section}'),
+                    ),
+                  )
                   .toList(),
               onChanged: (v) => setState(() => _selectedClass = v),
             ),
@@ -78,18 +85,21 @@ class _ClassTrendsSectionState extends ConsumerState<ClassTrendsSection> {
   }
 
   Widget _buildChart() {
-    final trendsAsync = ref.watch(classTrendsControllerProvider(
-      classId: _selectedClass!.id,
-      dateFrom: _dateFrom,
-      dateTo: _dateTo,
-    ));
+    final trendsAsync = ref.watch(
+      classTrendsControllerProvider(
+        classId: _selectedClass!.id,
+        dateFrom: _dateFrom,
+        dateTo: _dateTo,
+      ),
+    );
 
     return trendsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load trends: ${friendlyErrorMessage(e)}')),
-      data: (response) => SingleChildScrollView(
-        child: TrendPieChart(points: response.trends),
+      error: (e, _) => Center(
+        child: Text('Failed to load trends: ${friendlyErrorMessage(e)}'),
       ),
+      data: (response) =>
+          SingleChildScrollView(child: TrendPieChart(points: response.trends)),
     );
   }
 }

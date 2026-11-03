@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/fetch_all_pages.dart';
 import 'package:cms/core/constants/api_constants.dart';
 import 'package:cms/features/students/data/models/bulk_import_result.dart';
 import 'package:cms/features/students/data/models/student.dart';
@@ -7,6 +8,13 @@ import 'models/student_update_request.dart';
 import 'models/enrollment_change_request.dart';
 
 class StudentRepository {
+  Future<List<Student>> listAllStudents({String? classId}) =>
+      fetchAllPages<Student>(
+        fetch: (page, limit) =>
+            listStudents(page: page, limit: limit, classId: classId),
+        idOf: (item) => item.id,
+      );
+
   final Dio dio;
   StudentRepository(this.dio);
 

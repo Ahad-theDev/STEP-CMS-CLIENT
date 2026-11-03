@@ -2,7 +2,7 @@ import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/add_fee_structure_controller.dart';
 import '../../data/models/fee_structure_create_request.dart';
@@ -66,7 +66,7 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(addFeeStructureControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final isLoading = state.isLoading;
 
     return FeePage(

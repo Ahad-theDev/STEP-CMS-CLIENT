@@ -3,7 +3,7 @@ import 'package:cms/features/subjects/application/all_students_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import '../../application/fee_reminders_controller.dart';
 
 class FeeDueStudentsScreen extends ConsumerStatefulWidget {
@@ -21,7 +21,7 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
   @override
   Widget build(BuildContext context) {
     final studentsAsync = ref.watch(allStudentsControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     final classNameById = {
       for (final c in classesAsync.valueOrNull ?? [])

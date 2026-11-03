@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/fetch_all_pages.dart';
 import 'package:dio/dio.dart';
 import 'package:cms/core/constants/api_constants.dart';
 import 'models/subject.dart';
@@ -5,11 +6,19 @@ import 'models/subject_create_request.dart';
 import 'models/subject_update_request.dart';
 
 class SubjectRepository {
+  Future<List<Subject>> listAllSubjects() => fetchAllPages<Subject>(
+    fetch: (page, limit) => listSubjects(page: page, limit: limit),
+    idOf: (item) => item.id,
+  );
+
   final Dio dio;
   SubjectRepository(this.dio);
 
   Future<Subject> createSubject(SubjectCreateRequest request) async {
-    final response = await dio.post(ApiConstants.subjects, data: request.toJson());
+    final response = await dio.post(
+      ApiConstants.subjects,
+      data: request.toJson(),
+    );
     return Subject.fromJson(response.data);
   }
 
@@ -21,8 +30,14 @@ class SubjectRepository {
     return (response.data as List).map((e) => Subject.fromJson(e)).toList();
   }
 
-  Future<Subject> updateSubject(String subjectId, SubjectUpdateRequest request) async {
-    final response = await dio.put('${ApiConstants.subjects}/$subjectId', data: request.toJson());
+  Future<Subject> updateSubject(
+    String subjectId,
+    SubjectUpdateRequest request,
+  ) async {
+    final response = await dio.put(
+      '${ApiConstants.subjects}/$subjectId',
+      data: request.toJson(),
+    );
     return Subject.fromJson(response.data);
   }
 

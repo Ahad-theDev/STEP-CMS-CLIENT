@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/core/utils/time_of_day_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import 'package:cms/features/lectures/application/all_lectures_for_class_controller.dart';
 import 'package:cms/features/lectures/data/models/lecture.dart';
@@ -21,10 +21,12 @@ class ViewStudentAttendanceScreen extends ConsumerStatefulWidget {
   const ViewStudentAttendanceScreen({super.key});
 
   @override
-  ConsumerState<ViewStudentAttendanceScreen> createState() => _ViewStudentAttendanceScreenState();
+  ConsumerState<ViewStudentAttendanceScreen> createState() =>
+      _ViewStudentAttendanceScreenState();
 }
 
-class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttendanceScreen> {
+class _ViewStudentAttendanceScreenState
+    extends ConsumerState<ViewStudentAttendanceScreen> {
   SchoolClass? _selectedClass;
   Lecture? _selectedLecture;
   Student? _selectedStudent;
@@ -69,7 +71,7 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('View Attendance')),
@@ -80,13 +82,20 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
           children: [
             classesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red)),
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
               data: (classes) => DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
                 decoration: const InputDecoration(labelText: 'Select Class'),
                 items: classes
-                    .map((c) => DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text('${c.name} - ${c.section}'),
+                      ),
+                    )
                     .toList(),
                 onChanged: _onClassChanged,
               ),
@@ -105,9 +114,16 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
                       initialValue: _selectedStatus,
                       decoration: const InputDecoration(labelText: 'Status'),
                       items: [
-                        const DropdownMenuItem<String?>(value: null, child: Text('All')),
+                        const DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text('All'),
+                        ),
                         ..._statusFilterOptions.map(
-                            (o) => DropdownMenuItem(value: o['value'], child: Text(o['label']!))),
+                          (o) => DropdownMenuItem(
+                            value: o['value'],
+                            child: Text(o['label']!),
+                          ),
+                        ),
                       ],
                       onChanged: (v) => setState(() => _selectedStatus = v),
                     ),
@@ -137,7 +153,9 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
               const SizedBox(height: 16),
               Expanded(child: _buildResults()),
             ] else
-              const Expanded(child: Center(child: Text('Select a class to view attendance'))),
+              const Expanded(
+                child: Center(child: Text('Select a class to view attendance')),
+              ),
           ],
         ),
       ),
@@ -145,25 +163,33 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
   }
 
   Widget _buildLectureDropdown() {
-    final lecturesAsync =
-        ref.watch(allLecturesForClassControllerProvider(classId: _selectedClass!.id));
+    final lecturesAsync = ref.watch(
+      allLecturesForClassControllerProvider(classId: _selectedClass!.id),
+    );
     return lecturesAsync.when(
       loading: () => const LinearProgressIndicator(),
-      error: (e, _) => Text('Failed: ${friendlyErrorMessage(e)}',
-          style: const TextStyle(color: Colors.red, fontSize: 12)),
+      error: (e, _) => Text(
+        'Failed: ${friendlyErrorMessage(e)}',
+        style: const TextStyle(color: Colors.red, fontSize: 12),
+      ),
       data: (lectures) => DropdownButtonFormField<Lecture?>(
         initialValue: _selectedLecture,
         decoration: const InputDecoration(labelText: 'Lecture'),
         isExpanded: true,
         items: [
-          const DropdownMenuItem<Lecture?>(value: null, child: Text('All Lectures')),
-          ...lectures.map((l) => DropdownMenuItem(
-                value: l,
-                child: Text(
-                  '${l.dayOfWeek[0].toUpperCase()}${l.dayOfWeek.substring(1)} ${TimeOfDayUtils.displayLabel(l.startTime)}',
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )),
+          const DropdownMenuItem<Lecture?>(
+            value: null,
+            child: Text('All Lectures'),
+          ),
+          ...lectures.map(
+            (l) => DropdownMenuItem(
+              value: l,
+              child: Text(
+                '${l.dayOfWeek[0].toUpperCase()}${l.dayOfWeek.substring(1)} ${TimeOfDayUtils.displayLabel(l.startTime)}',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
         ],
         onChanged: (v) => setState(() => _selectedLecture = v),
       ),
@@ -171,22 +197,30 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
   }
 
   Widget _buildStudentDropdown() {
-    final studentsAsync =
-        ref.watch(allStudentsForClassControllerProvider(classId: _selectedClass!.id));
+    final studentsAsync = ref.watch(
+      allStudentsForClassControllerProvider(classId: _selectedClass!.id),
+    );
     return studentsAsync.when(
       loading: () => const LinearProgressIndicator(),
-      error: (e, _) => Text('Failed: ${friendlyErrorMessage(e)}',
-          style: const TextStyle(color: Colors.red, fontSize: 12)),
+      error: (e, _) => Text(
+        'Failed: ${friendlyErrorMessage(e)}',
+        style: const TextStyle(color: Colors.red, fontSize: 12),
+      ),
       data: (students) => DropdownButtonFormField<Student?>(
         initialValue: _selectedStudent,
         decoration: const InputDecoration(labelText: 'Student'),
         isExpanded: true,
         items: [
-          const DropdownMenuItem<Student?>(value: null, child: Text('All Students')),
-          ...students.map((s) => DropdownMenuItem(
-                value: s,
-                child: Text(s.fullName, overflow: TextOverflow.ellipsis),
-              )),
+          const DropdownMenuItem<Student?>(
+            value: null,
+            child: Text('All Students'),
+          ),
+          ...students.map(
+            (s) => DropdownMenuItem(
+              value: s,
+              child: Text(s.fullName, overflow: TextOverflow.ellipsis),
+            ),
+          ),
         ],
         onChanged: (v) => setState(() => _selectedStudent = v),
       ),
@@ -194,23 +228,28 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
   }
 
   Widget _buildResults() {
-    final studentsAsync =
-        ref.watch(allStudentsForClassControllerProvider(classId: _selectedClass!.id));
+    final studentsAsync = ref.watch(
+      allStudentsForClassControllerProvider(classId: _selectedClass!.id),
+    );
     final phoneByStudentId = {
-      for (final s in studentsAsync.valueOrNull ?? <Student>[]) s.id: s.guardianPhone,
+      for (final s in studentsAsync.valueOrNull ?? <Student>[])
+        s.id: s.guardianPhone,
     };
 
-    final recordsAsync = ref.watch(studentAttendanceListControllerProvider(
-      classId: _selectedClass!.id,
-      date: _date,
-      lectureId: _selectedLecture?.id,
-      studentId: _selectedStudent?.id,
-      status: _selectedStatus,
-    ));
+    final recordsAsync = ref.watch(
+      studentAttendanceListControllerProvider(
+        classId: _selectedClass!.id,
+        date: _date,
+        lectureId: _selectedLecture?.id,
+        studentId: _selectedStudent?.id,
+        status: _selectedStatus,
+      ),
+    );
 
     return recordsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
+      error: (e, _) =>
+          Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
       data: (records) {
         if (records.isEmpty) {
           return const Center(child: Text('No attendance records found'));
@@ -226,19 +265,31 @@ class _ViewStudentAttendanceScreenState extends ConsumerState<ViewStudentAttenda
               DataColumn(label: Text('Remarks')),
             ],
             rows: records
-                .map((r) => DataRow(cells: [
+                .map(
+                  (r) => DataRow(
+                    cells: [
                       DataCell(Text(r.studentName)),
                       DataCell(Text(phoneByStudentId[r.studentId] ?? '-')),
                       DataCell(Text(r.date)),
-                      DataCell(Chip(
-                        label: Text(r.status[0].toUpperCase() + r.status.substring(1),
-                            style: const TextStyle(color: Colors.white, fontSize: 12)),
-                        backgroundColor: _statusColor(r.status),
-                        padding: EdgeInsets.zero,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      )),
+                      DataCell(
+                        Chip(
+                          label: Text(
+                            r.status[0].toUpperCase() + r.status.substring(1),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                          backgroundColor: _statusColor(r.status),
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
                       DataCell(Text(r.remarks ?? '-')),
-                    ]))
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         );

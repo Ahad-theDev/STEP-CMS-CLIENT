@@ -2,7 +2,7 @@ import 'package:cms/features/attendance/presentation/widgets/trend_pie_chart.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/class_trends_controller.dart';
 
@@ -38,7 +38,7 @@ class _ClassTrendsScreenState extends ConsumerState<ClassTrendsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Class Attendance Trends')),

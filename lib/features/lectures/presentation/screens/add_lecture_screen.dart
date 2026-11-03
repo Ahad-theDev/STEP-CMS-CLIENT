@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/teachers/data/models/teacher.dart';
@@ -70,8 +70,9 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
         _selectedDay == null ||
         _startTime == null ||
         _endTime == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please fill in all fields')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
       return;
     }
 
@@ -85,17 +86,21 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
       endTime: _endTime!,
     );
 
-    final lecture = await ref.read(addLectureControllerProvider.notifier).createLecture(request);
+    final lecture = await ref
+        .read(addLectureControllerProvider.notifier)
+        .createLecture(request);
     if (!mounted || lecture == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lecture created')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Lecture created')));
     Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(addLectureControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final teachersAsync = ref.watch(teachersListControllerProvider);
     final subjectsAsync = ref.watch(subjectsListControllerProvider);
     final isLoading = state.isLoading;
@@ -110,16 +115,23 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
             children: [
               classesAsync.when(
                 loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: LinearProgressIndicator()),
-                error: (e, _) =>
-                    Text('Failed to load classes: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                ),
+                error: (e, _) => Text(
+                  'Failed to load classes: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 data: (classes) => DropdownButtonFormField<SchoolClass>(
                   initialValue: _selectedClass,
                   decoration: const InputDecoration(labelText: 'Class'),
                   items: classes
-                      .map((c) =>
-                          DropdownMenuItem(value: c, child: Text('${c.name} - ${c.section}')))
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text('${c.name} - ${c.section}'),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedClass = v),
                   validator: (v) => v == null ? 'Required' : null,
@@ -128,15 +140,21 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
               const SizedBox(height: 12),
               teachersAsync.when(
                 loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: LinearProgressIndicator()),
-                error: (e, _) =>
-                    Text('Failed to load teachers: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                ),
+                error: (e, _) => Text(
+                  'Failed to load teachers: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 data: (teachers) => DropdownButtonFormField<Teacher>(
                   initialValue: _selectedTeacher,
                   decoration: const InputDecoration(labelText: 'Teacher'),
                   items: teachers
-                      .map((t) => DropdownMenuItem(value: t, child: Text(t.fullName)))
+                      .map(
+                        (t) =>
+                            DropdownMenuItem(value: t, child: Text(t.fullName)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedTeacher = v),
                   validator: (v) => v == null ? 'Required' : null,
@@ -145,15 +163,20 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
               const SizedBox(height: 12),
               subjectsAsync.when(
                 loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: LinearProgressIndicator()),
-                error: (e, _) =>
-                    Text('Failed to load subjects: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: LinearProgressIndicator(),
+                ),
+                error: (e, _) => Text(
+                  'Failed to load subjects: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 data: (subjects) => DropdownButtonFormField<Subject>(
                   initialValue: _selectedSubject,
                   decoration: const InputDecoration(labelText: 'Subject'),
                   items: subjects
-                      .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
+                      .map(
+                        (s) => DropdownMenuItem(value: s, child: Text(s.name)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _selectedSubject = v),
                   validator: (v) => v == null ? 'Required' : null,
@@ -164,8 +187,12 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
                 initialValue: _selectedDay,
                 decoration: const InputDecoration(labelText: 'Day of Week'),
                 items: weekDays
-                    .map((d) => DropdownMenuItem(
-                        value: d, child: Text(d[0].toUpperCase() + d.substring(1))))
+                    .map(
+                      (d) => DropdownMenuItem(
+                        value: d,
+                        child: Text(d[0].toUpperCase() + d.substring(1)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (v) => setState(() => _selectedDay = v),
                 validator: (v) => v == null ? 'Required' : null,
@@ -183,8 +210,14 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
                     child: InkWell(
                       onTap: _pickStartTime,
                       child: InputDecorator(
-                        decoration: const InputDecoration(labelText: 'Start Time'),
-                        child: Text(_startTime == null ? 'Tap to select' : _startTime!.format(context)),
+                        decoration: const InputDecoration(
+                          labelText: 'Start Time',
+                        ),
+                        child: Text(
+                          _startTime == null
+                              ? 'Tap to select'
+                              : _startTime!.format(context),
+                        ),
                       ),
                     ),
                   ),
@@ -193,8 +226,14 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
                     child: InkWell(
                       onTap: _pickEndTime,
                       child: InputDecorator(
-                        decoration: const InputDecoration(labelText: 'End Time'),
-                        child: Text(_endTime == null ? 'Tap to select' : _endTime!.format(context)),
+                        decoration: const InputDecoration(
+                          labelText: 'End Time',
+                        ),
+                        child: Text(
+                          _endTime == null
+                              ? 'Tap to select'
+                              : _endTime!.format(context),
+                        ),
                       ),
                     ),
                   ),
@@ -204,13 +243,19 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    'Failed: ${friendlyErrorMessage(state.error!)}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Create Lecture'),
               ),
             ],

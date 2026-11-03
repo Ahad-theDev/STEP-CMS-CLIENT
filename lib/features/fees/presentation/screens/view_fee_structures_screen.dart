@@ -2,7 +2,7 @@ import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
 import '../../application/fee_structures_list_controller.dart';
 import '../../data/models/fee_structure.dart';
@@ -47,7 +47,7 @@ class _ViewFeeStructuresScreenState
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
 
     return FeePage(
       appBar: AppBar(title: const Text('View Fee Structure')),

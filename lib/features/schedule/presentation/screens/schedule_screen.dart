@@ -3,7 +3,7 @@ import 'package:cms/features/subjects/data/models/subject.dart';
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cms/features/classes/application/classes_list_controller.dart';
+import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/core/utils/time_of_day_utils.dart';
@@ -22,9 +22,7 @@ class ScheduleScreen extends ConsumerStatefulWidget {
 
 class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   DateTime _selectedDate = DateTime.now();
-  
-  
-  
+
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -37,9 +35,6 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     }
   }
 
-  
-  
-  
   String _formatDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
@@ -75,30 +70,44 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           'Teachers already notified for this date will be skipped.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Publish')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Publish'),
+          ),
         ],
       ),
     );
     if (confirmed != true) return;
 
-    final result = await ref.read(publishControllerProvider.notifier).publish(_selectedDate);
+    final result = await ref
+        .read(publishControllerProvider.notifier)
+        .publish(_selectedDate);
     if (!mounted) return;
 
     if (result == null) {
       final error = ref.read(publishControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Publish failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Publish failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}',
+          ),
+        ),
+      );
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        'Notified ${result.notified.length} teacher(s)'
-        '${result.skippedDuplicate.isNotEmpty ? ', skipped ${result.skippedDuplicate.length} already notified' : ''}',
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Notified ${result.notified.length} teacher(s)'
+          '${result.skippedDuplicate.isNotEmpty ? ', skipped ${result.skippedDuplicate.length} already notified' : ''}',
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -107,7 +116,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       schedulePreviewControllerProvider(date: _selectedDate),
     );
     final publishState = ref.watch(publishControllerProvider);
-    final classesAsync = ref.watch(classesListControllerProvider(page: 1));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final teachersAsync = ref.watch(teachersListControllerProvider);
     final subjectsAsync = ref.watch(subjectsListControllerProvider);
 
@@ -165,7 +174,9 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.campaign_rounded, size: 18),
                         label: const Text('Publish'),
@@ -179,8 +190,11 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           Expanded(
             child: previewAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) =>
-                  Center(child: Text('Failed to load schedule: ${friendlyErrorMessage(e)}')),
+              error: (e, _) => Center(
+                child: Text(
+                  'Failed to load schedule: ${friendlyErrorMessage(e)}',
+                ),
+              ),
               data: (preview) {
                 if (preview.isHoliday) {
                   return const Center(
@@ -302,7 +316,10 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                           children: [
                             Text(
                               subjectNameById[lec.subjectId] ?? lec.subjectId,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -319,12 +336,17 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              lec.status[0].toUpperCase() + lec.status.substring(1),
+                              lec.status[0].toUpperCase() +
+                                  lec.status.substring(1),
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: lec.status == 'cancelled' ? Colors.red : Colors.black,
-                                decoration: lec.status == 'cancelled' ? TextDecoration.lineThrough : null,
+                                color: lec.status == 'cancelled'
+                                    ? Colors.red
+                                    : Colors.black,
+                                decoration: lec.status == 'cancelled'
+                                    ? TextDecoration.lineThrough
+                                    : null,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
