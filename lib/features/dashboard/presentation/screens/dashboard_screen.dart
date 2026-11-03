@@ -36,23 +36,24 @@ class DashboardScreen extends ConsumerWidget {
   PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
     final bool isAdmin = user.role == 'management' || user.role == 'principal';
     final bool canAccessAi = isAdmin || user.role == 'teacher';
+    final bool isCampusUser = canAccessAi;
     final compact = MediaQuery.sizeOf(context).width < 480;
     return AppBar(
-      backgroundColor: isAdmin ? const Color(0xFFF4F1FC) : null,
-      foregroundColor: isAdmin ? CampusStyle.ink : null,
-      surfaceTintColor: isAdmin ? Colors.transparent : null,
+      backgroundColor: isCampusUser ? const Color(0xFFF4F1FC) : null,
+      foregroundColor: isCampusUser ? CampusStyle.ink : null,
+      surfaceTintColor: isCampusUser ? Colors.transparent : null,
       elevation: 0,
-      toolbarHeight: isAdmin ? 72 : kToolbarHeight,
+      toolbarHeight: isCampusUser ? 72 : kToolbarHeight,
       centerTitle: false,
-      titleSpacing: isAdmin ? 12 : null,
+      titleSpacing: isCampusUser ? 12 : null,
       leadingWidth: isAdmin ? 68 : null,
-      iconTheme: isAdmin
+      iconTheme: isCampusUser
           ? const IconThemeData(color: CampusStyle.primary)
           : null,
-      actionsIconTheme: isAdmin
+      actionsIconTheme: isCampusUser
           ? const IconThemeData(color: CampusStyle.primary)
           : null,
-      title: isAdmin
+      title: isCampusUser
           ? (compact
                 ? const Text(
                     'STEP CMS',
@@ -62,20 +63,20 @@ class DashboardScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   )
-                : _adminIdentity())
+                : _dashboardIdentity())
           : Text(
               'Welcome, ${user.fullName}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-      bottom: isAdmin && compact
+      bottom: isCampusUser && compact
           ? PreferredSize(
               preferredSize: const Size.fromHeight(64),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: _adminIdentity(),
+                  child: _dashboardIdentity(),
                 ),
               ),
             )
@@ -121,7 +122,7 @@ class DashboardScreen extends ConsumerWidget {
         IconButtonTheme(
           data: IconButtonThemeData(
             style: IconButton.styleFrom(
-              foregroundColor: isAdmin
+              foregroundColor: isCampusUser
                   ? CampusStyle.primary
                   : Theme.of(context).colorScheme.onSurface,
             ),
@@ -131,13 +132,16 @@ class DashboardScreen extends ConsumerWidget {
         IconButton(
           tooltip: 'Sign out',
           onPressed: () => _logout(context, ref),
-          icon: Icon(Icons.logout, color: isAdmin ? CampusStyle.primary : null),
+          icon: Icon(
+            Icons.logout,
+            color: isCampusUser ? CampusStyle.primary : null,
+          ),
         ),
       ],
     );
   }
 
-  Widget _adminIdentity() => Tooltip(
+  Widget _dashboardIdentity() => Tooltip(
     message: user.fullName,
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -146,6 +150,8 @@ class DashboardScreen extends ConsumerWidget {
         Text(
           user.role == 'principal'
               ? 'PRINCIPAL • STEP ACADEMY'
+              : user.role == 'teacher'
+              ? 'TEACHER • STEP ACADEMY'
               : 'ADMINISTRATION • STEP ACADEMY',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -413,7 +419,7 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 )
               : null,
-          body: isAdmin
+          body: isAdmin || user.role == 'teacher'
               ? Stack(
                   children: [
                     const Positioned.fill(child: CampusBackground()),

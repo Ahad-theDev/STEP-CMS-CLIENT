@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/staff_list_controller.dart';
@@ -18,7 +19,7 @@ class _SelectStaffScreenState extends ConsumerState<SelectStaffScreen> {
   Widget build(BuildContext context) {
     final staffAsync = ref.watch(staffListControllerProvider(page: _page));
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: Text(widget.title)),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -35,14 +36,16 @@ class _SelectStaffScreenState extends ConsumerState<SelectStaffScreen> {
             Expanded(
               child: staffAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Failed to load staff: $e')),
+                error: (e, _) =>
+                    Center(child: Text('Failed to load staff: $e')),
                 data: (staffList) {
                   final filtered = _query.isEmpty
                       ? staffList
                       : staffList.where((s) {
                           final q = _query.toLowerCase();
                           return s.fullName.toLowerCase().contains(q) ||
-                              (s.designation?.toLowerCase().contains(q) ?? false);
+                              (s.designation?.toLowerCase().contains(q) ??
+                                  false);
                         }).toList();
 
                   if (filtered.isEmpty) {
@@ -58,7 +61,9 @@ class _SelectStaffScreenState extends ConsumerState<SelectStaffScreen> {
                             final s = filtered[index];
                             return ListTile(
                               title: Text(s.fullName),
-                              subtitle: Text(s.designation ?? 'No designation set'),
+                              subtitle: Text(
+                                s.designation ?? 'No designation set',
+                              ),
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () => Navigator.of(context).pop(s),
                             );
@@ -71,7 +76,9 @@ class _SelectStaffScreenState extends ConsumerState<SelectStaffScreen> {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.chevron_left),
-                              onPressed: _page > 1 ? () => setState(() => _page -= 1) : null,
+                              onPressed: _page > 1
+                                  ? () => setState(() => _page -= 1)
+                                  : null,
                             ),
                             Text('Page $_page'),
                             IconButton(

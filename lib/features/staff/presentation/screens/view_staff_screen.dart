@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/staff_member.dart';
@@ -13,16 +14,18 @@ class ViewStaffScreen extends ConsumerStatefulWidget {
 class _ViewStaffScreenState extends ConsumerState<ViewStaffScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Staff Details')),
-      body: Padding(
+      body: CampusScrollView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Profile section
             const CircleAvatar(
               radius: 50,
-              backgroundColor: Colors.blue,
+              backgroundColor: Color(0xFF253E7A),
               child: Icon(Icons.person, size: 50, color: Colors.white),
             ),
             const SizedBox(height: 24),
@@ -50,10 +53,7 @@ class _ViewStaffScreenState extends ConsumerState<ViewStaffScreen> {
             // Details section
             const Text(
               'Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 

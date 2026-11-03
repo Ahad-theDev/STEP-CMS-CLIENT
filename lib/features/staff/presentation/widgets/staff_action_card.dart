@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class StaffActionCard extends StatelessWidget {
+  final double width;
   final IconData icon;
   final String title;
   final String description;
@@ -12,6 +13,7 @@ class StaffActionCard extends StatelessWidget {
 
   const StaffActionCard({
     super.key,
+    this.width = 220,
     required this.icon,
     required this.title,
     required this.description,
@@ -25,29 +27,44 @@ class StaffActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 220,
+      width: width,
       child: Card(
-        elevation: 1,
+        elevation: 0,
         color: backgroundColor,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 32, color: iconColor),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: (iconColor ?? Theme.of(context).colorScheme.primary)
+                      .withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  icon,
+                  size: 26,
+                  color: iconColor ?? Theme.of(context).colorScheme.primary,
+                ),
+              ),
               const SizedBox(height: 12),
-              Text(title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold, color: Colors.black87)),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(description,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: Colors.black54)),
+              Text(
+                description,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,

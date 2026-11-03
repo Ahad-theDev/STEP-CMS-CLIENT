@@ -17,56 +17,54 @@ class StaffActionCardsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Row(
-        children: [
-          StaffActionCard(
-            icon: Icons.person_add_alt_1_rounded,
-            title: 'Create Staff',
-            description: 'Add a new staff member',
-            buttonLabel: 'Create Now',
-            onPressed: onCreate,
-            backgroundColor: const Color(0xFFE3F2FD),
-            iconColor: const Color(0xFF1565C0),
-            buttonColor: const Color(0xFF1565C0),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = (constraints.maxWidth / 260).floor().clamp(1, 4);
+        final cardWidth = (constraints.maxWidth - (columns - 1) * 14) / columns;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Wrap(
+            spacing: 14,
+            runSpacing: 14,
+            children: [
+              StaffActionCard(
+                width: cardWidth,
+                icon: Icons.person_add_alt_1_rounded,
+                title: 'Create Staff',
+                description: 'Add a new staff member',
+                buttonLabel: 'Create Now',
+                onPressed: onCreate,
+              ),
+              StaffActionCard(
+                width: cardWidth,
+                icon: Icons.edit_rounded,
+                title: 'Update Staff',
+                description: 'Edit staff information',
+                buttonLabel: 'Update Now',
+                onPressed: onUpdate,
+              ),
+              StaffActionCard(
+                width: cardWidth,
+                icon: Icons.person_remove_rounded,
+                title: 'Delete Staff',
+                description: 'Deactivate a staff record',
+                buttonLabel: 'Delete Now',
+                onPressed: onDelete,
+                iconColor: const Color(0xFFB43C50),
+                buttonColor: const Color(0xFFB43C50),
+              ),
+              StaffActionCard(
+                width: cardWidth,
+                icon: Icons.search_rounded,
+                title: 'Search Staff',
+                description: 'Search and view all staff',
+                buttonLabel: 'Search Now',
+                onPressed: onSearch,
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          StaffActionCard(
-            icon: Icons.edit_rounded,
-            title: 'Update Staff',
-            description: 'Edit staff information',
-            buttonLabel: 'Update Now',
-            onPressed: onUpdate,
-            backgroundColor: const Color(0xFFF3E5F5),
-            iconColor: const Color(0xFF6A1B9A),
-            buttonColor: const Color(0xFF6A1B9A),
-          ),
-          const SizedBox(width: 12),
-          StaffActionCard(
-            icon: Icons.person_remove_rounded,
-            title: 'Delete Staff',
-            description: 'Remove staff from the system',
-            buttonLabel: 'Delete Now',
-            onPressed: onDelete,
-            backgroundColor: const Color(0xFFFFEBEE),
-            iconColor: const Color(0xFFC62828),
-            buttonColor: const Color(0xFFC62828),
-          ),
-          const SizedBox(width: 12),
-          StaffActionCard(
-            icon: Icons.search_rounded,
-            title: 'Search Staff',
-            description: 'Search and view all staff',
-            buttonLabel: 'Search Now',
-            onPressed: onSearch,
-            backgroundColor: const Color(0xFFF3E5F5),
-            iconColor: const Color(0xFF6A1B9A),
-            buttonColor: const Color(0xFF6A1B9A),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

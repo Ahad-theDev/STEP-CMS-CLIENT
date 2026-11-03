@@ -1,3 +1,4 @@
+import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
@@ -23,7 +24,9 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
   void initState() {
     super.initState();
     _fullNameController = TextEditingController(text: widget.staff.fullName);
-    _designationController = TextEditingController(text: widget.staff.designation ?? '');
+    _designationController = TextEditingController(
+      text: widget.staff.designation ?? '',
+    );
     _joinDate = widget.staff.joinDate;
   }
 
@@ -44,7 +47,6 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
     if (picked != null) setState(() => _joinDate = picked);
   }
 
-  
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -54,11 +56,14 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
       joinDate: _joinDate,
     );
 
-    final updated =
-        await ref.read(updateStaffControllerProvider.notifier).updateStaff(widget.staff.id, request);
+    final updated = await ref
+        .read(updateStaffControllerProvider.notifier)
+        .updateStaff(widget.staff.id, request);
     if (!mounted || updated == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${updated.fullName} updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${updated.fullName} updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -67,14 +72,21 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
     final state = ref.watch(updateStaffControllerProvider);
     final isLoading = state.isLoading;
 
-    return Scaffold(
+    return CampusPage(
       appBar: AppBar(title: const Text('Update Staff')),
-      body: Padding(
+      body: CampusScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const CampusSectionIntro(
+                title: 'Update staff details',
+                subtitle: 'Review the profile and save your changes.',
+              ),
+              const SizedBox(height: 22),
               TextFormField(
                 controller: _fullNameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
@@ -101,13 +113,19 @@ class _UpdateStaffScreenState extends ConsumerState<UpdateStaffScreen> {
               if (state.hasError)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    'Failed: ${friendlyErrorMessage(state.error!)}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Save Changes'),
               ),
             ],
