@@ -1,3 +1,4 @@
+import 'teacher_trends_controller.dart';
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'staff_attendance_repository_provider.dart';
@@ -11,11 +12,14 @@ class MarkStaffAttendanceController extends _$MarkStaffAttendanceController {
   @override
   FutureOr<void> build() {}
 
-  Future<StaffAttendance?> markAttendance(StaffAttendanceMarkRequest request) async {
+  Future<StaffAttendance?> markAttendance(
+    StaffAttendanceMarkRequest request,
+  ) async {
     state = const AsyncLoading();
     final repo = ref.read(staffAttendanceRepositoryProvider);
     try {
       final result = await repo.markAttendance(request);
+      ref.invalidate(teacherTrendsControllerProvider);
       state = const AsyncData(null);
       return result;
     } catch (e, st) {

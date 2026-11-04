@@ -6,7 +6,8 @@ class TeacherClassTrend {
 
   TeacherClassTrend({required this.classId, required this.trends});
 
-  factory TeacherClassTrend.fromJson(Map<String, dynamic> json) => TeacherClassTrend(
+  factory TeacherClassTrend.fromJson(Map<String, dynamic> json) =>
+      TeacherClassTrend(
         classId: json['class_id'] as String,
         trends: (json['trends'] as List)
             .map((e) => TrendPoint.fromJson(e as Map<String, dynamic>))
@@ -19,15 +20,21 @@ class TeacherTrendsResponse {
   final String dateFrom;
   final String dateTo;
   final List<TeacherClassTrend> classes;
+  final List<TrendPoint> attendanceTrends;
 
   TeacherTrendsResponse({
     required this.teacherId,
     required this.dateFrom,
     required this.dateTo,
     required this.classes,
+    this.attendanceTrends = const [],
   });
 
-  factory TeacherTrendsResponse.fromJson(Map<String, dynamic> json) => TeacherTrendsResponse(
+  factory TeacherTrendsResponse.fromJson(Map<String, dynamic> json) =>
+      TeacherTrendsResponse(
+        attendanceTrends: ((json['attendance_trends'] as List?) ?? [])
+            .map((e) => TrendPoint.fromJson(Map<String, dynamic>.from(e)))
+            .toList(),
         teacherId: json['teacher_id'] as String,
         dateFrom: json['date_from'] as String,
         dateTo: json['date_to'] as String,

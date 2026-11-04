@@ -30,7 +30,7 @@ class _TeacherTrendsScreenState extends ConsumerState<TeacherTrendsScreen> {
       lastDate: DateTime(2100),
       initialDateRange: DateTimeRange(start: _dateFrom, end: _dateTo),
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
         _dateFrom = picked.start;
         _dateTo = picked.end;
@@ -64,7 +64,18 @@ class _TeacherTrendsScreenState extends ConsumerState<TeacherTrendsScreen> {
                           DropdownMenuItem(value: t, child: Text(t.fullName)),
                     )
                     .toList(),
-                onChanged: (v) => setState(() => _selectedTeacher = v),
+                onChanged: (v) {
+                  setState(() => _selectedTeacher = v);
+                  if (v != null) {
+                    ref.invalidate(
+                      teacherTrendsControllerProvider(
+                        teacherId: v.id,
+                        dateFrom: _dateFrom,
+                        dateTo: _dateTo,
+                      ),
+                    );
+                  }
+                },
               ),
             ),
             const SizedBox(height: 12),
@@ -99,7 +110,7 @@ class _TeacherTrendsScreenState extends ConsumerState<TeacherTrendsScreen> {
         child: Text('Failed to load trends: ${friendlyErrorMessage(e)}'),
       ),
       data: (response) {
-        if (response.classes.isEmpty) {
+        if (response.classes.isEmpty && response.attendanceTrends.isEmpty) {
           return const Center(
             child: Text('No attendance data for this teacher in this range'),
           );
@@ -109,22 +120,44 @@ class _TeacherTrendsScreenState extends ConsumerState<TeacherTrendsScreen> {
             c.id: '${c.name}-${c.section}',
         };
         return ListView(
-          children: response.classes.map((classTrend) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    classNameById[classTrend.classId] ?? classTrend.classId,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  TrendPieChart(points: classTrend.trends),
-                ],
-              ),
-            );
-          }).toList(),
+          children: [
+            const Text(
+              "Teacher’s own attendance",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            if (response.attendanceTrends.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Text('No teacher check-in records in this range.'),
+              )
+            else
+              TrendPieChart(points: response.attendanceTrends),
+            const SizedBox(height: 24),
+            const Text(
+              'Student attendance in their classes',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            if (response.classes.isEmpty)
+              const Text('No student attendance recorded in this range.'),
+            ...response.classes.map((classTrend) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      classNameById[classTrend.classId] ?? classTrend.classId,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    TrendPieChart(points: classTrend.trends),
+                  ],
+                ),
+              );
+            }),
+          ],
         );
       },
     );
