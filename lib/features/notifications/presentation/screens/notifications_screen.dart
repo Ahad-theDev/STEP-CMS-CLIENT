@@ -13,50 +13,71 @@ class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   _NotificationsFilter _filter = _NotificationsFilter.all;
   int _page = 1;
 
-  bool? get _isReadParam => _filter == _NotificationsFilter.unread ? false : null;
+  bool? get _isReadParam =>
+      _filter == _NotificationsFilter.unread ? false : null;
 
   Future<void> _refresh() async {
     await ref
-        .read(notificationsListControllerProvider(isRead: _isReadParam, page: _page).notifier)
+        .read(
+          notificationsListControllerProvider(
+            isRead: _isReadParam,
+            page: _page,
+          ).notifier,
+        )
         .refresh();
     ref.invalidate(unreadNotificationsControllerProvider);
   }
 
   Future<void> _markRead(NotificationItem item) async {
     if (item.isRead) return;
-    final result = await ref.read(markNotificationReadControllerProvider.notifier).markRead(item.id);
+    final result = await ref
+        .read(markNotificationReadControllerProvider.notifier)
+        .markRead(item.id);
     if (!mounted) return;
     if (result == null) {
       final error = ref.read(markNotificationReadControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}',
+          ),
+        ),
+      );
       return;
     }
-    ref.invalidate(notificationsListControllerProvider(isRead: _isReadParam, page: _page));
+    ref.invalidate(notificationsListControllerProvider);
     ref.invalidate(unreadNotificationsControllerProvider);
   }
 
   Future<void> _markAllRead() async {
-    final count = await ref.read(markAllNotificationsReadControllerProvider.notifier).markAllRead();
+    final count = await ref
+        .read(markAllNotificationsReadControllerProvider.notifier)
+        .markAllRead();
     if (!mounted) return;
     if (count == null) {
       final error = ref.read(markAllNotificationsReadControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}',
+          ),
+        ),
+      );
       return;
     }
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Marked $count notification(s) as read')));
-    ref.invalidate(notificationsListControllerProvider(isRead: _isReadParam, page: _page));
+    setState(() => _page = 1);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Marked $count notification(s) as read')),
+    );
+    ref.invalidate(notificationsListControllerProvider);
     ref.invalidate(unreadNotificationsControllerProvider);
   }
 
@@ -92,24 +113,34 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(header,
-            style: TextStyle(fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold)),
+        Text(
+          header,
+          style: TextStyle(
+            fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
+          ),
+        ),
         if (bulletLines.isNotEmpty) const SizedBox(height: 4),
-        ...bulletLines.map((line) => Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                line.replaceFirst(RegExp(r'^-\s*'), '• '),
-                style: TextStyle(fontSize: 13, color: lineColor(line)),
-              ),
-            )),
+        ...bulletLines.map(
+          (line) => Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              line.replaceFirst(RegExp(r'^-\s*'), '• '),
+              style: TextStyle(fontSize: 13, color: lineColor(line)),
+            ),
+          ),
+        ),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final notificationsAsync =
-        ref.watch(notificationsListControllerProvider(isRead: _isReadParam, page: _page));
+    final isMarking =
+        ref.watch(markNotificationReadControllerProvider).isLoading ||
+        ref.watch(markAllNotificationsReadControllerProvider).isLoading;
+    final notificationsAsync = ref.watch(
+      notificationsListControllerProvider(isRead: _isReadParam, page: _page),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -123,7 +154,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           IconButton(
             icon: const Icon(Icons.done_all),
             tooltip: 'Mark all as read',
-            onPressed: _markAllRead,
+            onPressed: isMarking ? null : _markAllRead,
           ),
         ],
       ),
@@ -133,8 +164,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             padding: const EdgeInsets.all(16),
             child: SegmentedButton<_NotificationsFilter>(
               segments: const [
-                ButtonSegment(value: _NotificationsFilter.all, label: Text('All')),
-                ButtonSegment(value: _NotificationsFilter.unread, label: Text('Unread')),
+                ButtonSegment(
+                  value: _NotificationsFilter.all,
+                  label: Text('All'),
+                ),
+                ButtonSegment(
+                  value: _NotificationsFilter.unread,
+                  label: Text('Unread'),
+                ),
               ],
               selected: {_filter},
               onSelectionChanged: (s) => setState(() {
@@ -148,7 +185,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               onRefresh: _refresh,
               child: notificationsAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
+                error: (e, _) => Center(
+                  child: Text('Failed to load: ${friendlyErrorMessage(e)}'),
+                ),
                 data: (response) {
                   if (response.items.isEmpty) {
                     return ListView(
@@ -162,13 +201,15 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   }
                   return ListView.separated(
                     itemCount: response.items.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    separatorBuilder: (_, _) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final item = response.items[index];
                       return ListTile(
                         leading: Icon(
                           _iconForType(item.type),
-                          color: item.isRead ? Colors.grey : Theme.of(context).colorScheme.primary,
+                          color: item.isRead
+                              ? Colors.grey
+                              : Theme.of(context).colorScheme.primary,
                         ),
                         title: _buildMessage(context, item),
                         subtitle: Text(_fmt(item.createdAt)),
@@ -182,7 +223,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                   shape: BoxShape.circle,
                                 ),
                               ),
-                        onTap: () => _markRead(item),
+                        onTap: isMarking || item.isRead
+                            ? null
+                            : () => _markRead(item),
                       );
                     },
                   );
@@ -190,7 +233,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               ),
             ),
           ),
-          if ((notificationsAsync.valueOrNull?.total ?? 0) > notificationsPageSize)
+          if ((notificationsAsync.valueOrNull?.total ?? 0) >
+              notificationsPageSize)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
@@ -198,13 +242,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.chevron_left),
-                    onPressed: _page > 1 ? () => setState(() => _page -= 1) : null,
+                    onPressed: _page > 1
+                        ? () => setState(() => _page -= 1)
+                        : null,
                   ),
                   Text('Page $_page'),
                   IconButton(
                     icon: const Icon(Icons.chevron_right),
-                    onPressed: (notificationsAsync.valueOrNull != null &&
-                            _page * notificationsPageSize < notificationsAsync.valueOrNull!.total)
+                    onPressed:
+                        (notificationsAsync.valueOrNull != null &&
+                            _page * notificationsPageSize <
+                                notificationsAsync.valueOrNull!.total)
                         ? () => setState(() => _page += 1)
                         : null,
                   ),
