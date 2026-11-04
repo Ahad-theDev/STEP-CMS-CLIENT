@@ -11,7 +11,7 @@ import '../../../auth/data/models/auth_user.dart';
 /// Splash screen with logo animation and smooth transition to login.
 ///
 /// Features:
-/// - Bounce/scale animation on the logo
+/// - Rounded-square logo matching native launch, then a gentle bounce
 /// - Minimum display duration to prevent flashing
 /// - Respects reduced motion accessibility setting
 /// - Smooth page transition to login screen
@@ -28,13 +28,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   // Configuration constants
   static const Duration _minDisplayDuration = Duration(milliseconds: 1500);
   static const Duration _animationDuration = Duration(milliseconds: 1200);
-  static const double _logoSize = 220;
-  static const double _maxScale = 1.15;
-  static const double _minScale = 0.85;
+  static const double _logoSize = 128;
 
   late final AnimationController _animationController;
-  late final Animation<double> _scaleAnimation;
   late final Animation<double> _opacityAnimation;
+  late final Animation<double> _scaleAnimation;
 
   bool _hasNavigated = false;
   bool _prefersReducedMotion = false;
@@ -50,23 +48,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       vsync: this,
     );
 
-    // Scale animation: starts at 0.85, bounces to 1.15, settles at 1.0
+    // First frame matches the native tile; then bounce gently and settle.
     _scaleAnimation = TweenSequence<double>([
-      // Scale up with overshoot (bounce effect)
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: _minScale,
-          end: _maxScale,
-        ).chain(CurveTween(curve: Curves.easeOutBack)),
-        weight: 50,
+          begin: 1.0,
+          end: 1.12,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 40,
       ),
-      // Settle back to 1.0
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: _maxScale,
+          begin: 1.12,
           end: 1.0,
         ).chain(CurveTween(curve: Curves.elasticOut)),
-        weight: 50,
+        weight: 60,
       ),
     ]).animate(_animationController);
 
@@ -178,41 +174,45 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final opacity = _prefersReducedMotion
+        ? const AlwaysStoppedAnimation<double>(1)
+        : _opacityAnimation;
     return Scaffold(
-      body: Stack(
-        children: [
-          const Positioned.fill(child: CampusBackground()),
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 40,
+      backgroundColor: const Color(0xFFE8E0F8),
+      body: LayoutBuilder(
+        builder: (context, constraints) => Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: FadeTransition(
+                opacity: opacity,
+                child: const CampusBackground(),
+              ),
+            ),
+            // Match native size and position before the Flutter bounce begins.
+            Center(
+              child: SizedBox(
+                width: _logoSize,
+                height: _logoSize,
+                child: ScaleTransition(
+                  scale: _prefersReducedMotion
+                      ? const AlwaysStoppedAnimation<double>(1)
+                      : _scaleAnimation,
+                  child: _buildLogo(context),
                 ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
+              ),
+            ),
+            Positioned(
+              top: constraints.maxHeight / 2 + _logoSize / 2 + 24,
+              left: 24,
+              right: 24,
+              bottom: 16,
+              child: FadeTransition(
+                opacity: opacity,
+                child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) => Opacity(
-                          opacity: _prefersReducedMotion
-                              ? 1
-                              : _opacityAnimation.value.clamp(0.0, 1.0),
-                          child: Transform.scale(
-                            scale: _prefersReducedMotion
-                                ? 1
-                                : _scaleAnimation.value.clamp(
-                                    0.0,
-                                    double.infinity,
-                                  ),
-                            child: child,
-                          ),
-                        ),
-                        child: _buildLogo(context),
-                      ),
-                      const SizedBox(height: 32),
                       const Text(
                         'STEP ACADEMY',
                         textAlign: TextAlign.center,
@@ -232,7 +232,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           color: CampusStyle.muted,
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 24),
                       if (!_prefersReducedMotion)
                         const SizedBox(
                           width: 22,
@@ -240,15 +240,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             color: CampusStyle.primary,
-                            backgroundColor: Color(0xFFDADDF4),
                             semanticsLabel: 'Opening your campus portal',
                           ),
-                        )
-                      else
-                        const Icon(
-                          Icons.school_outlined,
-                          color: CampusStyle.primary,
-                          size: 22,
                         ),
                       const SizedBox(height: 14),
                       const Text(
@@ -264,8 +257,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -276,15 +269,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       child: AspectRatio(
         aspectRatio: 1,
         child: Container(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(11),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [Color(0xFF153D79), Color(0xFF2867A9)],
             ),
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: const Color(0x8060A5FA), width: 1.5),
+            borderRadius: BorderRadius.circular(19),
+            border: Border.all(color: const Color(0x8060A5FA), width: 1),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x28243C78),
@@ -299,7 +292,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
             child: Image.asset(
               'lib/core/assets/logo/CMS-LOGO-F.png',
               fit: BoxFit.contain,
