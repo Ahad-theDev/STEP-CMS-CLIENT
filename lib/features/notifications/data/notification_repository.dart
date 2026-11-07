@@ -22,7 +22,7 @@ class NotificationRepository {
       queryParameters: {
         'page': page,
         'limit': limit,
-        if (isRead != null) 'is_read': isRead,
+        'is_read': ?isRead,
       },
     );
     return NotificationListResponse.fromJson(response.data);
