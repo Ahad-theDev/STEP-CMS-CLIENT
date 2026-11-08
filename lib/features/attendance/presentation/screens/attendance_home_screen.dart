@@ -8,6 +8,8 @@ import 'staff_attendance_list_screen.dart';
 import 'student_attendance_screen.dart';
 import 'attendance_summary_screen.dart';
 import 'defaulters_screen.dart';
+import 'admin_daily_attendance_screen.dart';
+import 'class_daily_attendance_screen.dart';
 
 enum _TrendsView { classTrends, teacherTrends }
 
@@ -102,6 +104,34 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                             spacing: 14,
                             runSpacing: 14,
                             children: [
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.co_present_rounded,
+                                title: 'Class In-Charge Attendance',
+                                description:
+                                    'Morning & closing checkpoint marks for classes',
+                                buttonLabel: 'Mark Daily',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const ClassDailyAttendanceScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.fact_check_rounded,
+                                title: 'Daily Attendance Review',
+                                description:
+                                    'Review full daily roster & audit corrections',
+                                buttonLabel: 'Review Daily',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AdminDailyAttendanceScreen(),
+                                  ),
+                                ),
+                              ),
                               AttendanceActionCard(
                                 width: cardWidth,
                                 icon: Icons.how_to_reg_rounded,

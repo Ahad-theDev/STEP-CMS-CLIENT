@@ -60,4 +60,19 @@ class ApiConstants {
   static const String notificationsReadAll = 'notifications/read-all';
   static const String aiQuery = 'ai/query';
   static const String aiSuggestions = 'ai/suggestions';
+
+  // Daily In-Charge Student Attendance
+  static const String dailyAttendanceClasses = 'daily-attendance/classes';
+  static String dailyAttendanceRoster(String classId) =>
+      'daily-attendance/classes/$classId/roster';
+  static String dailyAttendanceMorning(String classId) =>
+      'daily-attendance/classes/$classId/morning';
+  static String dailyAttendanceClosing(String classId) =>
+      'daily-attendance/classes/$classId/closing';
+  static String dailyAttendanceClass(String classId) =>
+      'daily-attendance/classes/$classId';
+  static String dailyAttendanceStudent(String studentId) =>
+      'daily-attendance/students/$studentId';
+  static String dailyAttendanceCorrect(String classId, String studentId) =>
+      'daily-attendance/classes/$classId/students/$studentId';
 }

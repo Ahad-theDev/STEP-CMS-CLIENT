@@ -4,6 +4,7 @@ import 'package:cms/features/attendance/presentation/screens/teacher/teacher_vie
 import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
+import 'package:cms/features/attendance/presentation/screens/class_daily_attendance_screen.dart';
 import 'package:cms/features/lectures/presentation/teacher/my_schedule_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,46 @@ class TeacherDashboardBody extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 16,
                 children: [
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.co_present_rounded,
+                              color: AppColors.primary,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Class In-Charge Attendance',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Mark morning and closing dismissal attendance for your assigned class.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            FilledButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const ClassDailyAttendanceScreen(),
+                                ),
+                              ),
+                              child: const Text('Mark Daily Attendance'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     width: cardWidth,
                     child: Card(
