@@ -1,6 +1,4 @@
 import 'package:cms/core/theme/campus_page.dart';
-import 'package:cms/core/utils/schedule_dates.dart';
-import 'package:cms/features/attendance/presentation/screens/teacher/mark_lecture_attendance_screen.dart';
 import 'package:cms/features/lectures/application/my_schedule_controller.dart';
 import 'package:cms/features/lectures/data/models/my_schedule_response.dart';
 import 'package:flutter/material.dart';
@@ -80,12 +78,6 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
     }
   }
 
-  DateTime _dateForLecture(MyScheduleLecture lecture) {
-    if (_customDate != null) return _customDate!;
-    if (_todayMode) return _todayDate;
-    return scheduleDateForWeekday(_todayDate, lecture.dayOfWeek);
-  }
-
   void _refreshSchedule() {
     ref.invalidate(
       myScheduleControllerProvider(
@@ -95,18 +87,53 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
     );
   }
 
-  Future<void> _openMarkAttendance(MyScheduleLecture lecture) async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => MarkLectureAttendanceScreen(
-          lectureId: lecture.id,
-          initialDate: _dateForLecture(lecture),
-        ),
-      ),
+  void _showLectureDetails(MyScheduleLecture lec, String? subjectName) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  subjectName ?? 'Subject ${lec.subjectId}',
+                  style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.schedule_rounded),
+                  title: Text(
+                    '${lec.dayOfWeek[0].toUpperCase()}${lec.dayOfWeek.substring(1)} • '
+                    '${TimeOfDayUtils.displayLabel(lec.startTime)} - ${TimeOfDayUtils.displayLabel(lec.endTime)}',
+                  ),
+                  subtitle: const Text('Scheduled Time'),
+                ),
+                ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.meeting_room_outlined),
+                  title: Text('Room ${lec.roomNumber}'),
+                  subtitle: const Text('Classroom / Hall'),
+                ),
+                ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.people_outline_rounded),
+                  title: Text('${lec.studentCount} students enrolled'),
+                  subtitle: const Text('Enrolled Students'),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        );
+      },
     );
-    if (result == true) {
-      ref.invalidate(myScheduleControllerProvider);
-    }
   }
 
   @override
@@ -126,102 +153,91 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
 
     return CampusPage(
       appBar: AppBar(
-        title: Text(
-          widget.markAttendanceOnly ? 'Mark Attendance' : 'My Schedule',
-        ),
+        title: const Text('My Schedule'),
         actions: [
           IconButton(
             tooltip: 'Refresh schedule',
             icon: const Icon(Icons.refresh_rounded),
             onPressed: _refreshSchedule,
           ),
-          if (!widget.markAttendanceOnly)
-            IconButton(
-              icon: const Icon(Icons.calendar_month_rounded),
-              tooltip: 'Pick Date',
-              onPressed: _pickCustomDate,
-            ),
+          IconButton(
+            icon: const Icon(Icons.calendar_month_rounded),
+            tooltip: 'Pick Date',
+            onPressed: _pickCustomDate,
+          ),
         ],
       ),
       body: Column(
         children: [
-          if (widget.markAttendanceOnly)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Today’s lectures • Select a lecture to mark student attendance.',
-              ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * .4,
             ),
-          if (!widget.markAttendanceOnly)
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * .4,
-              ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          ChoiceChip(
-                            label: const Text('Today'),
-                            selected: _todayMode,
-                            onSelected: (_) => _selectToday(),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('Today'),
+                          selected: _todayMode,
+                          onSelected: (_) => _selectToday(),
+                        ),
+                        ChoiceChip(
+                          label: const Text('Full Week'),
+                          selected:
+                              !_todayMode &&
+                              _selectedDay == null &&
+                              _customDate == null,
+                          onSelected: (_) => _selectFullWeek(),
+                        ),
+                        ChoiceChip(
+                          avatar: const Icon(Icons.event, size: 16),
+                          label: Text(
+                            _customDate != null
+                                ? _fmt(_customDate!)
+                                : 'Pick Date',
                           ),
-                          ChoiceChip(
-                            label: const Text('Full Week'),
+                          selected: _customDate != null,
+                          onSelected: (_) => _pickCustomDate(),
+                        ),
+                        ..._weekDays.map(
+                          (d) => ChoiceChip(
+                            label: Text(d[0].toUpperCase() + d.substring(1)),
                             selected:
                                 !_todayMode &&
-                                _selectedDay == null &&
+                                _selectedDay == d &&
                                 _customDate == null,
-                            onSelected: (_) => _selectFullWeek(),
+                            onSelected: (_) => setState(() {
+                              _todayMode = false;
+                              _customDate = null;
+                              _selectedDay = d;
+                            }),
                           ),
-                          ChoiceChip(
-                            avatar: const Icon(Icons.event, size: 16),
-                            label: Text(
-                              _customDate != null
-                                  ? _fmt(_customDate!)
-                                  : 'Pick Date',
-                            ),
-                            selected: _customDate != null,
-                            onSelected: (_) => _pickCustomDate(),
-                          ),
-                          ..._weekDays.map(
-                            (d) => ChoiceChip(
-                              label: Text(d[0].toUpperCase() + d.substring(1)),
-                              selected:
-                                  !_todayMode &&
-                                  _selectedDay == d &&
-                                  _customDate == null,
-                              onSelected: (_) => setState(() {
-                                _todayMode = false;
-                                _customDate = null;
-                                _selectedDay = d;
-                              }),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _customDate != null
-                            ? 'Showing timetable for ${_fmt(_customDate!)}. Tap any lecture to mark attendance.'
-                            : _todayMode
-                            ? 'Showing lectures scheduled for today. Tap any lecture to mark attendance.'
-                            : 'Weekly timetable template. Attendance opens on the lecture’s date in this week.',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _customDate != null
+                          ? 'Showing timetable for ${_fmt(_customDate!)}.'
+                          : _todayMode
+                          ? 'Showing lectures scheduled for today.'
+                          : 'Weekly timetable template.',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                    ),
+                  ],
                 ),
               ),
             ),
+          ),
           Expanded(
             child: scheduleAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -276,35 +292,13 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
                             'Subject ${lec.subjectId}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 2),
-                          Text(
-                            '${lec.dayOfWeek[0].toUpperCase()}${lec.dayOfWeek.substring(1)} • '
-                            '${TimeOfDayUtils.displayLabel(lec.startTime)} - ${TimeOfDayUtils.displayLabel(lec.endTime)} • '
-                            'Room ${lec.roomNumber}',
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.how_to_reg_rounded,
-                                size: 14,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Attendance: ${_fmt(_dateForLecture(lec))}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          '${lec.dayOfWeek[0].toUpperCase()}${lec.dayOfWeek.substring(1)} • '
+                          '${TimeOfDayUtils.displayLabel(lec.startTime)} - ${TimeOfDayUtils.displayLabel(lec.endTime)} • '
+                          'Room ${lec.roomNumber}',
+                        ),
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -318,13 +312,16 @@ class _MyScheduleScreenState extends ConsumerState<MyScheduleScreen> {
                           ),
                           const SizedBox(width: 8),
                           const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 14,
+                            Icons.info_outline_rounded,
+                            size: 16,
                             color: Colors.grey,
                           ),
                         ],
                       ),
-                      onTap: () => _openMarkAttendance(lec),
+                      onTap: () => _showLectureDetails(
+                        lec,
+                        subjectNameById[lec.subjectId],
+                      ),
                     );
                   },
                 );

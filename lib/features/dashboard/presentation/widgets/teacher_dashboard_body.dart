@@ -1,6 +1,3 @@
-import 'package:cms/features/attendance/presentation/screens/teacher/unmarked_lectures_screen.dart';
-import 'package:cms/features/attendance/presentation/screens/teacher/my_attendance_screen.dart';
-import 'package:cms/features/attendance/presentation/screens/teacher/teacher_view_attendance_screen.dart';
 import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
@@ -21,7 +18,7 @@ class TeacherDashboardBody extends StatelessWidget {
           const CampusSectionIntro(
             title: 'Ready for your teaching day?',
             subtitle:
-                'Check your timetable, mark attendance, and find answers about your classes.',
+                'Check your timetable, manage class daily attendance, and find answers about your classes.',
           ),
           const SizedBox(height: 26),
           Text(
@@ -40,6 +37,7 @@ class TeacherDashboardBody extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 16,
                 children: [
+                  // 1. Class In-Charge Attendance (Primary Daily Action)
                   SizedBox(
                     width: cardWidth,
                     child: Card(
@@ -60,166 +58,7 @@ class TeacherDashboardBody extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'Mark morning and closing dismissal attendance for your assigned class.',
-                              style: TextStyle(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            FilledButton(
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const ClassDailyAttendanceScreen(),
-                                ),
-                              ),
-                              child: const Text('Mark Daily Attendance'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: cardWidth,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(22),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.pending_actions,
-                              color: AppColors.primary,
-                              size: 32,
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Unmarked Lectures',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Find today’s lectures with no attendance recorded.',
-                              style: TextStyle(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton(
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const UnmarkedLecturesScreen(),
-                                ),
-                              ),
-                              child: const Text('View pending lectures'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: cardWidth,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(22),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.insights_rounded,
-                              color: AppColors.primary,
-                              size: 32,
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'My Attendance',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Student attendance trends across your classes.',
-                              style: TextStyle(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton(
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const MyAttendanceScreen(),
-                                ),
-                              ),
-                              child: const Text('View my trends'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: cardWidth,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(22),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.manage_search,
-                              color: AppColors.primary,
-                              size: 32,
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'View Attendance',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Filter student records and view class summaries.',
-                              style: TextStyle(
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton(
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const TeacherViewAttendanceScreen(),
-                                ),
-                              ),
-                              child: const Text('View attendance'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: cardWidth,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(22),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.fact_check_outlined,
-                              size: 32,
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Mark Attendance',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Open today’s lectures and mark student attendance.',
+                              'Mark morning arrival and closing dismissal attendance for your assigned class.',
                               style: TextStyle(
                                 color: AppColors.onSurfaceVariant,
                               ),
@@ -227,15 +66,14 @@ class TeacherDashboardBody extends StatelessWidget {
                             const SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
+                              child: FilledButton(
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => const MyScheduleScreen(
-                                      markAttendanceOnly: true,
-                                    ),
+                                    builder: (_) =>
+                                        const ClassDailyAttendanceScreen(),
                                   ),
                                 ),
-                                child: const Text('Mark attendance'),
+                                child: const Text('Mark Daily Attendance'),
                               ),
                             ),
                           ],
@@ -243,15 +81,15 @@ class TeacherDashboardBody extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // 2. My Timetable & Schedule (Pure Lecture Schedule)
                   SizedBox(
                     width: cardWidth,
                     child: Card(
-                      elevation: 0,
                       child: Padding(
                         padding: const EdgeInsets.all(22),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Icons.calendar_today_rounded,
@@ -260,14 +98,13 @@ class TeacherDashboardBody extends StatelessWidget {
                             ),
                             const SizedBox(height: 12),
                             const Text(
-                              'My Schedule',
+                              'My Timetable & Schedule',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 8),
                             const Text(
-                              'View your timetable and mark attendance',
+                              'View your daily and weekly lecture schedule, classroom allocations, and timings.',
                               style: TextStyle(
-                                fontSize: 12,
                                 color: AppColors.onSurfaceVariant,
                               ),
                             ),
@@ -280,7 +117,7 @@ class TeacherDashboardBody extends StatelessWidget {
                                     builder: (_) => const MyScheduleScreen(),
                                   ),
                                 ),
-                                child: const Text('Open'),
+                                child: const Text('View Timetable'),
                               ),
                             ),
                           ],
@@ -288,6 +125,53 @@ class TeacherDashboardBody extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // 3. Daily Attendance History
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.history_rounded,
+                              color: AppColors.primary,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Daily Attendance History',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Browse past daily attendance records, morning statuses, and closing marks.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const ClassDailyAttendanceScreen(),
+                                  ),
+                                ),
+                                child: const Text('View History'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 4. AI Assistant
                   SizedBox(
                     width: cardWidth,
                     child: Card(
@@ -296,7 +180,6 @@ class TeacherDashboardBody extends StatelessWidget {
                         padding: const EdgeInsets.all(22),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
                               padding: const EdgeInsets.all(6),
@@ -317,11 +200,10 @@ class TeacherDashboardBody extends StatelessWidget {
                               'AI Assistant',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 8),
                             const Text(
-                              'Ask about your classes, schedule & student attendance',
+                              'Ask about your classes, schedule, curriculum, and school guidelines.',
                               style: TextStyle(
-                                fontSize: 12,
                                 color: AppColors.onSurfaceVariant,
                               ),
                             ),
