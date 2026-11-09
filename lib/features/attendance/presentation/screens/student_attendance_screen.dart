@@ -28,7 +28,7 @@ class StudentAttendanceScreen extends StatelessWidget {
             AttendanceActionCard(
               icon: Icons.list_alt_rounded,
               title: 'View Attendance',
-              description: 'Browse a class\'s attendance by date',
+              description: 'Browse a class\'s daily attendance records by date',
               buttonLabel: 'View Now',
               backgroundColor: _viewAttendanceBg,
               iconColor: _viewAttendanceIcon,
@@ -39,7 +39,7 @@ class StudentAttendanceScreen extends StatelessWidget {
             AttendanceActionCard(
               icon: Icons.edit_note_rounded,
               title: 'Correct Attendance',
-              description: 'Fix or add a student\'s record for a lecture',
+              description: 'Audit and correct daily morning & closing checkpoints',
               buttonLabel: 'Correct Now',
               backgroundColor: _correctAttendanceBg,
               iconColor: _correctAttendanceIcon,

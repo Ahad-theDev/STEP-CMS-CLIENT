@@ -118,9 +118,9 @@ class _AttendanceSummarySectionState
               DataColumn(label: Text('Student')),
               DataColumn(label: Text('Present')),
               DataColumn(label: Text('Absent')),
-              DataColumn(label: Text('Late')),
+              DataColumn(label: Text('Late / Half Day')),
               DataColumn(label: Text('Leave')),
-              DataColumn(label: Text('Total')),
+              DataColumn(label: Text('Total Days')),
               DataColumn(label: Text('%')),
             ],
             rows: items

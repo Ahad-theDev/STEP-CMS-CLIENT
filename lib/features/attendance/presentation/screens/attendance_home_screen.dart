@@ -165,7 +165,7 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                                 icon: Icons.groups_outlined,
                                 title: 'Student Attendance',
                                 description:
-                                    'View and correct student attendance records',
+                                    'View and correct student daily attendance records',
                                 buttonLabel: 'Open',
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
@@ -179,7 +179,7 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                                 icon: Icons.summarize_outlined,
                                 title: 'Attendance Summary',
                                 description:
-                                    'Per-student attendance % over a date range',
+                                    'Per-student daily attendance % over a date range',
                                 buttonLabel: 'View Summary',
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(

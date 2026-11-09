@@ -1,19 +1,17 @@
-import 'package:cms/features/attendance/application/all_students_for_class_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/utils/error_utils.dart';
-import 'package:cms/core/utils/time_of_day_utils.dart';
 import 'package:cms/features/classes/application/all_classes_controller.dart';
 import 'package:cms/features/classes/data/models/school_class.dart';
-import 'package:cms/features/lectures/application/all_lectures_for_class_controller.dart';
-import 'package:cms/features/lectures/data/models/lecture.dart';
 import 'package:cms/features/students/data/models/student.dart';
-import '../../application/student_attendance_list_controller.dart';
+import 'package:cms/features/attendance/application/all_students_for_class_controller.dart';
+import 'package:cms/features/attendance/application/daily_attendance_roster_provider.dart';
 
 const List<Map<String, String>> _statusFilterOptions = [
   {'value': 'present', 'label': 'Present'},
   {'value': 'absent', 'label': 'Absent'},
   {'value': 'late', 'label': 'Late'},
+  {'value': 'half_day', 'label': 'Half Day / Short Leave'},
   {'value': 'leave', 'label': 'Leave'},
 ];
 
@@ -28,10 +26,9 @@ class ViewStudentAttendanceScreen extends ConsumerStatefulWidget {
 class _ViewStudentAttendanceScreenState
     extends ConsumerState<ViewStudentAttendanceScreen> {
   SchoolClass? _selectedClass;
-  Lecture? _selectedLecture;
   Student? _selectedStudent;
   String? _selectedStatus;
-  DateTime? _date = DateTime.now();
+  DateTime _date = DateTime.now();
 
   String _fmt(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -39,7 +36,7 @@ class _ViewStudentAttendanceScreenState
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _date ?? DateTime.now(),
+      initialDate: _date,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
@@ -49,24 +46,66 @@ class _ViewStudentAttendanceScreenState
   void _onClassChanged(SchoolClass? cls) {
     setState(() {
       _selectedClass = cls;
-      _selectedLecture = null;
       _selectedStudent = null;
     });
   }
 
-  Color _statusColor(String status) {
-    switch (status) {
+  Color _statusColor(String? status) {
+    switch (status?.toLowerCase()) {
       case 'present':
-        return Colors.green;
+        return const Color(0xFF16A34A);
       case 'absent':
-        return Colors.red;
+        return const Color(0xFFDC2626);
       case 'late':
-        return Colors.orange;
+        return const Color(0xFFD97706);
       case 'leave':
-        return Colors.blue;
+        return const Color(0xFF7C3AED);
+      case 'half_day':
+      case 'short_leave':
+        return const Color(0xFFEA580C);
       default:
         return Colors.grey;
     }
+  }
+
+  Color _statusBg(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'present':
+        return const Color(0xFFDCFCE7);
+      case 'absent':
+        return const Color(0xFFFEE2E2);
+      case 'late':
+        return const Color(0xFFFEF3C7);
+      case 'leave':
+        return const Color(0xFFEDE9FE);
+      case 'half_day':
+      case 'short_leave':
+        return const Color(0xFFFFEDD5);
+      default:
+        return const Color(0xFFF1F5F9);
+    }
+  }
+
+  Widget _buildStatusChip(String? status) {
+    final label = (status == null || status.isEmpty)
+        ? 'Unmarked'
+        : status.replaceAll('_', ' ').toUpperCase();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: _statusBg(status),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: _statusColor(status).withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: _statusColor(status),
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 
   @override
@@ -74,7 +113,7 @@ class _ViewStudentAttendanceScreenState
     final classesAsync = ref.watch(allClassesControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('View Attendance')),
+      appBar: AppBar(title: const Text('View Daily Attendance')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -88,7 +127,11 @@ class _ViewStudentAttendanceScreenState
               ),
               data: (classes) => DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
-                decoration: const InputDecoration(labelText: 'Select Class'),
+                decoration: const InputDecoration(
+                  labelText: 'Select Class',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                ),
                 items: classes
                     .map(
                       (c) => DropdownMenuItem(
@@ -104,19 +147,41 @@ class _ViewStudentAttendanceScreenState
             if (_selectedClass != null) ...[
               Wrap(
                 spacing: 12,
-                runSpacing: 8,
+                runSpacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  SizedBox(width: 220, child: _buildLectureDropdown()),
-                  SizedBox(width: 200, child: _buildStudentDropdown()),
                   SizedBox(
-                    width: 160,
+                    width: 170,
+                    child: InkWell(
+                      onTap: _pickDate,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Date',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          suffixIcon: Icon(Icons.calendar_today, size: 18),
+                        ),
+                        child: Text(_fmt(_date)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 200,
+                    child: _buildStudentDropdown(),
+                  ),
+                  SizedBox(
+                    width: 170,
                     child: DropdownButtonFormField<String?>(
                       initialValue: _selectedStatus,
-                      decoration: const InputDecoration(labelText: 'Status'),
+                      decoration: const InputDecoration(
+                        labelText: 'Status Filter',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      ),
                       items: [
                         const DropdownMenuItem<String?>(
                           value: null,
-                          child: Text('All'),
+                          child: Text('All Statuses'),
                         ),
                         ..._statusFilterOptions.map(
                           (o) => DropdownMenuItem(
@@ -130,68 +195,19 @@ class _ViewStudentAttendanceScreenState
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickDate,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(labelText: 'Date'),
-                        child: Text(_date == null ? 'All dates' : _fmt(_date!)),
-                      ),
-                    ),
-                  ),
-                  if (_date != null)
-                    IconButton(
-                      icon: const Icon(Icons.clear),
-                      tooltip: 'Show all dates',
-                      onPressed: () => setState(() => _date = null),
-                    ),
-                ],
-              ),
               const SizedBox(height: 16),
-              Expanded(child: _buildResults()),
+              Expanded(child: _buildDailyResults()),
             ] else
               const Expanded(
-                child: Center(child: Text('Select a class to view attendance')),
+                child: Center(
+                  child: Text(
+                    'Select a class to view daily student attendance records',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
               ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildLectureDropdown() {
-    final lecturesAsync = ref.watch(
-      allLecturesForClassControllerProvider(classId: _selectedClass!.id),
-    );
-    return lecturesAsync.when(
-      loading: () => const LinearProgressIndicator(),
-      error: (e, _) => Text(
-        'Failed: ${friendlyErrorMessage(e)}',
-        style: const TextStyle(color: Colors.red, fontSize: 12),
-      ),
-      data: (lectures) => DropdownButtonFormField<Lecture?>(
-        initialValue: _selectedLecture,
-        decoration: const InputDecoration(labelText: 'Lecture'),
-        isExpanded: true,
-        items: [
-          const DropdownMenuItem<Lecture?>(
-            value: null,
-            child: Text('All Lectures'),
-          ),
-          ...lectures.map(
-            (l) => DropdownMenuItem(
-              value: l,
-              child: Text(
-                '${l.dayOfWeek[0].toUpperCase()}${l.dayOfWeek.substring(1)} ${TimeOfDayUtils.displayLabel(l.startTime)}',
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-        ],
-        onChanged: (v) => setState(() => _selectedLecture = v),
       ),
     );
   }
@@ -208,7 +224,11 @@ class _ViewStudentAttendanceScreenState
       ),
       data: (students) => DropdownButtonFormField<Student?>(
         initialValue: _selectedStudent,
-        decoration: const InputDecoration(labelText: 'Student'),
+        decoration: const InputDecoration(
+          labelText: 'Student Filter',
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        ),
         isExpanded: true,
         items: [
           const DropdownMenuItem<Student?>(
@@ -218,7 +238,10 @@ class _ViewStudentAttendanceScreenState
           ...students.map(
             (s) => DropdownMenuItem(
               value: s,
-              child: Text(s.fullName, overflow: TextOverflow.ellipsis),
+              child: Text(
+                s.rollNumber.isNotEmpty ? '${s.rollNumber} - ${s.fullName}' : s.fullName,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ],
@@ -227,73 +250,140 @@ class _ViewStudentAttendanceScreenState
     );
   }
 
-  Widget _buildResults() {
-    final studentsAsync = ref.watch(
-      allStudentsForClassControllerProvider(classId: _selectedClass!.id),
-    );
-    final phoneByStudentId = {
-      for (final s in studentsAsync.valueOrNull ?? <Student>[])
-        s.id: s.guardianPhone,
-    };
-
-    final recordsAsync = ref.watch(
-      studentAttendanceListControllerProvider(
-        classId: _selectedClass!.id,
-        date: _date,
-        lectureId: _selectedLecture?.id,
-        studentId: _selectedStudent?.id,
-        status: _selectedStatus,
+  Widget _buildDailyResults() {
+    final rosterAsync = ref.watch(
+      dailyAttendanceRosterProvider(
+        DailyRosterQuery(classId: _selectedClass!.id, date: _date),
       ),
     );
 
-    return recordsAsync.when(
+    return rosterAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) =>
-          Center(child: Text('Failed to load: ${friendlyErrorMessage(e)}')),
-      data: (records) {
-        if (records.isEmpty) {
-          return const Center(child: Text('No attendance records found'));
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Failed to load daily attendance: ${friendlyErrorMessage(e)}'),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => ref.invalidate(
+                dailyAttendanceRosterProvider(
+                  DailyRosterQuery(classId: _selectedClass!.id, date: _date),
+                ),
+              ),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+      data: (roster) {
+        var filtered = roster.students;
+
+        if (_selectedStudent != null) {
+          filtered = filtered.where((s) => s.studentId == _selectedStudent!.id).toList();
         }
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Student')),
-              DataColumn(label: Text('Phone')),
-              DataColumn(label: Text('Date')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Remarks')),
-            ],
-            rows: records
-                .map(
-                  (r) => DataRow(
-                    cells: [
-                      DataCell(Text(r.studentName)),
-                      DataCell(Text(phoneByStudentId[r.studentId] ?? '-')),
-                      DataCell(Text(r.date)),
-                      DataCell(
-                        Chip(
-                          label: Text(
-                            r.status[0].toUpperCase() + r.status.substring(1),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                          backgroundColor: _statusColor(r.status),
-                          padding: EdgeInsets.zero,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
-                      DataCell(Text(r.remarks ?? '-')),
+
+        if (_selectedStatus != null) {
+          filtered = filtered.where((s) {
+            final finalSt = s.finalStatus?.toLowerCase();
+            final morningSt = s.morningStatus?.toLowerCase();
+            if (_selectedStatus == 'half_day') {
+              return finalSt == 'half_day' || morningSt == 'late';
+            }
+            return finalSt == _selectedStatus || morningSt == _selectedStatus;
+          }).toList();
+        }
+
+        if (filtered.isEmpty) {
+          return const Center(child: Text('No attendance records found for this filter.'));
+        }
+
+        // Summary counts
+        final total = roster.students.length;
+        final presentCount = roster.students
+            .where((s) => s.finalStatus?.toLowerCase() == 'present' || (s.finalStatus == null && s.morningStatus?.toLowerCase() == 'present'))
+            .length;
+        final absentCount = roster.students
+            .where((s) => s.finalStatus?.toLowerCase() == 'absent' || (s.finalStatus == null && s.morningStatus?.toLowerCase() == 'absent'))
+            .length;
+        final lateCount = roster.students
+            .where((s) => s.finalStatus?.toLowerCase() == 'half_day' || s.morningStatus?.toLowerCase() == 'late')
+            .length;
+        final leaveCount = roster.students
+            .where((s) => s.finalStatus?.toLowerCase() == 'leave' || s.morningStatus?.toLowerCase() == 'leave')
+            .length;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _metricChip('Total: $total', Colors.grey.shade800, Colors.grey.shade100),
+                  const SizedBox(width: 8),
+                  _metricChip('Present: $presentCount', const Color(0xFF16A34A), const Color(0xFFDCFCE7)),
+                  const SizedBox(width: 8),
+                  _metricChip('Absent: $absentCount', const Color(0xFFDC2626), const Color(0xFFFEE2E2)),
+                  const SizedBox(width: 8),
+                  _metricChip('Late/Half-day: $lateCount', const Color(0xFFD97706), const Color(0xFFFEF3C7)),
+                  const SizedBox(width: 8),
+                  _metricChip('Leave: $leaveCount', const Color(0xFF7C3AED), const Color(0xFFEDE9FE)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SingleChildScrollView(
+                  child: DataTable(
+                    columnSpacing: 20,
+                    columns: const [
+                      DataColumn(label: Text('Roll #')),
+                      DataColumn(label: Text('Student Name')),
+                      DataColumn(label: Text('Morning')),
+                      DataColumn(label: Text('Closing')),
+                      DataColumn(label: Text('Final Status')),
+                      DataColumn(label: Text('Remarks')),
                     ],
+                    rows: filtered.map((r) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(r.rollNumber.isNotEmpty ? r.rollNumber : '-')),
+                          DataCell(Text(r.studentName, style: const TextStyle(fontWeight: FontWeight.w600))),
+                          DataCell(_buildStatusChip(r.morningStatus)),
+                          DataCell(_buildStatusChip(r.closingStatus)),
+                          DataCell(_buildStatusChip(r.finalStatus)),
+                          DataCell(Text(r.remarks ?? '-')),
+                        ],
+                      );
+                    }).toList(),
                   ),
-                )
-                .toList(),
-          ),
+                ),
+              ),
+            ),
+          ],
         );
       },
+    );
+  }
+
+  Widget _metricChip(String text, Color textCol, Color bgCol) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: bgCol,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: textCol,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
     );
   }
 }
