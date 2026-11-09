@@ -493,7 +493,7 @@ class DashboardScreen extends ConsumerWidget {
     switch (role) {
       case 'management':
       case 'principal':
-        return const AdminDashboardBody();
+        return AdminDashboardBody(isPrincipalReadOnly: role == 'principal');
       case 'teacher':
         return const TeacherDashboardBody();
       default:

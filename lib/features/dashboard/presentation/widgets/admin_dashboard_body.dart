@@ -24,11 +24,14 @@ import 'package:cms/features/attendance/presentation/screens/attendance_home_scr
 import 'package:cms/features/fees/presentation/screens/fee_home_screen.dart';
 import 'package:cms/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
+import 'package:cms/features/exams/presentation/screens/management_exams_screen.dart';
+import 'package:cms/features/reports/presentation/screens/reports_hub_screen.dart';
 import '../widgets/dashboard_stat_card.dart';
 import '../widgets/dashboard_shortcut_tile.dart';
 
 class AdminDashboardBody extends ConsumerStatefulWidget {
-  const AdminDashboardBody({super.key});
+  final bool isPrincipalReadOnly;
+  const AdminDashboardBody({super.key, this.isPrincipalReadOnly = false});
 
   @override
   ConsumerState<AdminDashboardBody> createState() => _AdminDashboardBodyState();
@@ -337,6 +340,22 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                         label: 'Fees',
                         color: const Color(0xFF326DA0),
                         onTap: () => _push(const FeeHomeScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.assignment_turned_in_outlined,
+                        label: 'Exams & Results',
+                        color: const Color(0xFF4A3780),
+                        onTap: () => _push(
+                          ManagementExamsScreen(
+                            isPrincipalReadOnly: widget.isPrincipalReadOnly,
+                          ),
+                        ),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.analytics_outlined,
+                        label: 'Reports & Analytics',
+                        color: const Color(0xFF1E88E5),
+                        onTap: () => _push(const ReportsHubScreen()),
                       ),
                       DashboardShortcutTile(
                         icon: Icons.notifications_outlined,
