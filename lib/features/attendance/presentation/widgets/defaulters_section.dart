@@ -53,16 +53,20 @@ class _DefaultersSectionState extends ConsumerState<DefaultersSection> {
             ),
             data: (classes) => DropdownButtonFormField<SchoolClass?>(
               initialValue: _selectedClass,
+              isExpanded: true,
               decoration: const InputDecoration(labelText: 'Class (optional)'),
               items: [
                 const DropdownMenuItem<SchoolClass?>(
                   value: null,
-                  child: Text('All Classes'),
+                  child: Text('All Classes', overflow: TextOverflow.ellipsis),
                 ),
                 ...classes.map(
                   (c) => DropdownMenuItem(
                     value: c,
-                    child: Text('${c.name} - ${c.section}'),
+                    child: Text(
+                      '${c.name} - ${c.section}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],

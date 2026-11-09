@@ -162,6 +162,7 @@ class _CorrectAttendanceScreenState
                       ),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         initialValue: selectedMorning,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -170,12 +171,12 @@ class _CorrectAttendanceScreenState
                         items: [
                           const DropdownMenuItem<String?>(
                             value: null,
-                            child: Text('Not Set / Unmarked'),
+                            child: Text('Not Set / Unmarked', overflow: TextOverflow.ellipsis),
                           ),
                           ..._morningCheckpointOptions.map(
                             (o) => DropdownMenuItem(
                               value: o['value'],
-                              child: Text(o['label']!),
+                              child: Text(o['label']!, overflow: TextOverflow.ellipsis),
                             ),
                           ),
                         ],
@@ -188,6 +189,7 @@ class _CorrectAttendanceScreenState
                       ),
                       const SizedBox(height: 6),
                       DropdownButtonFormField<String?>(
+                        isExpanded: true,
                         initialValue: selectedClosing,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -196,12 +198,12 @@ class _CorrectAttendanceScreenState
                         items: [
                           const DropdownMenuItem<String?>(
                             value: null,
-                            child: Text('Not Set / Unmarked'),
+                            child: Text('Not Set / Unmarked', overflow: TextOverflow.ellipsis),
                           ),
                           ..._closingCheckpointOptions.map(
                             (o) => DropdownMenuItem(
                               value: o['value'],
-                              child: Text(o['label']!),
+                              child: Text(o['label']!, overflow: TextOverflow.ellipsis),
                             ),
                           ),
                         ],
@@ -337,6 +339,7 @@ class _CorrectAttendanceScreenState
               ),
               data: (classes) => DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
+                isExpanded: true,
                 decoration: const InputDecoration(
                   labelText: 'Select Class',
                   border: OutlineInputBorder(),
@@ -346,7 +349,10 @@ class _CorrectAttendanceScreenState
                     .map(
                       (c) => DropdownMenuItem(
                         value: c,
-                        child: Text('${c.name} - ${c.section}'),
+                        child: Text(
+                          '${c.name} - ${c.section}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),
@@ -355,51 +361,56 @@ class _CorrectAttendanceScreenState
             ),
             const SizedBox(height: 12),
             if (_selectedClass != null) ...[
-              Wrap(
-                spacing: 12,
-                runSpacing: 10,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 170,
-                    child: InkWell(
-                      onTap: _pickDate,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Date',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          suffixIcon: Icon(Icons.calendar_today, size: 18),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 640;
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 10,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: isNarrow ? constraints.maxWidth : 160,
+                        child: InkWell(
+                          onTap: _pickDate,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Date',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              suffixIcon: Icon(Icons.calendar_today, size: 18),
+                            ),
+                            child: Text(_fmt(_date)),
+                          ),
                         ),
-                        child: Text(_fmt(_date)),
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 260,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Search student name / roll #',
-                        prefixIcon: Icon(Icons.search, size: 20),
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      SizedBox(
+                        width: isNarrow ? constraints.maxWidth : 260,
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            labelText: 'Search student name / roll #',
+                            prefixIcon: Icon(Icons.search, size: 20),
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          ),
+                          onChanged: (v) => setState(() => _searchQuery = v.trim().toLowerCase()),
+                        ),
                       ),
-                      onChanged: (v) => setState(() => _searchQuery = v.trim().toLowerCase()),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 250,
-                    child: TextField(
-                      controller: _batchReasonController,
-                      decoration: const InputDecoration(
-                        labelText: 'Default Audit Reason (Optional)',
-                        hintText: 'Prefills correction dialog',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      SizedBox(
+                        width: isNarrow ? constraints.maxWidth : 250,
+                        child: TextField(
+                          controller: _batchReasonController,
+                          decoration: const InputDecoration(
+                            labelText: 'Default Audit Reason (Optional)',
+                            hintText: 'Prefills correction dialog',
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 14),
               Expanded(child: _buildRosterList()),

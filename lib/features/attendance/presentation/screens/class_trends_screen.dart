@@ -55,12 +55,16 @@ class _ClassTrendsScreenState extends ConsumerState<ClassTrendsScreen> {
               ),
               data: (classes) => DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
+                isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Select Class'),
                 items: classes
                     .map(
                       (c) => DropdownMenuItem(
                         value: c,
-                        child: Text('${c.name} - ${c.section}'),
+                        child: Text(
+                          '${c.name} - ${c.section}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),

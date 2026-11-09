@@ -127,6 +127,7 @@ class _ViewStudentAttendanceScreenState
               ),
               data: (classes) => DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
+                isExpanded: true,
                 decoration: const InputDecoration(
                   labelText: 'Select Class',
                   border: OutlineInputBorder(),
@@ -136,7 +137,10 @@ class _ViewStudentAttendanceScreenState
                     .map(
                       (c) => DropdownMenuItem(
                         value: c,
-                        child: Text('${c.name} - ${c.section}'),
+                        child: Text(
+                          '${c.name} - ${c.section}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     )
                     .toList(),
@@ -145,55 +149,67 @@ class _ViewStudentAttendanceScreenState
             ),
             const SizedBox(height: 12),
             if (_selectedClass != null) ...[
-              Wrap(
-                spacing: 12,
-                runSpacing: 10,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 170,
-                    child: InkWell(
-                      onTap: _pickDate,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Date',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          suffixIcon: Icon(Icons.calendar_today, size: 18),
-                        ),
-                        child: Text(_fmt(_date)),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 200,
-                    child: _buildStudentDropdown(),
-                  ),
-                  SizedBox(
-                    width: 170,
-                    child: DropdownButtonFormField<String?>(
-                      initialValue: _selectedStatus,
-                      decoration: const InputDecoration(
-                        labelText: 'Status Filter',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      ),
-                      items: [
-                        const DropdownMenuItem<String?>(
-                          value: null,
-                          child: Text('All Statuses'),
-                        ),
-                        ..._statusFilterOptions.map(
-                          (o) => DropdownMenuItem(
-                            value: o['value'],
-                            child: Text(o['label']!),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 640;
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 10,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: isNarrow ? (constraints.maxWidth - 12) / 2 : 160,
+                        child: InkWell(
+                          onTap: _pickDate,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Date',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              suffixIcon: Icon(Icons.calendar_today, size: 18),
+                            ),
+                            child: Text(_fmt(_date)),
                           ),
                         ),
-                      ],
-                      onChanged: (v) => setState(() => _selectedStatus = v),
-                    ),
-                  ),
-                ],
+                      ),
+                      SizedBox(
+                        width: isNarrow ? (constraints.maxWidth - 12) / 2 : 180,
+                        child: DropdownButtonFormField<String?>(
+                          isExpanded: true,
+                          initialValue: _selectedStatus,
+                          decoration: const InputDecoration(
+                            labelText: 'Status Filter',
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          ),
+                          items: [
+                            const DropdownMenuItem<String?>(
+                              value: null,
+                              child: Text(
+                                'All Statuses',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            ..._statusFilterOptions.map(
+                              (o) => DropdownMenuItem(
+                                value: o['value'],
+                                child: Text(
+                                  o['label']!,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
+                          onChanged: (v) => setState(() => _selectedStatus = v),
+                        ),
+                      ),
+                      SizedBox(
+                        width: isNarrow ? constraints.maxWidth : 220,
+                        child: _buildStudentDropdown(),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
               Expanded(child: _buildDailyResults()),
@@ -233,7 +249,7 @@ class _ViewStudentAttendanceScreenState
         items: [
           const DropdownMenuItem<Student?>(
             value: null,
-            child: Text('All Students'),
+            child: Text('All Students', overflow: TextOverflow.ellipsis),
           ),
           ...students.map(
             (s) => DropdownMenuItem(

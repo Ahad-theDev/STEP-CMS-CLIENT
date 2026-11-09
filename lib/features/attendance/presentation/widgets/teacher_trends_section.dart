@@ -55,10 +55,17 @@ class _TeacherTrendsSectionState extends ConsumerState<TeacherTrendsSection> {
             ),
             data: (teachers) => DropdownButtonFormField<Teacher>(
               initialValue: _selectedTeacher,
+              isExpanded: true,
               decoration: const InputDecoration(labelText: 'Select Teacher'),
               items: teachers
                   .map(
-                    (t) => DropdownMenuItem(value: t, child: Text(t.fullName)),
+                    (t) => DropdownMenuItem(
+                      value: t,
+                      child: Text(
+                        t.fullName,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   )
                   .toList(),
               onChanged: (v) {
