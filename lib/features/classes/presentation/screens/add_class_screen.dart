@@ -45,11 +45,14 @@ class _AddClassScreenState extends ConsumerState<AddClassScreen> {
       classTeacherId: _selectedTeacher?.id,
     );
 
-    final cls = await ref.read(addClassControllerProvider.notifier).createClass(request);
+    final cls = await ref
+        .read(addClassControllerProvider.notifier)
+        .createClass(request);
     if (!mounted || cls == null) return;
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('${cls.name} - ${cls.section} created')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${cls.name} - ${cls.section} created')),
+    );
     Navigator.of(context).pop(true);
   }
 
@@ -61,63 +64,76 @@ class _AddClassScreenState extends ConsumerState<AddClassScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Create Class')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Class Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Class Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _sectionController,
+              decoration: const InputDecoration(labelText: 'Section'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _academicYearController,
+              decoration: const InputDecoration(labelText: 'Academic Year'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            teachersAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _sectionController,
-                decoration: const InputDecoration(labelText: 'Section'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              error: (e, _) => Text(
+                'Failed to load teachers: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _academicYearController,
-                decoration: const InputDecoration(labelText: 'Academic Year'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              teachersAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: CircularProgressIndicator()),
+              data: (teachers) => DropdownButtonFormField<Teacher?>(
+                // ignore: deprecated_member_use
+                value: _selectedTeacher,
+                decoration: const InputDecoration(
+                  labelText: 'Class Teacher (optional)',
                 ),
-                error: (e, _) =>
-                    Text('Failed to load teachers: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
-                data: (teachers) => DropdownButtonFormField<Teacher?>(
-                  // ignore: deprecated_member_use
-                  value: _selectedTeacher,
-                  decoration: const InputDecoration(labelText: 'Class Teacher (optional)'),
-                  items: [
-                    const DropdownMenuItem<Teacher?>(value: null, child: Text('None')),
-                    ...teachers.map((t) => DropdownMenuItem(value: t, child: Text(t.fullName))),
-                  ],
-                  onChanged: (v) => setState(() => _selectedTeacher = v),
+                items: [
+                  const DropdownMenuItem<Teacher?>(
+                    value: null,
+                    child: Text('None'),
+                  ),
+                  ...teachers.map(
+                    (t) => DropdownMenuItem(value: t, child: Text(t.fullName)),
+                  ),
+                ],
+                onChanged: (v) => setState(() => _selectedTeacher = v),
+              ),
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
                 ),
               ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
-                ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Create Class'),
-              ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Create Class'),
+            ),
+          ],
         ),
       ),
     );

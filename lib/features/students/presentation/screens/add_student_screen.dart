@@ -91,136 +91,131 @@ class _AddStudentScreenState extends ConsumerState<AddStudentScreen> {
 
     return CampusPage(
       appBar: AppBar(title: const Text('Add Student')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const CampusSectionIntro(
-                title: 'Welcome a new student',
-                subtitle: 'Add student, guardian, and enrollment details.',
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            const CampusSectionIntro(
+              title: 'Welcome a new student',
+              subtitle: 'Add student, guardian, and enrollment details.',
+            ),
+            const SizedBox(height: 22),
+            TextFormField(
+              controller: _fullNameController,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _rollNumberController,
+              decoration: const InputDecoration(labelText: 'Roll Number'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            classesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
               ),
-              const SizedBox(height: 22),
-              TextFormField(
-                controller: _fullNameController,
-                decoration: const InputDecoration(labelText: 'Full Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _rollNumberController,
-                decoration: const InputDecoration(labelText: 'Roll Number'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              classesAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (e, _) => Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Failed to load classes: ${friendlyErrorMessage(e)}',
-                        style: const TextStyle(color: Colors.red),
-                      ),
+              error: (e, _) => Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Failed to load classes: ${friendlyErrorMessage(e)}',
+                      style: const TextStyle(color: Colors.red),
                     ),
-                    TextButton(
-                      onPressed: () => ref
-                          .read(allClassesControllerProvider.notifier)
-                          .refresh(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-                data: (classes) {
-                  if (classes.isEmpty) {
-                    return const Text(
-                      'No classes found — create one first.',
-                      style: TextStyle(color: Colors.grey),
-                    );
-                  }
-                  return DropdownButtonFormField<SchoolClass>(
-                    initialValue: _selectedClass,
-                    decoration: const InputDecoration(labelText: 'Class'),
-                    items: classes
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(
-                              '${c.name} - ${c.section} (${c.academicYear})',
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) => setState(() => _selectedClass = v),
-                    validator: (v) =>
-                        v == null ? 'Please select a class' : null,
+                  ),
+                  TextButton(
+                    onPressed: () => ref
+                        .read(allClassesControllerProvider.notifier)
+                        .refresh(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+              data: (classes) {
+                if (classes.isEmpty) {
+                  return const Text(
+                    'No classes found — create one first.',
+                    style: TextStyle(color: Colors.grey),
                   );
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _guardianNameController,
-                decoration: const InputDecoration(labelText: 'Guardian Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _guardianPhoneController,
-                decoration: const InputDecoration(labelText: 'Guardian Phone'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: _pickAdmissionDate,
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Admission Date',
-                  ),
-                  child: Text(
-                    _admissionDate == null
-                        ? 'Tap to select'
-                        : '${_admissionDate!.year}-${_admissionDate!.month.toString().padLeft(2, '0')}-${_admissionDate!.day.toString().padLeft(2, '0')}',
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _monthlyFeeController,
-                decoration: const InputDecoration(labelText: 'Monthly Fee'),
-                keyboardType: TextInputType.number,
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _discountController,
-                decoration: const InputDecoration(labelText: 'Discount'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                }
+                return DropdownButtonFormField<SchoolClass>(
+                  initialValue: _selectedClass,
+                  decoration: const InputDecoration(labelText: 'Class'),
+                  items: classes
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text(
+                            '${c.name} - ${c.section} (${c.academicYear})',
+                          ),
+                        ),
                       )
-                    : const Text('Add Student'),
+                      .toList(),
+                  onChanged: (v) => setState(() => _selectedClass = v),
+                  validator: (v) => v == null ? 'Please select a class' : null,
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _guardianNameController,
+              decoration: const InputDecoration(labelText: 'Guardian Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _guardianPhoneController,
+              decoration: const InputDecoration(labelText: 'Guardian Phone'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: _pickAdmissionDate,
+              child: InputDecorator(
+                decoration: const InputDecoration(labelText: 'Admission Date'),
+                child: Text(
+                  _admissionDate == null
+                      ? 'Tap to select'
+                      : '${_admissionDate!.year}-${_admissionDate!.month.toString().padLeft(2, '0')}-${_admissionDate!.day.toString().padLeft(2, '0')}',
+                ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _monthlyFeeController,
+              decoration: const InputDecoration(labelText: 'Monthly Fee'),
+              keyboardType: TextInputType.number,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _discountController,
+              decoration: const InputDecoration(labelText: 'Discount'),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Add Student'),
+            ),
+          ],
         ),
       ),
     );

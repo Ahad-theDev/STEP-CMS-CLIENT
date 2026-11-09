@@ -6,10 +6,7 @@ import '../screens/view_class_screen.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 
 class ClassSearchSection extends ConsumerStatefulWidget {
-  const ClassSearchSection({
-    super.key,
-    this.onClassTap,
-  });
+  const ClassSearchSection({super.key, this.onClassTap});
 
   final ValueChanged<SchoolClass>? onClassTap;
 
@@ -22,19 +19,23 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
   String _query = '';
 
   Future<void> refresh() async {
-    await ref.read(classesListControllerProvider(page: _page).notifier).refresh(page: _page);
+    await ref
+        .read(classesListControllerProvider(page: _page).notifier)
+        .refresh(page: _page);
   }
 
   void _exportStub() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Export — coming soon')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Export — coming soon')));
   }
 
   @override
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(classesListControllerProvider(page: _page));
     final teacherNameById = <String, String>{
-      for (final t in ref.watch(teachersListControllerProvider).valueOrNull ?? [])
+      for (final t
+          in ref.watch(teachersListControllerProvider).valueOrNull ?? [])
         t.id: t.fullName,
     };
     return Padding(
@@ -46,75 +47,79 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
         ),
         error: (e, _) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Text('Failed to load classes: $e', style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Failed to load classes: $e',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (classes) => _buildResultsCard(classes, teacherNameById),
       ),
     );
   }
 
-  Widget _buildResultsCard(List<SchoolClass> classes, Map<String, String> teacherNameById) {
+  Widget _buildResultsCard(
+    List<SchoolClass> classes,
+    Map<String, String> teacherNameById,
+  ) {
     return Card(
       elevation: 1,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 620),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      'All Classes',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      width: 220,
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          hintText: 'Search Classes',
-                          prefixIcon: Icon(Icons.search, size: 20),
-                          isDense: true,
-                        ),
-                        onChanged: (v) => setState(() => _query = v),
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: _exportStub,
-                      icon: const Icon(Icons.download_outlined, size: 18),
-                      label: const Text('Export'),
-                    ),
-                    IconButton(
-                      onPressed: refresh,
-                      icon: const Icon(Icons.refresh, size: 20),
-                      tooltip: 'Refresh Class List',
-                    ),
-                  ],
+                Text(
+                  'All Classes',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 16),
-                _buildTableAndPagination(classes, teacherNameById),
+                SizedBox(
+                  width: 220,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Search Classes',
+                      prefixIcon: Icon(Icons.search, size: 20),
+                      isDense: true,
+                    ),
+                    onChanged: (v) => setState(() => _query = v),
+                  ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _exportStub,
+                  icon: const Icon(Icons.download_outlined, size: 18),
+                  label: const Text('Export'),
+                ),
+                IconButton(
+                  onPressed: refresh,
+                  icon: const Icon(Icons.refresh, size: 20),
+                  tooltip: 'Refresh Class List',
+                ),
               ],
             ),
-          ),
+            const SizedBox(height: 16),
+            _buildTableAndPagination(classes, teacherNameById),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTableAndPagination(List<SchoolClass> classes, Map<String, String> teacherNameById) {
+  Widget _buildTableAndPagination(
+    List<SchoolClass> classes,
+    Map<String, String> teacherNameById,
+  ) {
     final filtered = _query.isEmpty
         ? classes
         : classes.where((c) {
             final q = _query.toLowerCase();
-            return c.name.toLowerCase().contains(q) || c.section.toLowerCase().contains(q);
+            return c.name.toLowerCase().contains(q) ||
+                c.section.toLowerCase().contains(q);
           }).toList();
 
     if (classes.isEmpty) {
@@ -163,7 +168,8 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
               DataColumn(label: Text('Status')),
             ],
             rows: filtered
-                .map((c) => DataRow(
+                .map(
+                  (c) => DataRow(
                     onSelectChanged: (b) {
                       if (b == true) {
                         if (widget.onClassTap != null) {
@@ -182,16 +188,24 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
                       DataCell(Text(c.section)),
                       DataCell(Text(c.academicYear)),
                       DataCell(
-                        Text(c.classTeacherId == null
-                            ? 'Unassigned'
-                            : (teacherNameById[c.classTeacherId] ?? 'Assigned')),
+                        Text(
+                          c.classTeacherId == null
+                              ? 'Unassigned'
+                              : (teacherNameById[c.classTeacherId] ??
+                                    'Assigned'),
+                        ),
                       ),
-                      DataCell(Text(
-                        c.isActive ? 'Active' : 'Inactive',
-                        style: TextStyle(color: c.isActive ? Colors.green : Colors.grey),
-                      )),
+                      DataCell(
+                        Text(
+                          c.isActive ? 'Active' : 'Inactive',
+                          style: TextStyle(
+                            color: c.isActive ? Colors.green : Colors.grey,
+                          ),
+                        ),
+                      ),
                     ],
-                  ))
+                  ),
+                )
                 .toList(),
           ),
         ),

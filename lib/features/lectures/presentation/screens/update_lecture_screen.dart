@@ -16,7 +16,8 @@ class UpdateLectureScreen extends ConsumerStatefulWidget {
   const UpdateLectureScreen({super.key, required this.lecture});
 
   @override
-  ConsumerState<UpdateLectureScreen> createState() => _UpdateLectureScreenState();
+  ConsumerState<UpdateLectureScreen> createState() =>
+      _UpdateLectureScreenState();
 }
 
 class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
@@ -102,7 +103,9 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
         .updateLecture(widget.lecture.id, request);
     if (!mounted || updated == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lecture updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Lecture updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -115,112 +118,136 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Update Lecture')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              teachersAsync.when(
-                loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: LinearProgressIndicator()),
-                error: (e, _) =>
-                    Text('Failed to load teachers: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
-                data: (teachers) {
-                  _selectedTeacher ??= _findTeacher(teachers);
-                  return DropdownButtonFormField<Teacher>(
-                    initialValue: _selectedTeacher,
-                    decoration: const InputDecoration(labelText: 'Teacher'),
-                    items: teachers
-                        .map((t) => DropdownMenuItem(value: t, child: Text(t.fullName)))
-                        .toList(),
-                    onChanged: (v) => setState(() => _selectedTeacher = v),
-                    validator: (v) => v == null ? 'Required' : null,
-                  );
-                },
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            teachersAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
               ),
-              const SizedBox(height: 12),
-              subjectsAsync.when(
-                loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: LinearProgressIndicator()),
-                error: (e, _) =>
-                    Text('Failed to load subjects: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
-                data: (subjects) {
-                  _selectedSubject ??= _findSubject(subjects);
-                  return DropdownButtonFormField<Subject>(
-                    initialValue: _selectedSubject,
-                    decoration: const InputDecoration(labelText: 'Subject'),
-                    items: subjects
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
-                        .toList(),
-                    onChanged: (v) => setState(() => _selectedSubject = v),
-                    validator: (v) => v == null ? 'Required' : null,
-                  );
-                },
+              error: (e, _) => Text(
+                'Failed to load teachers: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
               ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedDay,
-                decoration: const InputDecoration(labelText: 'Day of Week'),
-                items: weekDays
-                    .map((d) => DropdownMenuItem(
-                        value: d, child: Text(d[0].toUpperCase() + d.substring(1))))
-                    .toList(),
-                onChanged: (v) => setState(() => _selectedDay = v ?? _selectedDay),
+              data: (teachers) {
+                _selectedTeacher ??= _findTeacher(teachers);
+                return DropdownButtonFormField<Teacher>(
+                  initialValue: _selectedTeacher,
+                  decoration: const InputDecoration(labelText: 'Teacher'),
+                  items: teachers
+                      .map(
+                        (t) =>
+                            DropdownMenuItem(value: t, child: Text(t.fullName)),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => _selectedTeacher = v),
+                  validator: (v) => v == null ? 'Required' : null,
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            subjectsAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _roomController,
-                decoration: const InputDecoration(labelText: 'Room Number'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              error: (e, _) => Text(
+                'Failed to load subjects: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickStartTime,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(labelText: 'Start Time'),
-                        child: Text(_startTime.format(context)),
+              data: (subjects) {
+                _selectedSubject ??= _findSubject(subjects);
+                return DropdownButtonFormField<Subject>(
+                  initialValue: _selectedSubject,
+                  decoration: const InputDecoration(labelText: 'Subject'),
+                  items: subjects
+                      .map(
+                        (s) => DropdownMenuItem(value: s, child: Text(s.name)),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => _selectedSubject = v),
+                  validator: (v) => v == null ? 'Required' : null,
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedDay,
+              decoration: const InputDecoration(labelText: 'Day of Week'),
+              items: weekDays
+                  .map(
+                    (d) => DropdownMenuItem(
+                      value: d,
+                      child: Text(d[0].toUpperCase() + d.substring(1)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (v) =>
+                  setState(() => _selectedDay = v ?? _selectedDay),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _roomController,
+              decoration: const InputDecoration(labelText: 'Room Number'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickStartTime,
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Start Time',
                       ),
+                      child: Text(_startTime.format(context)),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickEndTime,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(labelText: 'End Time'),
-                        child: Text(_endTime.format(context)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'This edits the permanent weekly slot. For a one-off change on a specific '
-                'date, use Create Override instead.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
                 ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Save Changes'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickEndTime,
+                    child: InputDecorator(
+                      decoration: const InputDecoration(labelText: 'End Time'),
+                      child: Text(_endTime.format(context)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'This edits the permanent weekly slot. For a one-off change on a specific '
+              'date, use Create Override instead.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save Changes'),
+            ),
+          ],
         ),
       ),
     );

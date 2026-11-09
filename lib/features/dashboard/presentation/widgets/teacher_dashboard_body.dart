@@ -2,6 +2,7 @@ import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/core/theme/app_colors.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
 import 'package:cms/features/attendance/presentation/screens/class_daily_attendance_screen.dart';
+import 'package:cms/features/exams/presentation/screens/teacher_my_exams_screen.dart';
 import 'package:cms/features/lectures/presentation/teacher/my_schedule_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -171,7 +172,61 @@ class TeacherDashboardBody extends StatelessWidget {
                     ),
                   ),
 
-                  // 4. AI Assistant
+                  // 4. Class Examinations & Results
+                  SizedBox(
+                    width: cardWidth,
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(22),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.15,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.assignment_turned_in_rounded,
+                                size: 28,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Examinations & Marks',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Create term exams, enter subject marks, and publish verified class results.',
+                              style: TextStyle(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const TeacherMyExamsScreen(),
+                                  ),
+                                ),
+                                child: const Text('Manage Exams'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 5. AI Assistant
                   SizedBox(
                     width: cardWidth,
                     child: Card(

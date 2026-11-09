@@ -7,15 +7,13 @@ import '../../application/student_search_controller.dart';
 import '../../data/models/student.dart';
 
 class StudentSearchSection extends ConsumerStatefulWidget {
-  const StudentSearchSection({
-    super.key,
-    this.onStudentTap,
-  });
+  const StudentSearchSection({super.key, this.onStudentTap});
 
   final ValueChanged<Student>? onStudentTap;
 
   @override
-  ConsumerState<StudentSearchSection> createState() => StudentSearchSectionState();
+  ConsumerState<StudentSearchSection> createState() =>
+      StudentSearchSectionState();
 }
 
 class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
@@ -37,13 +35,19 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
     final cls = _selectedClass;
     if (cls == null) return;
     await ref
-        .read(studentSearchControllerProvider(classId: cls.id, page: _page).notifier)
+        .read(
+          studentSearchControllerProvider(
+            classId: cls.id,
+            page: _page,
+          ).notifier,
+        )
         .refresh();
   }
 
   void _exportStub() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Export — coming soon')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Export — coming soon')));
   }
 
   @override
@@ -55,7 +59,10 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Search Students by Class', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Search Students by Class',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           classesAsync.when(
             loading: () => const LinearProgressIndicator(),
@@ -76,17 +83,23 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
             ),
             data: (classes) {
               if (classes.isEmpty) {
-                return const Text('No classes found — create one first.',
-                    style: TextStyle(color: Colors.grey));
+                return const Text(
+                  'No classes found — create one first.',
+                  style: TextStyle(color: Colors.grey),
+                );
               }
               return DropdownButtonFormField<SchoolClass>(
                 initialValue: _selectedClass,
                 decoration: const InputDecoration(labelText: 'Select Class'),
                 items: classes
-                    .map((c) => DropdownMenuItem(
-                          value: c,
-                          child: Text('${c.name} - ${c.section} (${c.academicYear})'),
-                        ))
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text(
+                          '${c.name} - ${c.section} (${c.academicYear})',
+                        ),
+                      ),
+                    )
                     .toList(),
                 onChanged: _onClassChanged,
               );
@@ -101,70 +114,67 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
 
   Widget _buildResultsCard(BuildContext context) {
     final cls = _selectedClass!;
-    final studentsAsync = ref.watch(studentSearchControllerProvider(classId: cls.id, page: _page));
+    final studentsAsync = ref.watch(
+      studentSearchControllerProvider(classId: cls.id, page: _page),
+    );
 
     return Card(
       elevation: 1,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          maxHeight: 400, // Limit card height to prevent overflow
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      'Students in ${cls.name}-${cls.section}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      width: 220,
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          hintText: 'Search Student',
-                          prefixIcon: Icon(Icons.search, size: 20),
-                          isDense: true,
-                        ),
-                        onChanged: (v) => setState(() => _query = v),
-                      ),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: _exportStub,
-                      icon: const Icon(Icons.download_outlined, size: 18),
-                      label: const Text('Export'),
-                    ),
-                    IconButton(
-                      onPressed: refreshIfClassSelected,
-                      icon: const Icon(Icons.refresh, size: 20),
-                      tooltip: 'Refresh Student List',
-                    ),
-                  ],
+                Text(
+                  'Students in ${cls.name}-${cls.section}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 16),
-                studentsAsync.when(
-                  loading: () => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: CircularProgressIndicator()),
+                SizedBox(
+                  width: 220,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Search Student',
+                      prefixIcon: Icon(Icons.search, size: 20),
+                      isDense: true,
+                    ),
+                    onChanged: (v) => setState(() => _query = v),
                   ),
-                  error: (e, _) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Text('Failed to load students: $e', style: const TextStyle(color: Colors.red)),
-                  ),
-                  data: (students) => _buildTableAndPagination(students),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _exportStub,
+                  icon: const Icon(Icons.download_outlined, size: 18),
+                  label: const Text('Export'),
+                ),
+                IconButton(
+                  onPressed: refreshIfClassSelected,
+                  icon: const Icon(Icons.refresh, size: 20),
+                  tooltip: 'Refresh Student List',
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 16),
+            studentsAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  'Failed to load students: $e',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+              data: (students) => _buildTableAndPagination(students),
+            ),
+          ],
         ),
       ),
     );
@@ -225,7 +235,9 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
               subtitle: Text('Roll #${s.rollNumber}'),
               trailing: Text(
                 s.isActive ? 'Active' : 'Inactive',
-                style: TextStyle(color: s.isActive ? Colors.green : Colors.grey),
+                style: TextStyle(
+                  color: s.isActive ? Colors.green : Colors.grey,
+                ),
               ),
               onTap: () {
                 if (widget.onStudentTap != null) {

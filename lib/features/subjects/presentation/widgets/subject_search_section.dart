@@ -8,7 +8,8 @@ class SubjectSearchSection extends ConsumerStatefulWidget {
   const SubjectSearchSection({super.key, this.onSubjectTap});
 
   @override
-  ConsumerState<SubjectSearchSection> createState() => SubjectSearchSectionState();
+  ConsumerState<SubjectSearchSection> createState() =>
+      SubjectSearchSectionState();
 }
 
 class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
@@ -19,8 +20,9 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
   }
 
   void _exportStub() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Export — coming soon')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Export — coming soon')));
   }
 
   @override
@@ -31,57 +33,56 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 1,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 550),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text('All Subjects',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                      SizedBox(
-                        width: 220,
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            hintText: 'Search Subjects',
-                            prefixIcon: Icon(Icons.search, size: 20),
-                            isDense: true,
-                          ),
-                          onChanged: (v) => setState(() => _query = v),
-                        ),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: _exportStub,
-                        icon: const Icon(Icons.download_outlined, size: 18),
-                        label: const Text('Export'),
-                      ),
-                    ],
+                  Text(
+                    'All Subjects',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  subjectsAsync.when(
-                    loading: () => const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 32),
-                      child: Center(child: CircularProgressIndicator()),
+                  SizedBox(
+                    width: 220,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Search Subjects',
+                        prefixIcon: Icon(Icons.search, size: 20),
+                        isDense: true,
+                      ),
+                      onChanged: (v) => setState(() => _query = v),
                     ),
-                    error: (e, _) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Text('Failed to load subjects: $e', style: const TextStyle(color: Colors.red)),
-                    ),
-                    data: (subjects) => _buildTable(subjects),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _exportStub,
+                    icon: const Icon(Icons.download_outlined, size: 18),
+                    label: const Text('Export'),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 16),
+              subjectsAsync.when(
+                loading: () => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (e, _) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    'Failed to load subjects: $e',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+                data: (subjects) => _buildTable(subjects),
+              ),
+            ],
           ),
         ),
       ),
@@ -93,7 +94,8 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
         ? subjects
         : subjects.where((s) {
             final q = _query.toLowerCase();
-            return s.name.toLowerCase().contains(q) || s.code.toLowerCase().contains(q);
+            return s.name.toLowerCase().contains(q) ||
+                s.code.toLowerCase().contains(q);
           }).toList();
 
     if (subjects.isEmpty) {
@@ -112,21 +114,27 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
           DataColumn(label: Text('Status')),
         ],
         rows: filtered
-            .map((s) => DataRow(
-                  onSelectChanged: widget.onSubjectTap == null
-                      ? null
-                      : (selected) {
-                          if (selected == true) widget.onSubjectTap!(s);
-                        },
-                  cells: [
-                    DataCell(Text(s.name)),
-                    DataCell(Text(s.code)),
-                    DataCell(Text(
+            .map(
+              (s) => DataRow(
+                onSelectChanged: widget.onSubjectTap == null
+                    ? null
+                    : (selected) {
+                        if (selected == true) widget.onSubjectTap!(s);
+                      },
+                cells: [
+                  DataCell(Text(s.name)),
+                  DataCell(Text(s.code)),
+                  DataCell(
+                    Text(
                       s.isActive ? 'Active' : 'Inactive',
-                      style: TextStyle(color: s.isActive ? Colors.green : Colors.grey),
-                    )),
-                  ],
-                ))
+                      style: TextStyle(
+                        color: s.isActive ? Colors.green : Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
             .toList(),
       ),
     );

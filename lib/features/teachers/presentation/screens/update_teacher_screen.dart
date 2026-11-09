@@ -12,7 +12,8 @@ class UpdateTeacherScreen extends ConsumerStatefulWidget {
   const UpdateTeacherScreen({super.key, required this.teacher});
 
   @override
-  ConsumerState<UpdateTeacherScreen> createState() => _UpdateTeacherScreenState();
+  ConsumerState<UpdateTeacherScreen> createState() =>
+      _UpdateTeacherScreenState();
 }
 
 class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
@@ -25,8 +26,12 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
   @override
   void initState() {
     super.initState();
-    _departmentController = TextEditingController(text: widget.teacher.department ?? '');
-    _qualificationController = TextEditingController(text: widget.teacher.qualification ?? '');
+    _departmentController = TextEditingController(
+      text: widget.teacher.department ?? '',
+    );
+    _qualificationController = TextEditingController(
+      text: widget.teacher.qualification ?? '',
+    );
     _hireDate = widget.teacher.hireDate;
   }
 
@@ -70,7 +75,9 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
         .updateTeacher(widget.teacher.id, request);
     if (!mounted || updated == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${updated.fullName} updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${updated.fullName} updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -82,73 +89,91 @@ class _UpdateTeacherScreenState extends ConsumerState<UpdateTeacherScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Update Teacher')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Text(widget.teacher.fullName, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _departmentController,
-                decoration: const InputDecoration(labelText: 'Department'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Text(
+              widget.teacher.fullName,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _departmentController,
+              decoration: const InputDecoration(labelText: 'Department'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: _pickHireDate,
+              child: InputDecorator(
+                decoration: const InputDecoration(labelText: 'Hire Date'),
+                child: Text(
+                  _hireDate == null
+                      ? 'Tap to select'
+                      : '${_hireDate!.year}-${_hireDate!.month.toString().padLeft(2, '0')}-${_hireDate!.day.toString().padLeft(2, '0')}',
+                ),
               ),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: _pickHireDate,
-                child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Hire Date'),
-                  child: Text(
-                    _hireDate == null
-                        ? 'Tap to select'
-                        : '${_hireDate!.year}-${_hireDate!.month.toString().padLeft(2, '0')}-${_hireDate!.day.toString().padLeft(2, '0')}',
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _qualificationController,
+              decoration: const InputDecoration(labelText: 'Qualification'),
+            ),
+            const SizedBox(height: 12),
+            subjectsAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => Text(
+                'Failed to load subjects: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
+              data: (subjects) {
+                _selectedSubject ??= _findById(
+                  subjects,
+                  widget.teacher.subjectSpecializationId,
+                );
+                return DropdownButtonFormField<Subject?>(
+                  initialValue: _selectedSubject,
+                  decoration: const InputDecoration(
+                    labelText: 'Subject Specialization (optional)',
                   ),
+                  items: [
+                    const DropdownMenuItem<Subject?>(
+                      value: null,
+                      child: Text('None'),
+                    ),
+                    ...subjects.map(
+                      (s) => DropdownMenuItem(value: s, child: Text(s.name)),
+                    ),
+                  ],
+                  onChanged: (v) => setState(() => _selectedSubject = v),
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
                 ),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _qualificationController,
-                decoration: const InputDecoration(labelText: 'Qualification'),
-              ),
-              const SizedBox(height: 12),
-              subjectsAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (e, _) =>
-                    Text('Failed to load subjects: ${friendlyErrorMessage(e)}', style: const TextStyle(color: Colors.red)),
-                data: (subjects) {
-                  _selectedSubject ??=
-                      _findById(subjects, widget.teacher.subjectSpecializationId);
-                  return DropdownButtonFormField<Subject?>(
-                    initialValue: _selectedSubject,
-                    decoration: const InputDecoration(labelText: 'Subject Specialization (optional)'),
-                    items: [
-                      const DropdownMenuItem<Subject?>(value: null, child: Text('None')),
-                      ...subjects.map((s) => DropdownMenuItem(value: s, child: Text(s.name))),
-                    ],
-                    onChanged: (v) => setState(() => _selectedSubject = v),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
-                ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Save Changes'),
-              ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save Changes'),
+            ),
+          ],
         ),
       ),
     );

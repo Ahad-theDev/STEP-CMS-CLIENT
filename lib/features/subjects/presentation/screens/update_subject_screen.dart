@@ -10,7 +10,8 @@ class UpdateSubjectScreen extends ConsumerStatefulWidget {
   const UpdateSubjectScreen({super.key, required this.subject});
 
   @override
-  ConsumerState<UpdateSubjectScreen> createState() => _UpdateSubjectScreenState();
+  ConsumerState<UpdateSubjectScreen> createState() =>
+      _UpdateSubjectScreenState();
 }
 
 class _UpdateSubjectScreenState extends ConsumerState<UpdateSubjectScreen> {
@@ -45,7 +46,9 @@ class _UpdateSubjectScreenState extends ConsumerState<UpdateSubjectScreen> {
         .updateSubject(widget.subject.id, request);
     if (!mounted || updated == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${updated.name} updated')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${updated.name} updated')));
     Navigator.of(context).pop(true);
   }
 
@@ -56,38 +59,42 @@ class _UpdateSubjectScreenState extends ConsumerState<UpdateSubjectScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Update Subject')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Subject Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _codeController,
-                decoration: const InputDecoration(labelText: 'Subject Code'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Subject Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _codeController,
+              decoration: const InputDecoration(labelText: 'Subject Code'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
                 ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Save Changes'),
               ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save Changes'),
+            ),
+          ],
         ),
       ),
     );

@@ -17,6 +17,8 @@ import 'package:cms/features/lectures/presentation/screens/lecture_management_sc
 import 'package:cms/features/attendance/presentation/screens/attendance_home_screen.dart';
 import 'package:cms/features/notifications/presentation/widgets/notification_bell.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
+import 'package:cms/features/exams/presentation/screens/management_exams_screen.dart';
+import 'package:cms/features/reports/presentation/screens/reports_hub_screen.dart';
 import 'package:cms/core/theme/app_colors.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -312,6 +314,38 @@ class DashboardScreen extends ConsumerWidget {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (_) => const FeeHomeScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.assignment_turned_in_outlined,
+                                  ),
+                                  title: const Text('Exams & Results'),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => ManagementExamsScreen(
+                                          isPrincipalReadOnly:
+                                              user.role == 'principal',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.analytics_outlined,
+                                  ),
+                                  title: const Text('Reports & Analytics'),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const ReportsHubScreen(),
                                       ),
                                     );
                                   },

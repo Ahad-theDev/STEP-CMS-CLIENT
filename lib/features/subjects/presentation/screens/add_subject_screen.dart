@@ -31,10 +31,14 @@ class _AddSubjectScreenState extends ConsumerState<AddSubjectScreen> {
       code: _codeController.text.trim(),
     );
 
-    final subject = await ref.read(addSubjectControllerProvider.notifier).createSubject(request);
+    final subject = await ref
+        .read(addSubjectControllerProvider.notifier)
+        .createSubject(request);
     if (!mounted || subject == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${subject.name} created')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${subject.name} created')));
     Navigator.of(context).pop(true);
   }
 
@@ -45,38 +49,42 @@ class _AddSubjectScreenState extends ConsumerState<AddSubjectScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Create Subject')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Subject Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _codeController,
-                decoration: const InputDecoration(labelText: 'Subject Code'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Subject Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _codeController,
+              decoration: const InputDecoration(labelText: 'Subject Code'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
                 ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Create Subject'),
               ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Create Subject'),
+            ),
+          ],
         ),
       ),
     );

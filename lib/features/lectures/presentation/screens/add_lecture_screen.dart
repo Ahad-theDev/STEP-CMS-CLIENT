@@ -107,159 +107,153 @@ class _AddLectureScreenState extends ConsumerState<AddLectureScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Create Lecture')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              classesAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                ),
-                error: (e, _) => Text(
-                  'Failed to load classes: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
-                data: (classes) => DropdownButtonFormField<SchoolClass>(
-                  initialValue: _selectedClass,
-                  decoration: const InputDecoration(labelText: 'Class'),
-                  items: classes
-                      .map(
-                        (c) => DropdownMenuItem(
-                          value: c,
-                          child: Text('${c.name} - ${c.section}'),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedClass = v),
-                  validator: (v) => v == null ? 'Required' : null,
-                ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            classesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
               ),
-              const SizedBox(height: 12),
-              teachersAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                ),
-                error: (e, _) => Text(
-                  'Failed to load teachers: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
-                data: (teachers) => DropdownButtonFormField<Teacher>(
-                  initialValue: _selectedTeacher,
-                  decoration: const InputDecoration(labelText: 'Teacher'),
-                  items: teachers
-                      .map(
-                        (t) =>
-                            DropdownMenuItem(value: t, child: Text(t.fullName)),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedTeacher = v),
-                  validator: (v) => v == null ? 'Required' : null,
-                ),
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
               ),
-              const SizedBox(height: 12),
-              subjectsAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                ),
-                error: (e, _) => Text(
-                  'Failed to load subjects: ${friendlyErrorMessage(e)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
-                data: (subjects) => DropdownButtonFormField<Subject>(
-                  initialValue: _selectedSubject,
-                  decoration: const InputDecoration(labelText: 'Subject'),
-                  items: subjects
-                      .map(
-                        (s) => DropdownMenuItem(value: s, child: Text(s.name)),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _selectedSubject = v),
-                  validator: (v) => v == null ? 'Required' : null,
-                ),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedDay,
-                decoration: const InputDecoration(labelText: 'Day of Week'),
-                items: weekDays
+              data: (classes) => DropdownButtonFormField<SchoolClass>(
+                initialValue: _selectedClass,
+                decoration: const InputDecoration(labelText: 'Class'),
+                items: classes
                     .map(
-                      (d) => DropdownMenuItem(
-                        value: d,
-                        child: Text(d[0].toUpperCase() + d.substring(1)),
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text('${c.name} - ${c.section}'),
                       ),
                     )
                     .toList(),
-                onChanged: (v) => setState(() => _selectedDay = v),
+                onChanged: (v) => setState(() => _selectedClass = v),
                 validator: (v) => v == null ? 'Required' : null,
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _roomController,
-                decoration: const InputDecoration(labelText: 'Room Number'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            teachersAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickStartTime,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Start Time',
-                        ),
-                        child: Text(
-                          _startTime == null
-                              ? 'Tap to select'
-                              : _startTime!.format(context),
-                        ),
+              error: (e, _) => Text(
+                'Failed to load teachers: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
+              data: (teachers) => DropdownButtonFormField<Teacher>(
+                initialValue: _selectedTeacher,
+                decoration: const InputDecoration(labelText: 'Teacher'),
+                items: teachers
+                    .map(
+                      (t) =>
+                          DropdownMenuItem(value: t, child: Text(t.fullName)),
+                    )
+                    .toList(),
+                onChanged: (v) => setState(() => _selectedTeacher = v),
+                validator: (v) => v == null ? 'Required' : null,
+              ),
+            ),
+            const SizedBox(height: 12),
+            subjectsAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
+              ),
+              error: (e, _) => Text(
+                'Failed to load subjects: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
+              data: (subjects) => DropdownButtonFormField<Subject>(
+                initialValue: _selectedSubject,
+                decoration: const InputDecoration(labelText: 'Subject'),
+                items: subjects
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s.name)))
+                    .toList(),
+                onChanged: (v) => setState(() => _selectedSubject = v),
+                validator: (v) => v == null ? 'Required' : null,
+              ),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedDay,
+              decoration: const InputDecoration(labelText: 'Day of Week'),
+              items: weekDays
+                  .map(
+                    (d) => DropdownMenuItem(
+                      value: d,
+                      child: Text(d[0].toUpperCase() + d.substring(1)),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (v) => setState(() => _selectedDay = v),
+              validator: (v) => v == null ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _roomController,
+              decoration: const InputDecoration(labelText: 'Room Number'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickStartTime,
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Start Time',
+                      ),
+                      child: Text(
+                        _startTime == null
+                            ? 'Tap to select'
+                            : _startTime!.format(context),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: InkWell(
-                      onTap: _pickEndTime,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'End Time',
-                        ),
-                        child: Text(
-                          _endTime == null
-                              ? 'Tap to select'
-                              : _endTime!.format(context),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Create Lecture'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InkWell(
+                    onTap: _pickEndTime,
+                    child: InputDecorator(
+                      decoration: const InputDecoration(labelText: 'End Time'),
+                      child: Text(
+                        _endTime == null
+                            ? 'Tap to select'
+                            : _endTime!.format(context),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Create Lecture'),
+            ),
+          ],
         ),
       ),
     );

@@ -83,79 +83,77 @@ class _UpdateStudentScreenState extends ConsumerState<UpdateStudentScreen> {
 
     return CampusPage(
       appBar: AppBar(title: const Text('Update Student')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const CampusSectionIntro(
-                title: 'Update student details',
-                subtitle: 'Review and update the student profile.',
-              ),
-              const SizedBox(height: 22),
-              TextFormField(
-                controller: _fullNameController,
-                decoration: const InputDecoration(labelText: 'Full Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _rollNumberController,
-                decoration: const InputDecoration(labelText: 'Roll Number'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _guardianNameController,
-                decoration: const InputDecoration(labelText: 'Guardian Name'),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _guardianPhoneController,
-                decoration: const InputDecoration(labelText: 'Guardian Phone'),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _monthlyFeeController,
-                decoration: const InputDecoration(labelText: 'Monthly Fee'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _discountController,
-                decoration: const InputDecoration(labelText: 'Discount'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'To move this student to a different class, use Change Enrollment instead — '
-                'it keeps enrollment history consistent.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            const CampusSectionIntro(
+              title: 'Update student details',
+              subtitle: 'Review and update the student profile.',
+            ),
+            const SizedBox(height: 22),
+            TextFormField(
+              controller: _fullNameController,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _rollNumberController,
+              decoration: const InputDecoration(labelText: 'Roll Number'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _guardianNameController,
+              decoration: const InputDecoration(labelText: 'Guardian Name'),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _guardianPhoneController,
+              decoration: const InputDecoration(labelText: 'Guardian Phone'),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _monthlyFeeController,
+              decoration: const InputDecoration(labelText: 'Monthly Fee'),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _discountController,
+              decoration: const InputDecoration(labelText: 'Discount'),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'To move this student to a different class, use Change Enrollment instead — '
+              'it keeps enrollment history consistent.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
                 ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Save Changes'),
               ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save Changes'),
+            ),
+          ],
         ),
       ),
     );

@@ -72,131 +72,126 @@ class _GenerateBulkFeesScreenState
 
     return FeePage(
       appBar: AppBar(title: const Text('Generate Bulk Fees')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            const FeeSectionIntro(
-              title: 'Generate monthly fees',
-              subtitle: 'Select classes and the billing period.',
+        children: [
+          const FeeSectionIntro(
+            title: 'Generate monthly fees',
+            subtitle: 'Select classes and the billing period.',
+          ),
+          const SizedBox(height: 22),
+          Text('Select Classes', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          classesAsync.when(
+            loading: () => const LinearProgressIndicator(),
+            error: (e, _) => Text(
+              'Failed to load classes: ${friendlyErrorMessage(e)}',
+              style: const TextStyle(color: Colors.red),
             ),
-            const SizedBox(height: 22),
-            Text(
-              'Select Classes',
-              style: Theme.of(context).textTheme.titleSmall,
+            data: (classes) => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: classes.map((c) {
+                final selected = _selectedClassIds.contains(c.id);
+                return FilterChip(
+                  label: Text('${c.name} - ${c.section}'),
+                  selected: selected,
+                  onSelected: (v) => setState(() {
+                    if (v) {
+                      _selectedClassIds.add(c.id);
+                    } else {
+                      _selectedClassIds.remove(c.id);
+                    }
+                  }),
+                );
+              }).toList(),
             ),
-            const SizedBox(height: 8),
-            classesAsync.when(
-              loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text(
-                'Failed to load classes: ${friendlyErrorMessage(e)}',
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<int>(
+            initialValue: _month,
+            decoration: const InputDecoration(labelText: 'Month'),
+            items: List.generate(
+              12,
+              (i) => DropdownMenuItem(
+                value: i + 1,
+                child: Text(
+                  '${DateTime(2000, i + 1).month.toString().padLeft(2, '0')} - ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i]}',
+                ),
+              ),
+            ),
+            onChanged: (v) => setState(() => _month = v ?? _month),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _yearController,
+            decoration: const InputDecoration(labelText: 'Year'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 24),
+          if (state.hasError)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Failed: ${friendlyErrorMessage(state.error!)}',
                 style: const TextStyle(color: Colors.red),
               ),
-              data: (classes) => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: classes.map((c) {
-                  final selected = _selectedClassIds.contains(c.id);
-                  return FilterChip(
-                    label: Text('${c.name} - ${c.section}'),
-                    selected: selected,
-                    onSelected: (v) => setState(() {
-                      if (v) {
-                        _selectedClassIds.add(c.id);
-                      } else {
-                        _selectedClassIds.remove(c.id);
-                      }
-                    }),
-                  );
-                }).toList(),
-              ),
             ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<int>(
-              initialValue: _month,
-              decoration: const InputDecoration(labelText: 'Month'),
-              items: List.generate(
-                12,
-                (i) => DropdownMenuItem(
-                  value: i + 1,
-                  child: Text(
-                    '${DateTime(2000, i + 1).month.toString().padLeft(2, '0')} - ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i]}',
-                  ),
-                ),
-              ),
-              onChanged: (v) => setState(() => _month = v ?? _month),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _yearController,
-              decoration: const InputDecoration(labelText: 'Year'),
-              keyboardType: TextInputType.number,
-            ),
+          ElevatedButton(
+            onPressed: isLoading ? null : _submit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Generate'),
+          ),
+          if (_result != null) ...[
             const SizedBox(height: 24),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'Failed: ${friendlyErrorMessage(state.error!)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Generate'),
+            const Divider(),
+            const SizedBox(height: 12),
+            Text(
+              'Generation Complete',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-            if (_result != null) ...[
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 12),
-              Text(
-                'Generation Complete',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 16,
-                children: [
-                  Text('Total: ${_result!.total}'),
-                  Text(
-                    'Success: ${_result!.success}',
-                    style: const TextStyle(color: Colors.green),
-                  ),
-                  Text(
-                    'Skipped: ${_result!.skipped}',
-                    style: const TextStyle(color: Colors.orange),
-                  ),
-                  Text(
-                    'Failed: ${_result!.failed}',
-                    style: TextStyle(
-                      color: _result!.failed > 0 ? Colors.red : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              if (_result!.errors.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Text('Details', style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 8),
-                ..._result!.errors.map(
-                  (e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      '${e.studentId}: ${e.reason}',
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                    ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 16,
+              children: [
+                Text('Total: ${_result!.total}'),
+                Text(
+                  'Success: ${_result!.success}',
+                  style: const TextStyle(color: Colors.green),
+                ),
+                Text(
+                  'Skipped: ${_result!.skipped}',
+                  style: const TextStyle(color: Colors.orange),
+                ),
+                Text(
+                  'Failed: ${_result!.failed}',
+                  style: TextStyle(
+                    color: _result!.failed > 0 ? Colors.red : Colors.grey,
                   ),
                 ),
               ],
+            ),
+            if (_result!.errors.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text('Details', style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              ..._result!.errors.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    '${e.studentId}: ${e.reason}',
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+              ),
             ],
           ],
-        ),
+        ],
       ),
     );
   }

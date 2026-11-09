@@ -9,10 +9,12 @@ class BulkImportTeachersScreen extends ConsumerStatefulWidget {
   const BulkImportTeachersScreen({super.key});
 
   @override
-  ConsumerState<BulkImportTeachersScreen> createState() => _BulkImportTeachersScreenState();
+  ConsumerState<BulkImportTeachersScreen> createState() =>
+      _BulkImportTeachersScreenState();
 }
 
-class _BulkImportTeachersScreenState extends ConsumerState<BulkImportTeachersScreen> {
+class _BulkImportTeachersScreenState
+    extends ConsumerState<BulkImportTeachersScreen> {
   String? _pickedPath;
   String? _pickedName;
   BulkImportResult? _result;
@@ -46,63 +48,82 @@ class _BulkImportTeachersScreenState extends ConsumerState<BulkImportTeachersScr
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bulk Import Teachers')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
+        children: [
+          Text(
+            'CSV column names not yet confirmed against the backend — '
+            'ask before relying on this for a real import.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.orange),
+          ),
+          const SizedBox(height: 20),
+          OutlinedButton.icon(
+            onPressed: isLoading ? null : _pickFile,
+            icon: const Icon(Icons.upload_file),
+            label: Text(_pickedName ?? 'Choose CSV File'),
+          ),
+          const SizedBox(height: 16),
+          if (state.hasError)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Failed: ${friendlyErrorMessage(state.error!)}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          ElevatedButton(
+            onPressed: (isLoading || _pickedPath == null) ? null : _submit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Import'),
+          ),
+          if (_result != null) ...[
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 12),
             Text(
-              'CSV column names not yet confirmed against the backend — '
-              'ask before relying on this for a real import.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange),
+              'Import Complete',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: isLoading ? null : _pickFile,
-              icon: const Icon(Icons.upload_file),
-              label: Text(_pickedName ?? 'Choose CSV File'),
-            ),
-            const SizedBox(height: 16),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red)),
-              ),
-            ElevatedButton(
-              onPressed: (isLoading || _pickedPath == null) ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Import'),
-            ),
-            if (_result != null) ...[
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 12),
-              Text('Import Complete', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 16,
-                children: [
-                  Text('Total: ${_result!.total}'),
-                  Text('Success: ${_result!.success}', style: const TextStyle(color: Colors.green)),
-                  Text('Failed: ${_result!.failed}',
-                      style: TextStyle(color: _result!.failed > 0 ? Colors.red : Colors.grey)),
-                ],
-              ),
-              if (_result!.errors.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Text('Errors', style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 8),
-                ..._result!.errors.map(
-                  (e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text('Row ${e.row}: ${e.error}', style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 16,
+              children: [
+                Text('Total: ${_result!.total}'),
+                Text(
+                  'Success: ${_result!.success}',
+                  style: const TextStyle(color: Colors.green),
+                ),
+                Text(
+                  'Failed: ${_result!.failed}',
+                  style: TextStyle(
+                    color: _result!.failed > 0 ? Colors.red : Colors.grey,
                   ),
                 ),
               ],
+            ),
+            if (_result!.errors.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text('Errors', style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              ..._result!.errors.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    'Row ${e.row}: ${e.error}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
             ],
           ],
-        ),
+        ],
       ),
     );
   }

@@ -36,7 +36,9 @@ class _BulkShiftScreenState extends ConsumerState<BulkShiftScreen> {
       reason: _reasonController.text.trim(),
     );
 
-    final result = await ref.read(bulkShiftControllerProvider.notifier).shift(request);
+    final result = await ref
+        .read(bulkShiftControllerProvider.notifier)
+        .shift(request);
     if (!mounted || result == null) return;
     setState(() => _result = result);
   }
@@ -50,79 +52,95 @@ class _BulkShiftScreenState extends ConsumerState<BulkShiftScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bulk Shift Schedule')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Text('Shifting all lectures on $dateLabel',
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 20),
-              Row(
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Text(
+              'Shifting all lectures on $dateLabel',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                ChoiceChip(
+                  label: const Text('Later'),
+                  selected: _shiftLater,
+                  onSelected: (v) => setState(() => _shiftLater = true),
+                ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('Earlier'),
+                  selected: !_shiftLater,
+                  onSelected: (v) => setState(() => _shiftLater = false),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _minutesController,
+              decoration: const InputDecoration(labelText: 'Minutes to shift'),
+              keyboardType: TextInputType.number,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _reasonController,
+              decoration: const InputDecoration(labelText: 'Reason'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Apply Shift'),
+            ),
+            if (_result != null) ...[
+              const SizedBox(height: 24),
+              const Divider(),
+              const SizedBox(height: 12),
+              Text(
+                'Shift Complete',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 16,
                 children: [
-                  ChoiceChip(
-                    label: const Text('Later'),
-                    selected: _shiftLater,
-                    onSelected: (v) => setState(() => _shiftLater = true),
+                  Text('Total: ${_result!.total}'),
+                  Text(
+                    'Success: ${_result!.success}',
+                    style: const TextStyle(color: Colors.green),
                   ),
-                  const SizedBox(width: 8),
-                  ChoiceChip(
-                    label: const Text('Earlier'),
-                    selected: !_shiftLater,
-                    onSelected: (v) => setState(() => _shiftLater = false),
+                  Text(
+                    'Failed: ${_result!.failed}',
+                    style: TextStyle(
+                      color: _result!.failed > 0 ? Colors.red : Colors.grey,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _minutesController,
-                decoration: const InputDecoration(labelText: 'Minutes to shift'),
-                keyboardType: TextInputType.number,
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _reasonController,
-                decoration: const InputDecoration(labelText: 'Reason'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
-                ),
+              const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Apply Shift'),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Done'),
               ),
-              if (_result != null) ...[
-                const SizedBox(height: 24),
-                const Divider(),
-                const SizedBox(height: 12),
-                Text('Shift Complete', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 16,
-                  children: [
-                    Text('Total: ${_result!.total}'),
-                    Text('Success: ${_result!.success}', style: const TextStyle(color: Colors.green)),
-                    Text('Failed: ${_result!.failed}',
-                        style: TextStyle(color: _result!.failed > 0 ? Colors.red : Colors.grey)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Done'),
-                ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
     );

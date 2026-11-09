@@ -69,95 +69,93 @@ class _ChangeEnrollmentScreenState
 
     return CampusPage(
       appBar: AppBar(title: const Text('Change Enrollment')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const CampusSectionIntro(
-                title: 'Move to a new class',
-                subtitle: 'Choose the destination class and academic year.',
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'Student: ${widget.student.fullName} (Roll #${widget.student.rollNumber})',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 20),
-              classesAsync.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (e, _) => Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Failed to load classes: ${friendlyErrorMessage(e)}',
-                        style: const TextStyle(color: Colors.red),
-                      ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            const CampusSectionIntro(
+              title: 'Move to a new class',
+              subtitle: 'Choose the destination class and academic year.',
+            ),
+            const SizedBox(height: 22),
+            Text(
+              'Student: ${widget.student.fullName} (Roll #${widget.student.rollNumber})',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 20),
+            classesAsync.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (e, _) => Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Failed to load classes: ${friendlyErrorMessage(e)}',
+                      style: const TextStyle(color: Colors.red),
                     ),
-                    TextButton(
-                      onPressed: () => ref
-                          .read(allClassesControllerProvider.notifier)
-                          .refresh(),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-                data: (classes) {
-                  final options = classes
-                      .where((c) => c.id != widget.student.classId)
-                      .toList();
-                  if (options.isEmpty) {
-                    return const Text(
-                      'No other classes available to move to.',
-                      style: TextStyle(color: Colors.grey),
-                    );
-                  }
-                  return DropdownButtonFormField<SchoolClass>(
-                    initialValue: _selectedClass,
-                    decoration: const InputDecoration(labelText: 'New Class'),
-                    items: options
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(
-                              '${c.name} - ${c.section} (${c.academicYear})',
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) => setState(() => _selectedClass = v),
-                    validator: (v) => v == null ? 'Required' : null,
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _academicYearController,
-                decoration: const InputDecoration(labelText: 'Academic Year'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red),
                   ),
-                ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Change Enrollment'),
+                  TextButton(
+                    onPressed: () => ref
+                        .read(allClassesControllerProvider.notifier)
+                        .refresh(),
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
-            ],
-          ),
+              data: (classes) {
+                final options = classes
+                    .where((c) => c.id != widget.student.classId)
+                    .toList();
+                if (options.isEmpty) {
+                  return const Text(
+                    'No other classes available to move to.',
+                    style: TextStyle(color: Colors.grey),
+                  );
+                }
+                return DropdownButtonFormField<SchoolClass>(
+                  initialValue: _selectedClass,
+                  decoration: const InputDecoration(labelText: 'New Class'),
+                  items: options
+                      .map(
+                        (c) => DropdownMenuItem(
+                          value: c,
+                          child: Text(
+                            '${c.name} - ${c.section} (${c.academicYear})',
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => _selectedClass = v),
+                  validator: (v) => v == null ? 'Required' : null,
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _academicYearController,
+              decoration: const InputDecoration(labelText: 'Academic Year'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Change Enrollment'),
+            ),
+          ],
         ),
       ),
     );

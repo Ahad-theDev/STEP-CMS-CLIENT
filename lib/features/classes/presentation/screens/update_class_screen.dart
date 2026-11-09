@@ -23,8 +23,12 @@ class _UpdateClassScreenState extends ConsumerState<UpdateClassScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.schoolClass.name);
-    _sectionController = TextEditingController(text: widget.schoolClass.section);
-    _academicYearController = TextEditingController(text: widget.schoolClass.academicYear);
+    _sectionController = TextEditingController(
+      text: widget.schoolClass.section,
+    );
+    _academicYearController = TextEditingController(
+      text: widget.schoolClass.academicYear,
+    );
   }
 
   @override
@@ -49,8 +53,9 @@ class _UpdateClassScreenState extends ConsumerState<UpdateClassScreen> {
         .updateClass(widget.schoolClass.id, request);
     if (!mounted || updated == null) return;
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('${updated.name} - ${updated.section} updated')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${updated.name} - ${updated.section} updated')),
+    );
     Navigator.of(context).pop(true);
   }
 
@@ -61,49 +66,55 @@ class _UpdateClassScreenState extends ConsumerState<UpdateClassScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Update Class')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Class Name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _sectionController,
-                decoration: const InputDecoration(labelText: 'Section'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _academicYearController,
-                decoration: const InputDecoration(labelText: 'Academic Year'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'To assign or change this class\'s teacher, use Assign Teacher instead.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                      style: const TextStyle(color: Colors.red)),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Class Name'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _sectionController,
+              decoration: const InputDecoration(labelText: 'Section'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _academicYearController,
+              decoration: const InputDecoration(labelText: 'Academic Year'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'To assign or change this class\'s teacher, use Assign Teacher instead.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
+                  style: const TextStyle(color: Colors.red),
                 ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Text('Save Changes'),
               ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save Changes'),
+            ),
+          ],
         ),
       ),
     );

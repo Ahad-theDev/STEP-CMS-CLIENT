@@ -13,7 +13,9 @@ class SearchClassesScreen extends StatefulWidget {
 class _SearchClassesScreenState extends State<SearchClassesScreen> {
   Future<void> _openViewClassScreen(SchoolClass schoolClass) async {
     await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => ViewClassScreen(schoolClass: schoolClass)),
+      MaterialPageRoute(
+        builder: (_) => ViewClassScreen(schoolClass: schoolClass),
+      ),
     );
   }
 
@@ -21,8 +23,8 @@ class _SearchClassesScreenState extends State<SearchClassesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Search Classes')),
-      body: ClassSearchSection(
-        onClassTap: _openViewClassScreen,
+      body: SingleChildScrollView(
+        child: ClassSearchSection(onClassTap: _openViewClassScreen),
       ),
     );
   }

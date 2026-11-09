@@ -9,10 +9,12 @@ class BulkImportClassesScreen extends ConsumerStatefulWidget {
   const BulkImportClassesScreen({super.key});
 
   @override
-  ConsumerState<BulkImportClassesScreen> createState() => _BulkImportClassesScreenState();
+  ConsumerState<BulkImportClassesScreen> createState() =>
+      _BulkImportClassesScreenState();
 }
 
-class _BulkImportClassesScreenState extends ConsumerState<BulkImportClassesScreen> {
+class _BulkImportClassesScreenState
+    extends ConsumerState<BulkImportClassesScreen> {
   String? _pickedPath;
   String? _pickedName;
   BulkImportResult? _result;
@@ -40,9 +42,16 @@ class _BulkImportClassesScreenState extends ConsumerState<BulkImportClassesScree
           spacing: 16,
           children: [
             Text('Total: ${result.total}'),
-            Text('Success: ${result.success}', style: const TextStyle(color: Colors.green)),
-            Text('Failed: ${result.failed}',
-                style: TextStyle(color: result.failed > 0 ? Colors.red : Colors.grey)),
+            Text(
+              'Success: ${result.success}',
+              style: const TextStyle(color: Colors.green),
+            ),
+            Text(
+              'Failed: ${result.failed}',
+              style: TextStyle(
+                color: result.failed > 0 ? Colors.red : Colors.grey,
+              ),
+            ),
           ],
         ),
         if (result.errors.isNotEmpty) ...[
@@ -52,7 +61,10 @@ class _BulkImportClassesScreenState extends ConsumerState<BulkImportClassesScree
           ...result.errors.map(
             (e) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text('Row ${e.row}: ${e.error}', style: const TextStyle(color: Colors.red)),
+              child: Text(
+                'Row ${e.row}: ${e.error}',
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
           ),
         ],
@@ -76,42 +88,48 @@ class _BulkImportClassesScreenState extends ConsumerState<BulkImportClassesScree
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bulk Import Classes')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            Text(
-              'CSV columns required: name, section, academic_year, '
-              'class_teacher_id (optional).',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: isLoading ? null : _pickFile,
-              icon: const Icon(Icons.upload_file),
-              label: Text(_pickedName ?? 'Choose CSV File'),
-            ),
-            const SizedBox(height: 16),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text('Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red)),
+        children: [
+          Text(
+            'CSV columns required: name, section, academic_year, '
+            'class_teacher_id (optional).',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+          ),
+          const SizedBox(height: 20),
+          OutlinedButton.icon(
+            onPressed: isLoading ? null : _pickFile,
+            icon: const Icon(Icons.upload_file),
+            label: Text(_pickedName ?? 'Choose CSV File'),
+          ),
+          const SizedBox(height: 16),
+          if (state.hasError)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Failed: ${friendlyErrorMessage(state.error!)}',
+                style: const TextStyle(color: Colors.red),
               ),
-            ElevatedButton(
-              onPressed: (isLoading || _pickedPath == null) ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Import'),
             ),
-            if (_result != null) ...[
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 12),
-              _buildResultSummary(_result!),
-            ],
+          ElevatedButton(
+            onPressed: (isLoading || _pickedPath == null) ? null : _submit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Import'),
+          ),
+          if (_result != null) ...[
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 12),
+            _buildResultSummary(_result!),
           ],
-        ),
+        ],
       ),
     );
   }

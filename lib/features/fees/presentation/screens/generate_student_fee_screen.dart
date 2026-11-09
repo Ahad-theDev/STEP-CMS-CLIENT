@@ -87,81 +87,79 @@ class _GenerateStudentFeeScreenState
 
     return FeePage(
       appBar: AppBar(title: const Text('Generate Fee for Student')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            const FeeSectionIntro(
-              title: 'Generate a student fee',
-              subtitle: 'Choose the student and billing period.',
+        children: [
+          const FeeSectionIntro(
+            title: 'Generate a student fee',
+            subtitle: 'Choose the student and billing period.',
+          ),
+          const SizedBox(height: 22),
+          InkWell(
+            onTap: _pickStudent,
+            child: InputDecorator(
+              decoration: const InputDecoration(labelText: 'Student'),
+              child: Text(
+                _selectedStudent == null
+                    ? 'Tap to select'
+                    : _selectedStudent!.fullName,
+              ),
             ),
-            const SizedBox(height: 22),
-            InkWell(
-              onTap: _pickStudent,
-              child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Student'),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<int>(
+            initialValue: _month,
+            decoration: const InputDecoration(labelText: 'Month'),
+            items: List.generate(
+              12,
+              (i) => DropdownMenuItem(
+                value: i + 1,
                 child: Text(
-                  _selectedStudent == null
-                      ? 'Tap to select'
-                      : _selectedStudent!.fullName,
+                  [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                  ][i],
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<int>(
-              initialValue: _month,
-              decoration: const InputDecoration(labelText: 'Month'),
-              items: List.generate(
-                12,
-                (i) => DropdownMenuItem(
-                  value: i + 1,
-                  child: Text(
-                    [
-                      'January',
-                      'February',
-                      'March',
-                      'April',
-                      'May',
-                      'June',
-                      'July',
-                      'August',
-                      'September',
-                      'October',
-                      'November',
-                      'December',
-                    ][i],
-                  ),
-                ),
+            onChanged: (v) => setState(() => _month = v ?? _month),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _yearController,
+            decoration: const InputDecoration(labelText: 'Year'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 24),
+          if (state.hasError)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Failed: ${friendlyErrorMessage(state.error!)}',
+                style: const TextStyle(color: Colors.red),
               ),
-              onChanged: (v) => setState(() => _month = v ?? _month),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _yearController,
-              decoration: const InputDecoration(labelText: 'Year'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 24),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'Failed: ${friendlyErrorMessage(state.error!)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Generate'),
-            ),
-          ],
-        ),
+          ElevatedButton(
+            onPressed: isLoading ? null : _submit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Generate'),
+          ),
+        ],
       ),
     );
   }

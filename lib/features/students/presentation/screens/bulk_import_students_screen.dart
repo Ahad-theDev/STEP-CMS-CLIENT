@@ -49,63 +49,61 @@ class _BulkImportStudentsScreenState
 
     return CampusPage(
       appBar: AppBar(title: const Text('Bulk Import Students')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            const CampusSectionIntro(
-              title: 'Import student records',
-              subtitle: 'Upload a CSV file and review the import results.',
-            ),
-            const SizedBox(height: 22),
-            Text(
-              'CSV columns required: full_name, roll_number, class_id, guardian_name, '
-              'guardian_phone, admission_date (YYYY-MM-DD), monthly_fee, discount (optional).',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Note: class_id must be the class\'s UUID, not its name — '
-              'export the class list first if you need to look these up.',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.orange),
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: isLoading ? null : _pickFile,
-              icon: const Icon(Icons.upload_file),
-              label: Text(_pickedName ?? 'Choose CSV File'),
-            ),
-            const SizedBox(height: 16),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'Failed: ${friendlyErrorMessage(state.error!)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
+        children: [
+          const CampusSectionIntro(
+            title: 'Import student records',
+            subtitle: 'Upload a CSV file and review the import results.',
+          ),
+          const SizedBox(height: 22),
+          Text(
+            'CSV columns required: full_name, roll_number, class_id, guardian_name, '
+            'guardian_phone, admission_date (YYYY-MM-DD), monthly_fee, discount (optional).',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Note: class_id must be the class\'s UUID, not its name — '
+            'export the class list first if you need to look these up.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.orange),
+          ),
+          const SizedBox(height: 20),
+          OutlinedButton.icon(
+            onPressed: isLoading ? null : _pickFile,
+            icon: const Icon(Icons.upload_file),
+            label: Text(_pickedName ?? 'Choose CSV File'),
+          ),
+          const SizedBox(height: 16),
+          if (state.hasError)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Failed: ${friendlyErrorMessage(state.error!)}',
+                style: const TextStyle(color: Colors.red),
               ),
-            ElevatedButton(
-              onPressed: (isLoading || _pickedPath == null) ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Import'),
             ),
-            if (_result != null) ...[
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 12),
-              _buildResultSummary(_result!),
-            ],
+          ElevatedButton(
+            onPressed: (isLoading || _pickedPath == null) ? null : _submit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Import'),
+          ),
+          if (_result != null) ...[
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 12),
+            _buildResultSummary(_result!),
           ],
-        ),
+        ],
       ),
     );
   }

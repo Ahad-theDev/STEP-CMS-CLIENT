@@ -59,56 +59,54 @@ class _UpdateFeeStructureScreenState
 
     return FeePage(
       appBar: AppBar(title: const Text('Update Fee Structure')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: ListView(
-          children: [
-            const FeeSectionIntro(
-              title: 'Update fee structure',
-              subtitle: 'Review the class fee details before saving changes.',
+        children: [
+          const FeeSectionIntro(
+            title: 'Update fee structure',
+            subtitle: 'Review the class fee details before saving changes.',
+          ),
+          const SizedBox(height: 22),
+          Text(
+            'Academic Year: ${widget.structure.academicYear}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            controller: _amountController,
+            decoration: const InputDecoration(labelText: 'Amount'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 12),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Active'),
+            subtitle: const Text(
+              'Turn off to deactivate — no hard delete exists for this',
             ),
-            const SizedBox(height: 22),
-            Text(
-              'Academic Year: ${widget.structure.academicYear}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _amountController,
-              decoration: const InputDecoration(labelText: 'Amount'),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 12),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Active'),
-              subtitle: const Text(
-                'Turn off to deactivate — no hard delete exists for this',
+            value: _isActive,
+            onChanged: (v) => setState(() => _isActive = v),
+          ),
+          const SizedBox(height: 24),
+          if (state.hasError)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Failed: ${friendlyErrorMessage(state.error!)}',
+                style: const TextStyle(color: Colors.red),
               ),
-              value: _isActive,
-              onChanged: (v) => setState(() => _isActive = v),
             ),
-            const SizedBox(height: 24),
-            if (state.hasError)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'Failed: ${friendlyErrorMessage(state.error!)}',
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submit,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Save Changes'),
-            ),
-          ],
-        ),
+          ElevatedButton(
+            onPressed: isLoading ? null : _submit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Save Changes'),
+          ),
+        ],
       ),
     );
   }

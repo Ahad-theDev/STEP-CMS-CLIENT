@@ -71,75 +71,73 @@ class _AddFeeStructureScreenState extends ConsumerState<AddFeeStructureScreen> {
 
     return FeePage(
       appBar: AppBar(title: const Text('Create Fee Structure')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              const FeeSectionIntro(
-                title: 'Create a fee structure',
-                subtitle: 'Choose a class, academic year, and fee amount.',
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            const FeeSectionIntro(
+              title: 'Create a fee structure',
+              subtitle: 'Choose a class, academic year, and fee amount.',
+            ),
+            const SizedBox(height: 22),
+            classesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
               ),
-              const SizedBox(height: 22),
-              classesAsync.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: LinearProgressIndicator(),
-                ),
-                error: (e, _) => Text(
-                  'Failed to load classes: ${friendlyErrorMessage(e)}',
+              error: (e, _) => Text(
+                'Failed to load classes: ${friendlyErrorMessage(e)}',
+                style: const TextStyle(color: Colors.red),
+              ),
+              data: (classes) => DropdownButtonFormField<SchoolClass>(
+                initialValue: _selectedClass,
+                decoration: const InputDecoration(labelText: 'Class'),
+                items: classes
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text('${c.name} - ${c.section}'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: _onClassChanged,
+                validator: (v) => v == null ? 'Required' : null,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _amountController,
+              decoration: const InputDecoration(labelText: 'Amount'),
+              keyboardType: TextInputType.number,
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _yearController,
+              decoration: const InputDecoration(labelText: 'Academic Year'),
+              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 24),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Failed: ${friendlyErrorMessage(state.error!)}',
                   style: const TextStyle(color: Colors.red),
                 ),
-                data: (classes) => DropdownButtonFormField<SchoolClass>(
-                  initialValue: _selectedClass,
-                  decoration: const InputDecoration(labelText: 'Class'),
-                  items: classes
-                      .map(
-                        (c) => DropdownMenuItem(
-                          value: c,
-                          child: Text('${c.name} - ${c.section}'),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: _onClassChanged,
-                  validator: (v) => v == null ? 'Required' : null,
-                ),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _amountController,
-                decoration: const InputDecoration(labelText: 'Amount'),
-                keyboardType: TextInputType.number,
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _yearController,
-                decoration: const InputDecoration(labelText: 'Academic Year'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-              ),
-              const SizedBox(height: 24),
-              if (state.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Failed: ${friendlyErrorMessage(state.error!)}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-              ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Create Fee Structure'),
-              ),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: isLoading ? null : _submit,
+              child: isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Create Fee Structure'),
+            ),
+          ],
         ),
       ),
     );

@@ -28,13 +28,17 @@ class _SearchSubjectScreenState extends State<SearchSubjectScreen> {
           ),
         ],
       ),
-      body: SubjectSearchSection(
-        key: _searchSectionKey,
-        onSubjectTap: (subject) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Selected: ${subject.name} (${subject.code})')),
-          );
-        },
+      body: SingleChildScrollView(
+        child: SubjectSearchSection(
+          key: _searchSectionKey,
+          onSubjectTap: (subject) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Selected: ${subject.name} (${subject.code})'),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

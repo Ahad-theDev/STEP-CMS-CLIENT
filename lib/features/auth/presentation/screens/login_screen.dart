@@ -167,138 +167,154 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F3FD),
       body: Stack(
+        fit: StackFit.expand,
         children: [
           const Positioned.fill(child: CampusBackground()),
           SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 28,
-                ),
+            child: LayoutBuilder(
+              builder: (context, viewport) => SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Top Institutional Branding (Dark contrast logo & typography)
-                      const _HeaderSection(),
-                      const SizedBox(height: 24),
-                      // Elevated Clean Card with Noticeable Purplish Tint
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFFFFFFFF),
-                              Color(0xFFF6F1FF),
-                              Color(0xFFF0F6FF),
-                            ],
-                            stops: [0.0, 0.55, 1.0],
-                          ),
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(
-                            color: const Color(0xFFDADDF4),
-                            width: 1,
-                          ), // Refined purple border
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(
-                                0x127C3AED,
-                              ), // Noticeable ambient purple shadow
-                              blurRadius: 30,
-                              offset: Offset(0, 10),
+                  constraints: BoxConstraints(minHeight: viewport.maxHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 28,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 420),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Top Institutional Branding (Dark contrast logo & typography)
+                            const _HeaderSection(),
+                            const SizedBox(height: 24),
+                            // Elevated Clean Card with Noticeable Purplish Tint
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFFFFFFFF),
+                                    Color(0xFFF6F1FF),
+                                    Color(0xFFF0F6FF),
+                                  ],
+                                  stops: [0.0, 0.55, 1.0],
+                                ),
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(
+                                  color: const Color(0xFFDADDF4),
+                                  width: 1,
+                                ), // Refined purple border
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(
+                                      0x127C3AED,
+                                    ), // Noticeable ambient purple shadow
+                                    blurRadius: 30,
+                                    offset: Offset(0, 10),
+                                  ),
+                                  BoxShadow(
+                                    color: Color(0x080F172A),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 28,
+                              ),
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    const Text(
+                                      'Sign In',
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF0F172A),
+                                        letterSpacing: -0.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'Welcome back. Sign in to your campus portal.',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFF64748B),
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 22),
+                                    _UsernameField(
+                                      controller: _usernameController,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _PasswordField(
+                                      controller: _passwordController,
+                                      obscureText: _obscurePassword,
+                                      onToggleVisibility: () => setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    _RememberMeAndForgotPassword(
+                                      rememberMe: _rememberMe,
+                                      onRememberMeChanged: (value) => setState(
+                                        () => _rememberMe = value ?? false,
+                                      ),
+                                      onForgotPassword: _handleForgotPassword,
+                                    ),
+                                    const SizedBox(height: 22),
+                                    _SubmitButton(
+                                      isLoading: isLoading,
+                                      onPressed: _submit,
+                                    ),
+                                    const SizedBox(height: 18),
+                                    const _FooterSection(),
+                                  ],
+                                ),
+                              ),
                             ),
-                            BoxShadow(
-                              color: Color(0x080F172A),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
+                            const SizedBox(height: 20),
+                            // Subtle campus footer indicator
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(0xFF16A34A),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                const Flexible(
+                                  child: Text(
+                                    'STEP CMS • Campus & Mobile Edition',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xFF64748B),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 28,
-                        ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const Text(
-                                'Sign In',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF0F172A),
-                                  letterSpacing: -0.4,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                'Welcome back. Sign in to your campus portal.',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF64748B),
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 22),
-                              _UsernameField(controller: _usernameController),
-                              const SizedBox(height: 16),
-                              _PasswordField(
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                onToggleVisibility: () => setState(
-                                  () => _obscurePassword = !_obscurePassword,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              _RememberMeAndForgotPassword(
-                                rememberMe: _rememberMe,
-                                onRememberMeChanged: (value) => setState(
-                                  () => _rememberMe = value ?? false,
-                                ),
-                                onForgotPassword: _handleForgotPassword,
-                              ),
-                              const SizedBox(height: 22),
-                              _SubmitButton(
-                                isLoading: isLoading,
-                                onPressed: _submit,
-                              ),
-                              const SizedBox(height: 18),
-                              const _FooterSection(),
-                            ],
-                          ),
-                        ),
                       ),
-                      const SizedBox(height: 20),
-                      // Subtle campus footer indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF16A34A),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            'STEP CMS • Campus & Mobile Edition',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
