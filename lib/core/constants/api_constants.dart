@@ -75,4 +75,21 @@ class ApiConstants {
       'daily-attendance/students/$studentId';
   static String dailyAttendanceCorrect(String classId, String studentId) =>
       'daily-attendance/classes/$classId/students/$studentId';
+
+  // Teacher Check-In/Out & Biometric Attendance
+  static const String attendanceDevices = 'attendance/devices';
+  static String attendanceDevice(String deviceId) =>
+      'attendance/devices/$deviceId';
+  static String teacherFingerprintEnrollment(String teacherId) =>
+      'attendance/teachers/$teacherId/fingerprint-enrollment';
+  static String revokeTeacherFingerprintEnrollment(
+    String teacherId,
+    String deviceId,
+  ) =>
+      'attendance/teachers/$teacherId/fingerprint-enrollment/$deviceId';
+  static const String attendancePolicy = 'attendance/policy';
+  static const String teacherScan = 'attendance/teachers/scan';
+  static const String teacherManualEvent = 'attendance/teachers/manual-event';
+  static const String teacherDailyAttendance = 'attendance/teachers/daily';
+  static const String teacherAttendanceSummary = 'attendance/teachers/summary';
 }

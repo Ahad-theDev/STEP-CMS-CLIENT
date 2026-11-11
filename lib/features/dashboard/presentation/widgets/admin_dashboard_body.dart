@@ -21,6 +21,7 @@ import 'package:cms/features/lectures/presentation/screens/lecture_management_sc
 import 'package:cms/features/schedule/presentation/screens/schedule_screen.dart';
 import 'package:cms/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:cms/features/attendance/presentation/screens/attendance_home_screen.dart';
+import 'package:cms/features/attendance/presentation/screens/teacher_daily_attendance_screen.dart';
 import 'package:cms/features/fees/presentation/screens/fee_home_screen.dart';
 import 'package:cms/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:cms/features/ai/presentation/screens/ai_assistant_screen.dart';
@@ -334,6 +335,13 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                         label: 'Attendance',
                         color: const Color(0xFF287B70),
                         onTap: () => _push(const AttendanceHomeScreen()),
+                      ),
+                      DashboardShortcutTile(
+                        icon: Icons.access_time_filled_rounded,
+                        label: 'Teacher Check-In/Out',
+                        color: const Color(0xFF554490),
+                        onTap: () =>
+                            _push(const TeacherDailyAttendanceScreen()),
                       ),
                       DashboardShortcutTile(
                         icon: Icons.payments_outlined,

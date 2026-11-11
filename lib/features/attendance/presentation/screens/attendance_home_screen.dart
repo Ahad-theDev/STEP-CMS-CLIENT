@@ -10,6 +10,11 @@ import 'attendance_summary_screen.dart';
 import 'defaulters_screen.dart';
 import 'admin_daily_attendance_screen.dart';
 import 'class_daily_attendance_screen.dart';
+import 'attendance_devices_screen.dart';
+import 'teacher_enrollment_screen.dart';
+import 'attendance_policy_screen.dart';
+import 'teacher_kiosk_screen.dart';
+import 'teacher_daily_attendance_screen.dart';
 
 enum _TrendsView { classTrends, teacherTrends }
 
@@ -83,6 +88,101 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 26),
+                      const Text(
+                        'Teacher Check-In/Out & Biometric Kiosk',
+                        style: TextStyle(
+                          color: CampusStyle.ink,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final columns = (constraints.maxWidth / 250)
+                              .floor()
+                              .clamp(1, 3);
+                          final cardWidth =
+                              (constraints.maxWidth - (columns - 1) * 14) /
+                              columns;
+                          return Wrap(
+                            spacing: 14,
+                            runSpacing: 14,
+                            children: [
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.access_time_filled_rounded,
+                                title: 'Teacher Check-In / Out',
+                                description:
+                                    'Record manual check-in/out events & view daily timestamps & summaries',
+                                buttonLabel: 'Open Check-In/Out',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const TeacherDailyAttendanceScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.fingerprint_rounded,
+                                title: 'Attendance Kiosk',
+                                description:
+                                    'Arrival & departure fingerprint kiosk scanning mode',
+                                buttonLabel: 'Launch Kiosk',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const TeacherKioskScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.devices_rounded,
+                                title: 'Kiosk Devices',
+                                description:
+                                    'Register workstations, store tokens & manage scanner attachment',
+                                buttonLabel: 'Manage Devices',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AttendanceDevicesScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.badge_rounded,
+                                title: 'Fingerprint Enrollment',
+                                description:
+                                    'Enroll & revoke teacher fingerprint templates per kiosk',
+                                buttonLabel: 'Enroll Teachers',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const TeacherEnrollmentScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.tune_rounded,
+                                title: 'Attendance Policy',
+                                description:
+                                    'Configure Mon–Sun start/end times, cutoffs & grace rules',
+                                buttonLabel: 'Edit Policy',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AttendancePolicyScreen(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 28),
                       const Text(
                         'Attendance workspace',
                         style: TextStyle(
