@@ -23,6 +23,14 @@ class ApiConstants {
   static const String calendarHolidays = 'calendar/holidays';
   static const String attendanceStaff = 'attendance/staff';
   static const String attendanceStaffBulkMark = 'attendance/staff/bulk-mark';
+  static const String attendanceStaffRoster = 'attendance/staff/roster';
+  static const String attendanceStaffSummary = 'attendance/staff/summary';
+  static String attendanceStaffItem(String attendanceId) =>
+      'attendance/staff/$attendanceId';
+  static String attendanceStaffAudit(String attendanceId) =>
+      'attendance/staff/$attendanceId/audit';
+  static String attendanceStaffHistory(String personType, String personId) =>
+      'attendance/staff/$personType/$personId/history';
   static const String attendanceStudents = 'attendance/students';
   static const String attendanceStudentsSummary = 'attendance/students/summary';
   static const String attendanceStudentsBulkCorrect =

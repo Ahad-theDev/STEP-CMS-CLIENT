@@ -1,10 +1,8 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:cms/core/network/dio_client.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/staff_attendance_repository.dart';
 
-part 'staff_attendance_repository_provider.g.dart';
-
-@riverpod
-StaffAttendanceRepository staffAttendanceRepository(StaffAttendanceRepositoryRef ref) {
-  return StaffAttendanceRepository(ref.read(dioProvider));
-}
+final staffAttendanceRepositoryProvider =
+    Provider<StaffAttendanceRepository>((ref) {
+  return StaffAttendanceRepository(ref.watch(dioProvider));
+});

@@ -1,27 +1,46 @@
 class BulkStaffAttendanceResultItem {
   final String personId;
-  final String action; // created | updated | skipped_duplicate
+  final String personType;
+  final String attendanceId;
+  final String action;
 
-  BulkStaffAttendanceResultItem({required this.personId, required this.action});
+  const BulkStaffAttendanceResultItem({
+    required this.personId,
+    required this.personType,
+    required this.attendanceId,
+    required this.action,
+  });
 
-  factory BulkStaffAttendanceResultItem.fromJson(Map<String, dynamic> json) =>
-      BulkStaffAttendanceResultItem(
-        personId: json['person_id'] as String,
-        action: json['action'] as String,
-      );
+  factory BulkStaffAttendanceResultItem.fromJson(Map<String, dynamic> json) {
+    return BulkStaffAttendanceResultItem(
+      personId: json['person_id']?.toString() ?? '',
+      personType: json['person_type']?.toString() ?? 'staff',
+      attendanceId: json['attendance_id']?.toString() ?? '',
+      action: json['action']?.toString() ?? 'created',
+    );
+  }
 }
 
 class BulkStaffAttendanceResponse {
   final String date;
+  final int savedCount;
   final List<BulkStaffAttendanceResultItem> results;
 
-  BulkStaffAttendanceResponse({required this.date, required this.results});
+  const BulkStaffAttendanceResponse({
+    required this.date,
+    required this.savedCount,
+    required this.results,
+  });
 
-  factory BulkStaffAttendanceResponse.fromJson(Map<String, dynamic> json) =>
-      BulkStaffAttendanceResponse(
-        date: json['date'] as String,
-        results: (json['results'] as List)
-            .map((e) => BulkStaffAttendanceResultItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
+  factory BulkStaffAttendanceResponse.fromJson(Map<String, dynamic> json) {
+    final rawResults = json['results'] as List<dynamic>? ?? const [];
+    return BulkStaffAttendanceResponse(
+      date: json['date']?.toString() ?? '',
+      savedCount: (json['saved_count'] as num?)?.toInt() ?? rawResults.length,
+      results: rawResults
+          .whereType<Map<String, dynamic>>()
+          .map(BulkStaffAttendanceResultItem.fromJson)
+          .toList(),
+    );
+  }
 }

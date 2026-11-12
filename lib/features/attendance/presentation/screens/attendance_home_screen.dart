@@ -14,12 +14,13 @@ import 'attendance_devices_screen.dart';
 import 'teacher_enrollment_screen.dart';
 import 'attendance_policy_screen.dart';
 import 'teacher_kiosk_screen.dart';
-import 'teacher_daily_attendance_screen.dart';
 
 enum _TrendsView { classTrends, teacherTrends }
 
 class AttendanceHomeScreen extends StatefulWidget {
-  const AttendanceHomeScreen({super.key});
+  final bool isPrincipalReadOnly;
+
+  const AttendanceHomeScreen({super.key, this.isPrincipalReadOnly = false});
 
   @override
   State<AttendanceHomeScreen> createState() => _AttendanceHomeScreenState();
@@ -112,30 +113,35 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                               AttendanceActionCard(
                                 width: cardWidth,
                                 icon: Icons.access_time_filled_rounded,
-                                title: 'Teacher Check-In / Out',
+                                title: 'Staff & Teacher Check-In / Out',
                                 description:
-                                    'Record manual check-in/out events & view daily timestamps & summaries',
-                                buttonLabel: 'Open Check-In/Out',
+                                    'Unified daily roster for check-in/out times, short leaves, bulk mark & audit edits',
+                                buttonLabel: widget.isPrincipalReadOnly
+                                    ? 'View Roster'
+                                    : 'Open Check-In/Out',
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        const TeacherDailyAttendanceScreen(),
+                                    builder: (_) => MarkStaffAttendanceScreen(
+                                      isPrincipalReadOnly:
+                                          widget.isPrincipalReadOnly,
+                                    ),
                                   ),
                                 ),
                               ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.fingerprint_rounded,
-                                title: 'Attendance Kiosk',
-                                description:
-                                    'Arrival & departure fingerprint kiosk scanning mode',
-                                buttonLabel: 'Launch Kiosk',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const TeacherKioskScreen(),
+                              if (!widget.isPrincipalReadOnly)
+                                AttendanceActionCard(
+                                  width: cardWidth,
+                                  icon: Icons.fingerprint_rounded,
+                                  title: 'Attendance Kiosk',
+                                  description:
+                                      'Arrival & departure fingerprint kiosk scanning mode',
+                                  buttonLabel: 'Launch Kiosk',
+                                  onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const TeacherKioskScreen(),
+                                    ),
                                   ),
                                 ),
-                              ),
                               AttendanceActionCard(
                                 width: cardWidth,
                                 icon: Icons.devices_rounded,
@@ -235,28 +241,36 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                               AttendanceActionCard(
                                 width: cardWidth,
                                 icon: Icons.how_to_reg_rounded,
-                                title: 'Mark Staff Attendance',
+                                title: widget.isPrincipalReadOnly
+                                    ? 'Staff & Teacher Roster'
+                                    : 'Mark Staff & Teacher Attendance',
                                 description:
-                                    'Mark a staff member or teacher present/absent',
-                                buttonLabel: 'Mark Now',
+                                    'Daily check-in/out times, bulk marking, short leave & absent/leave exceptions',
+                                buttonLabel: widget.isPrincipalReadOnly
+                                    ? 'View Roster'
+                                    : 'Mark Now',
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        const MarkStaffAttendanceScreen(),
+                                    builder: (_) => MarkStaffAttendanceScreen(
+                                      isPrincipalReadOnly:
+                                          widget.isPrincipalReadOnly,
+                                    ),
                                   ),
                                 ),
                               ),
                               AttendanceActionCard(
                                 width: cardWidth,
                                 icon: Icons.fact_check_outlined,
-                                title: 'View Staff Attendance',
+                                title: 'Staff & Teacher Records',
                                 description:
-                                    'Browse staff/teacher attendance by date',
+                                    'Browse saved check-in/out records, edit with audit reason, history & summary',
                                 buttonLabel: 'View Now',
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        const StaffAttendanceListScreen(),
+                                    builder: (_) => StaffAttendanceListScreen(
+                                      isPrincipalReadOnly:
+                                          widget.isPrincipalReadOnly,
+                                    ),
                                   ),
                                 ),
                               ),

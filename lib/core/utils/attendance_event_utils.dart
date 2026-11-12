@@ -63,3 +63,18 @@ String formatTimeOfDay12h(TimeOfDay t) {
   final dt = DateTime(2026, 1, 1, t.hour, t.minute);
   return DateFormat('hh:mm a').format(dt);
 }
+
+/// Combines a calendar date and a [TimeOfDay] in device-local time.
+DateTime combineLocalDateAndTime(DateTime date, TimeOfDay time) {
+  return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+}
+
+/// Formats total worked minutes as `Xh Ym` (or `0m`).
+String formatWorkedDuration(int totalMinutes) {
+  if (totalMinutes <= 0) return '0m';
+  final h = totalMinutes ~/ 60;
+  final m = totalMinutes % 60;
+  if (h == 0) return '${m}m';
+  if (m == 0) return '${h}h';
+  return '${h}h ${m}m';
+}

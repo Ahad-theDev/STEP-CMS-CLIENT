@@ -8,6 +8,7 @@ import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../application/staff_attendance_list_controller.dart';
 import '../../application/teacher_biometric_attendance_providers.dart';
 import '../../data/models/teacher_attendance_models.dart';
 import '../../services/biometric_scanner_service.dart';
@@ -199,9 +200,11 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
         _lastResult = response;
         _pendingRetryRequest = null;
       });
-      ref.invalidate(
-        teacherDailyAttendanceProvider(formatApiDate(DateTime.now())),
-      );
+      final todayIso = formatApiDate(DateTime.now());
+      ref.invalidate(staffAttendanceRosterProvider(todayIso));
+      ref.invalidate(staffAttendanceListProvider);
+      ref.invalidate(staffAttendanceSummaryProvider);
+      ref.invalidate(teacherDailyAttendanceProvider(todayIso));
     } catch (e) {
       if (!mounted) return;
       final retryable = _isRetryableError(e);

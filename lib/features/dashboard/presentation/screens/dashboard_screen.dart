@@ -300,8 +300,10 @@ class DashboardScreen extends ConsumerWidget {
                                     Navigator.of(context).pop();
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            const AttendanceHomeScreen(),
+                                        builder: (_) => AttendanceHomeScreen(
+                                          isPrincipalReadOnly:
+                                              user.role == 'principal',
+                                        ),
                                       ),
                                     );
                                   },
