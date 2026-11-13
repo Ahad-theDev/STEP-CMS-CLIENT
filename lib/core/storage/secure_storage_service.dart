@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
   final _storage = const FlutterSecureStorage();
+  static final Map<String, String> _memoryCache = {};
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
@@ -17,62 +18,159 @@ class SecureStorageService {
     required String accessToken,
     required String refreshToken,
   }) async {
-    await _storage.write(key: _accessTokenKey, value: accessToken);
-    await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    _memoryCache[_accessTokenKey] = accessToken;
+    _memoryCache[_refreshTokenKey] = refreshToken;
+    try {
+      await _storage.write(key: _accessTokenKey, value: accessToken);
+    } catch (_) {}
+    try {
+      await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    } catch (_) {}
   }
 
-  Future<String?> getAccessToken() {
-    return _storage.read(key: _accessTokenKey);
+  Future<String?> getAccessToken() async {
+    if (_memoryCache.containsKey(_accessTokenKey)) {
+      return _memoryCache[_accessTokenKey];
+    }
+    try {
+      final val = await _storage.read(key: _accessTokenKey);
+      if (val != null) {
+        _memoryCache[_accessTokenKey] = val;
+      }
+      return val;
+    } catch (_) {
+      return _memoryCache[_accessTokenKey];
+    }
   }
 
-  Future<String?> getRefreshToken() {
-    return _storage.read(key: _refreshTokenKey);
+  Future<String?> getRefreshToken() async {
+    if (_memoryCache.containsKey(_refreshTokenKey)) {
+      return _memoryCache[_refreshTokenKey];
+    }
+    try {
+      final val = await _storage.read(key: _refreshTokenKey);
+      if (val != null) {
+        _memoryCache[_refreshTokenKey] = val;
+      }
+      return val;
+    } catch (_) {
+      return _memoryCache[_refreshTokenKey];
+    }
   }
 
   Future<void> clearToken() async {
-    await _storage.delete(key: _accessTokenKey);
-    await _storage.delete(key: _refreshTokenKey);
+    _memoryCache.remove(_accessTokenKey);
+    _memoryCache.remove(_refreshTokenKey);
+    try {
+      await _storage.delete(key: _accessTokenKey);
+    } catch (_) {}
+    try {
+      await _storage.delete(key: _refreshTokenKey);
+    } catch (_) {}
   }
 
   Future<String> getOrCreateWorkstationIdentifier() async {
-    final existing = await _storage.read(key: _workstationIdKey);
-    if (existing != null && existing.trim().isNotEmpty) {
-      return existing;
+    if (_memoryCache.containsKey(_workstationIdKey)) {
+      final existing = _memoryCache[_workstationIdKey]!;
+      if (existing.trim().isNotEmpty) return existing;
     }
+    try {
+      final existing = await _storage.read(key: _workstationIdKey);
+      if (existing != null && existing.trim().isNotEmpty) {
+        _memoryCache[_workstationIdKey] = existing;
+        return existing;
+      }
+    } catch (_) {}
     final created = 'kiosk-${generateEventUuid()}';
-    await _storage.write(key: _workstationIdKey, value: created);
+    _memoryCache[_workstationIdKey] = created;
+    try {
+      await _storage.write(key: _workstationIdKey, value: created);
+    } catch (_) {}
     return created;
   }
 
-  Future<void> saveDeviceToken(String deviceId, String token) {
-    return _storage.write(key: _deviceTokenKey(deviceId), value: token);
+  Future<void> saveDeviceToken(String deviceId, String token) async {
+    final key = _deviceTokenKey(deviceId);
+    _memoryCache[key] = token;
+    try {
+      await _storage.write(key: key, value: token);
+    } catch (_) {}
   }
 
-  Future<String?> getDeviceToken(String deviceId) {
-    return _storage.read(key: _deviceTokenKey(deviceId));
+  Future<String?> getDeviceToken(String deviceId) async {
+    final key = _deviceTokenKey(deviceId);
+    if (_memoryCache.containsKey(key)) {
+      return _memoryCache[key];
+    }
+    try {
+      final val = await _storage.read(key: key);
+      if (val != null) {
+        _memoryCache[key] = val;
+      }
+      return val;
+    } catch (_) {
+      return _memoryCache[key];
+    }
   }
 
-  Future<void> deleteDeviceToken(String deviceId) {
-    return _storage.delete(key: _deviceTokenKey(deviceId));
+  Future<void> deleteDeviceToken(String deviceId) async {
+    final key = _deviceTokenKey(deviceId);
+    _memoryCache.remove(key);
+    try {
+      await _storage.delete(key: key);
+    } catch (_) {}
   }
 
   Future<void> saveActiveKioskDeviceId(String? deviceId) async {
     if (deviceId == null || deviceId.isEmpty) {
-      await _storage.delete(key: _activeDeviceIdKey);
+      _memoryCache.remove(_activeDeviceIdKey);
+      try {
+        await _storage.delete(key: _activeDeviceIdKey);
+      } catch (_) {}
     } else {
-      await _storage.write(key: _activeDeviceIdKey, value: deviceId);
+      _memoryCache[_activeDeviceIdKey] = deviceId;
+      try {
+        await _storage.write(key: _activeDeviceIdKey, value: deviceId);
+      } catch (_) {}
     }
   }
 
-  Future<String?> getActiveKioskDeviceId() {
-    return _storage.read(key: _activeDeviceIdKey);
+  Future<String?> getActiveKioskDeviceId() async {
+    if (_memoryCache.containsKey(_activeDeviceIdKey)) {
+      return _memoryCache[_activeDeviceIdKey];
+    }
+    try {
+      final val = await _storage.read(key: _activeDeviceIdKey);
+      if (val != null) {
+        _memoryCache[_activeDeviceIdKey] = val;
+      }
+      return val;
+    } catch (_) {
+      return _memoryCache[_activeDeviceIdKey];
+    }
   }
 
-  Future<void> saveLocalTemplatesJson(String deviceId, String jsonStr) {
-    return _storage.write(key: _localTemplatesKey(deviceId), value: jsonStr);
+  Future<void> saveLocalTemplatesJson(String deviceId, String jsonStr) async {
+    final key = _localTemplatesKey(deviceId);
+    _memoryCache[key] = jsonStr;
+    try {
+      await _storage.write(key: key, value: jsonStr);
+    } catch (_) {}
   }
 
-  Future<String?> getLocalTemplatesJson(String deviceId) {
-    return _storage.read(key: _localTemplatesKey(deviceId));
+  Future<String?> getLocalTemplatesJson(String deviceId) async {
+    final key = _localTemplatesKey(deviceId);
+    if (_memoryCache.containsKey(key)) {
+      return _memoryCache[key];
+    }
+    try {
+      final val = await _storage.read(key: key);
+      if (val != null) {
+        _memoryCache[key] = val;
+      }
+      return val;
+    } catch (_) {
+      return _memoryCache[key];
+    }
   }
 }

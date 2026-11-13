@@ -7,7 +7,7 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
-/// Centralized theme configuration for the Academy CMS app.
+/// Centralized theme configuration for the City Ideal School app.
 class AppTheme {
   AppTheme._();
 

@@ -115,7 +115,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'STEP ACADEMY  /  ADMINISTRATION',
+                        'CITY IDEAL SCHOOL  /  ADMINISTRATION',
                         style: TextStyle(
                           color: Color(0xFFD9DFFF),
                           fontSize: 11,

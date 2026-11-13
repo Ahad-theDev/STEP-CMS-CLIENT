@@ -178,7 +178,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ? const AlwaysStoppedAnimation<double>(1)
         : _opacityAnimation;
     return Scaffold(
-      backgroundColor: const Color(0xFFE8E0F8),
+      backgroundColor: const Color(0xFFFFF4DF),
       body: LayoutBuilder(
         builder: (context, constraints) => Stack(
           fit: StackFit.expand,
@@ -214,7 +214,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        'STEP ACADEMY',
+                        'CITY IDEAL SCHOOL',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 24,
@@ -225,7 +225,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Daroghawala Campus',
+                        'School portal',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -274,10 +274,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF153D79), Color(0xFF2867A9)],
+              colors: [Color(0xFFFFF4DF), Color(0xFFFFDFAC)],
             ),
             borderRadius: BorderRadius.circular(19),
-            border: Border.all(color: const Color(0x8060A5FA), width: 1),
+            border: Border.all(color: const Color(0x80F18432), width: 1),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x28243C78),
@@ -294,9 +294,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.asset(
-              'lib/core/assets/logo/CMS-LOGO-F.png',
+              'lib/core/assets/logo/city_ideal_school.jpeg',
               fit: BoxFit.contain,
-              semanticLabel: 'STEP Academy logo',
+              semanticLabel: 'City Ideal School crest',
               errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.school_rounded,
                 size: 90,

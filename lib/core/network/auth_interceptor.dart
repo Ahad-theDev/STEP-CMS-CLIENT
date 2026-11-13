@@ -13,8 +13,7 @@ class AuthInterceptor extends Interceptor {
     final isAuthEndpoint = options.path.contains('auth/login') ||
         options.path.contains('auth/refresh') ||
         options.path.contains('auth/request-password-reset') ||
-        options.path.contains('auth/reset-password') ||
-        options.path.contains('auth/register');
+        options.path.contains('auth/reset-password');
 
     if (!isAuthEndpoint) {
       final token = await storage.getAccessToken();

@@ -249,7 +249,7 @@ class _RequestPasswordResetScreenState
                             ),
                             const SizedBox(height: 24),
                             const Text(
-                              'STEP ACADEMY • Daroghawala Campus',
+                              'City Ideal School',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: CampusStyle.muted,

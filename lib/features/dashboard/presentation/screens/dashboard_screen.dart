@@ -173,10 +173,10 @@ class DashboardScreen extends ConsumerWidget {
       children: [
         Text(
           user.role == 'principal'
-              ? 'PRINCIPAL • STEP ACADEMY'
+              ? 'PRINCIPAL • CITY IDEAL SCHOOL'
               : user.role == 'teacher'
-              ? 'TEACHER • STEP ACADEMY'
-              : 'ADMINISTRATION • STEP ACADEMY',
+              ? 'TEACHER • CITY IDEAL SCHOOL'
+              : 'ADMINISTRATION • CITY IDEAL SCHOOL',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
@@ -232,7 +232,7 @@ class DashboardScreen extends ConsumerWidget {
                                   // ),
                                   const SizedBox(height: 32),
                                   Text(
-                                    'STEP CMS',
+                                    'City Ideal School',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge
@@ -338,9 +338,7 @@ class DashboardScreen extends ConsumerWidget {
                                   },
                                 ),
                                 ListTile(
-                                  leading: const Icon(
-                                    Icons.analytics_outlined,
-                                  ),
+                                  leading: const Icon(Icons.analytics_outlined),
                                   title: const Text('Reports & Analytics'),
                                   onTap: () {
                                     Navigator.of(context).pop();

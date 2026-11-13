@@ -11,7 +11,9 @@ class TokenRefreshInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final requestOptions = err.requestOptions;
     final isAuthCall = requestOptions.path.contains('auth/login') ||
-        requestOptions.path.contains('auth/refresh');
+        requestOptions.path.contains('auth/refresh') ||
+        requestOptions.path.contains('auth/request-password-reset') ||
+        requestOptions.path.contains('auth/reset-password');
     final alreadyRetried = requestOptions.extra['retriedAfterRefresh'] == true;
 
     if (err.response?.statusCode != 401 || isAuthCall || alreadyRetried) {

@@ -300,7 +300,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 const SizedBox(width: 6),
                                 const Flexible(
                                   child: Text(
-                                    'STEP CMS • Campus & Mobile Edition',
+                                    'City Ideal School',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 11,
@@ -341,14 +341,11 @@ class _HeaderSection extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF153D79), // Original Academy deep navy blue
-                Color(0xFF2867A9), // Deep rich collegiate purple
-              ],
+              colors: [Color(0xFFFFF4DF), Color(0xFFFFDFAC)],
             ),
             borderRadius: BorderRadius.circular(26),
             border: Border.all(
-              color: const Color(0xFF60A5FA).withValues(alpha: 0.35),
+              color: const Color(0xFFF18432).withValues(alpha: 0.35),
               width: 1.5,
             ),
             boxShadow: const [
@@ -368,7 +365,7 @@ class _HeaderSection extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18),
             child: Image.asset(
-              'lib/core/assets/logo/CMS-LOGO-F.png',
+              'lib/core/assets/logo/city_ideal_school.jpeg',
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const Icon(
                 Icons.school_rounded,
@@ -380,7 +377,7 @@ class _HeaderSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         const Text(
-          'STEP ACADEMY',
+          'CITY IDEAL SCHOOL',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,
@@ -390,7 +387,7 @@ class _HeaderSection extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         const Text(
-          'Daroghawala Campus',
+          'School portal',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,

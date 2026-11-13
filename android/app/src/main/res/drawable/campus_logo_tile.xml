@@ -3,11 +3,11 @@
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="19dp" />
-            <gradient android:angle="315" android:startColor="#153D79" android:endColor="#2867A9" />
-            <stroke android:width="1dp" android:color="#8060A5FA" />
+            <gradient android:angle="315" android:startColor="#FFF4DF" android:endColor="#FFDFAC" />
+            <stroke android:width="1dp" android:color="#80F18432" />
         </shape>
     </item>
-    <item android:width="106dp" android:height="71dp" android:gravity="center">
+    <item android:width="106dp" android:height="106dp" android:gravity="center">
         <bitmap android:src="@drawable/campus_logo" android:gravity="fill" android:filter="true" />
     </item>
 </layer-list>
