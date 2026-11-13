@@ -199,14 +199,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   end: Alignment.bottomRight,
                                   colors: [
                                     Color(0xFFFFFFFF),
-                                    Color(0xFFF6F1FF),
-                                    Color(0xFFF0F6FF),
+                                    Color(0xFFFFF3EF),
+                                    Color(0xFFFDE9E3),
                                   ],
                                   stops: [0.0, 0.55, 1.0],
                                 ),
                                 borderRadius: BorderRadius.circular(22),
                                 border: Border.all(
-                                  color: const Color(0xFFDADDF4),
+                                  color: const Color(0xFFF0D6D1),
                                   width: 1,
                                 ), // Refined purple border
                                 boxShadow: const [
@@ -427,7 +427,7 @@ class _UsernameField extends StatelessWidget {
         fillColor: Colors.white,
         prefixIcon: const Icon(
           Icons.person_outline_rounded,
-          color: Color(0xFF6250B8),
+          color: Color(0xFFA83C3C),
           size: 20,
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -436,15 +436,15 @@ class _UsernameField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFD9DFF0), width: 1.2),
+          borderSide: const BorderSide(color: Color(0xFFECD3CF), width: 1.2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFD9DFF0), width: 1.2),
+          borderSide: const BorderSide(color: Color(0xFFECD3CF), width: 1.2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF6250B8), width: 1.8),
+          borderSide: const BorderSide(color: Color(0xFFA83C3C), width: 1.8),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -502,7 +502,7 @@ class _PasswordField extends StatelessWidget {
         fillColor: Colors.white,
         prefixIcon: const Icon(
           Icons.lock_outline_rounded,
-          color: Color(0xFF6250B8),
+          color: Color(0xFFA83C3C),
           size: 20,
         ),
         suffixIcon: IconButton(
@@ -510,7 +510,7 @@ class _PasswordField extends StatelessWidget {
             obscureText
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined,
-            color: const Color(0xFF6250B8),
+            color: const Color(0xFFA83C3C),
             size: 20,
           ),
           onPressed: onToggleVisibility,
@@ -522,15 +522,15 @@ class _PasswordField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFD9DFF0), width: 1.2),
+          borderSide: const BorderSide(color: Color(0xFFECD3CF), width: 1.2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFD9DFF0), width: 1.2),
+          borderSide: const BorderSide(color: Color(0xFFECD3CF), width: 1.2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF6250B8), width: 1.8),
+          borderSide: const BorderSide(color: Color(0xFFA83C3C), width: 1.8),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -578,7 +578,7 @@ class _RememberMeAndForgotPassword extends StatelessWidget {
               child: Checkbox(
                 value: rememberMe,
                 onChanged: onRememberMeChanged,
-                activeColor: const Color(0xFF6250B8),
+                activeColor: const Color(0xFFA83C3C),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -603,7 +603,7 @@ class _RememberMeAndForgotPassword extends StatelessWidget {
         TextButton(
           onPressed: onForgotPassword,
           style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF6250B8),
+            foregroundColor: const Color(0xFFA83C3C),
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -611,7 +611,7 @@ class _RememberMeAndForgotPassword extends StatelessWidget {
           child: const Text(
             'Forgot password?',
             style: TextStyle(
-              color: Color(0xFF6250B8),
+              color: Color(0xFFA83C3C),
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
@@ -634,10 +634,10 @@ class _SubmitButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF4345A6), // Campus indigo
+          backgroundColor: const Color(0xFF922B2B), // Campus indigo
           foregroundColor: Colors.white,
           disabledBackgroundColor: const Color(
-            0xFF4345A6,
+            0xFF922B2B,
           ).withValues(alpha: 0.6),
           disabledForegroundColor: Colors.white70,
           elevation: 0,
@@ -712,12 +712,12 @@ class _FooterSection extends StatelessWidget {
           icon: const Icon(
             Icons.help_outline_rounded,
             size: 16,
-            color: Color(0xFF6250B8),
+            color: Color(0xFFA83C3C),
           ),
           label: const Text(
             'Need help? Contact support',
             style: TextStyle(
-              color: Color(0xFF6250B8),
+              color: Color(0xFFA83C3C),
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),

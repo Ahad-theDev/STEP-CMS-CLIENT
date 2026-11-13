@@ -54,7 +54,7 @@ class TeacherDashboardBody extends StatelessWidget {
                             ),
                             const SizedBox(height: 12),
                             const Text(
-                              'Class In-Charge Attendance',
+                              'Mark Student Attendance',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),

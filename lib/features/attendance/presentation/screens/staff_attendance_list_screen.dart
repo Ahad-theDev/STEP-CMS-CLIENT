@@ -120,7 +120,7 @@ class _StaffAttendanceListScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Staff & Teacher Records'),
-        backgroundColor: const Color(0xFFE4DDF3),
+        backgroundColor: const Color(0xFFF5DCD7),
         actions: [
           IconButton(
             tooltip: 'Teacher Trends',
@@ -174,7 +174,12 @@ class _StaffAttendanceListScreenState
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(compact ? 14 : 20, 14, compact ? 14 : 20, 8),
+          padding: EdgeInsets.fromLTRB(
+            compact ? 14 : 20,
+            14,
+            compact ? 14 : 20,
+            8,
+          ),
           child: CampusCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,7 +201,10 @@ class _StaffAttendanceListScreenState
                     if (!_useDateRange)
                       OutlinedButton.icon(
                         onPressed: _pickSingleDate,
-                        icon: const Icon(Icons.calendar_today_rounded, size: 17),
+                        icon: const Icon(
+                          Icons.calendar_today_rounded,
+                          size: 17,
+                        ),
                         label: Text(formatApiDate(_singleDate)),
                       )
                     else
@@ -238,9 +246,13 @@ class _StaffAttendanceListScreenState
                       items: const [
                         DropdownMenuItem(value: null, child: Text('Role: All')),
                         DropdownMenuItem(
-                            value: 'teacher', child: Text('Teachers Only')),
+                          value: 'teacher',
+                          child: Text('Teachers Only'),
+                        ),
                         DropdownMenuItem(
-                            value: 'staff', child: Text('Non-Teaching Staff')),
+                          value: 'staff',
+                          child: Text('Non-Teaching Staff'),
+                        ),
                       ],
                       onChanged: (v) => setState(() => _personTypeFilter = v),
                     ),
@@ -249,12 +261,18 @@ class _StaffAttendanceListScreenState
                       hint: const Text('Status: All'),
                       items: const [
                         DropdownMenuItem(
-                            value: null, child: Text('Status: All')),
+                          value: null,
+                          child: Text('Status: All'),
+                        ),
                         DropdownMenuItem(
-                            value: 'present', child: Text('Present')),
+                          value: 'present',
+                          child: Text('Present'),
+                        ),
                         DropdownMenuItem(value: 'late', child: Text('Late')),
                         DropdownMenuItem(
-                            value: 'absent', child: Text('Absent')),
+                          value: 'absent',
+                          child: Text('Absent'),
+                        ),
                         DropdownMenuItem(value: 'leave', child: Text('Leave')),
                       ],
                       onChanged: (v) => setState(() => _statusFilter = v),
@@ -299,12 +317,12 @@ class _StaffAttendanceListScreenState
               final filtered = q.isEmpty
                   ? items
                   : items
-                      .where(
-                        (r) =>
-                            r.displayName.toLowerCase().contains(q) ||
-                            (r.designation ?? '').toLowerCase().contains(q),
-                      )
-                      .toList();
+                        .where(
+                          (r) =>
+                              r.displayName.toLowerCase().contains(q) ||
+                              (r.designation ?? '').toLowerCase().contains(q),
+                        )
+                        .toList();
 
               if (filtered.isEmpty) {
                 return const Center(
@@ -331,6 +349,8 @@ class _StaffAttendanceListScreenState
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: DataTable(
+                              dataRowMinHeight: 56,
+                              dataRowMaxHeight: double.infinity,
                               columns: const [
                                 DataColumn(label: Text('Name')),
                                 DataColumn(label: Text('Role')),
@@ -362,7 +382,7 @@ class _StaffAttendanceListScreenState
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFE4DDF3)),
+        side: const BorderSide(color: Color(0xFFF5DCD7)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -513,8 +533,9 @@ class _StaffAttendanceListScreenState
   }
 
   Widget _buildSummaryTab(StaffAttendanceSummaryFilter summaryFilter) {
-    final summaryAsync =
-        ref.watch(staffAttendanceSummaryProvider(summaryFilter));
+    final summaryAsync = ref.watch(
+      staffAttendanceSummaryProvider(summaryFilter),
+    );
     final compact = MediaQuery.sizeOf(context).width < 760;
 
     return RefreshIndicator(
@@ -574,12 +595,12 @@ class _StaffAttendanceListScreenState
               final people = q.isEmpty
                   ? summary.people
                   : summary.people
-                      .where(
-                        (p) =>
-                            p.personName.toLowerCase().contains(q) ||
-                            p.personType.toLowerCase().contains(q),
-                      )
-                      .toList();
+                        .where(
+                          (p) =>
+                              p.personName.toLowerCase().contains(q) ||
+                              p.personType.toLowerCase().contains(q),
+                        )
+                        .toList();
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -596,8 +617,7 @@ class _StaffAttendanceListScreenState
                       ),
                       _SummaryKpiTile(
                         label: 'Total Worked',
-                        value:
-                            formatWorkedDuration(summary.totalWorkedMinutes),
+                        value: formatWorkedDuration(summary.totalWorkedMinutes),
                         color: const Color(0xFF0369A1),
                       ),
                       _SummaryKpiTile(
@@ -646,14 +666,14 @@ class _StaffAttendanceListScreenState
                       child: Padding(
                         padding: EdgeInsets.all(20),
                         child: Center(
-                          child: Text('No summary records for selected filters.'),
+                          child: Text(
+                            'No summary records for selected filters.',
+                          ),
                         ),
                       ),
                     )
                   else
-                    ...people.map(
-                      (p) => _buildPersonSummaryCard(p),
-                    ),
+                    ...people.map((p) => _buildPersonSummaryCard(p)),
                 ],
               );
             },
@@ -668,7 +688,7 @@ class _StaffAttendanceListScreenState
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFE4DDF3)),
+        side: const BorderSide(color: Color(0xFFF5DCD7)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

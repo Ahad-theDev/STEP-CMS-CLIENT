@@ -18,16 +18,16 @@ class AppColors {
 
   /// Primary brand color - Soft purple accent
   /// Used for: primary buttons, key actions, headers, focus states
-  static const Color primary = Color(0xFF4345A6);
+  static const Color primary = Color(0xFF922B2B);
 
   /// Primary container - Lighter version for backgrounds, chips, cards
-  static const Color primaryContainer = Color(0xFFE1DDF5);
+  static const Color primaryContainer = Color(0xFFF7DEDB);
 
   /// On-primary - Text/icons on primary backgrounds
   static const Color onPrimary = Color(0xFFFFFFFF);
 
   /// On-primary-container - Text on primary container backgrounds
-  static const Color onPrimaryContainer = Color(0xFF2A225D);
+  static const Color onPrimaryContainer = Color(0xFF4D1616);
 
   // =========================================================================
   // SECONDARY COLORS
@@ -35,16 +35,16 @@ class AppColors {
 
   /// Secondary brand color - Light violet accent
   /// Used for: highlights, accents, secondary actions
-  static const Color secondary = Color(0xFF6250B8);
+  static const Color secondary = Color(0xFFA83C3C);
 
   /// Secondary container - Subtle violet background
-  static const Color secondaryContainer = Color(0xFFE8E0F8);
+  static const Color secondaryContainer = Color(0xFFFAE7E3);
 
   /// On-secondary - Text/icons on secondary backgrounds
   static const Color onSecondary = Color(0xFFFFFFFF);
 
   /// On-secondary-container - Text on secondary container backgrounds
-  static const Color onSecondaryContainer = Color(0xFF4A3D7A);
+  static const Color onSecondaryContainer = Color(0xFF642222);
 
   // =========================================================================
   // TERTIARY / ACCENT COLORS
@@ -54,7 +54,7 @@ class AppColors {
   static const Color tertiary = Color(0xFF326DA0);
 
   /// Tertiary container - Light blue backgrounds
-  static const Color tertiaryContainer = Color(0xFFD8E6FA);
+  static const Color tertiaryContainer = Color(0xFFF9E1D8);
 
   /// On-tertiary - Text on tertiary backgrounds
   static const Color onTertiary = Color(0xFFFFFFFF);
@@ -89,22 +89,22 @@ class AppColors {
   // =========================================================================
 
   /// Surface - Main background for cards, sheets, dialogs
-  static const Color surface = Color(0xFFFCFAFF);
+  static const Color surface = Color(0xFFFFFAF8);
 
   /// Surface variant - Subtle contrast for alternate rows, inputs
-  static const Color surfaceVariant = Color(0xFFEEF0FC);
+  static const Color surfaceVariant = Color(0xFFFFF4F0);
 
   /// Surface container - Elevated surfaces (cards on cards)
-  static const Color surfaceContainer = Color(0xFFF4F1FC);
+  static const Color surfaceContainer = Color(0xFFFFF2EF);
 
   /// Surface container high - Highest elevation surfaces
-  static const Color surfaceContainerHigh = Color(0xFFEBE7F6);
+  static const Color surfaceContainerHigh = Color(0xFFF9E6E2);
 
   /// Surface container highest - Even higher elevation
-  static const Color surfaceContainerHighest = Color(0xFFE1DDF0);
+  static const Color surfaceContainerHighest = Color(0xFFF4DAD6);
 
   /// Surface container low - Lower elevation surfaces
-  static const Color surfaceContainerLow = Color(0xFFF8F6FD);
+  static const Color surfaceContainerLow = Color(0xFFFFF7F4);
 
   /// Surface container lowest - Lowest elevation
   static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
@@ -123,7 +123,7 @@ class AppColors {
   // =========================================================================
 
   /// App background - Main scaffold background
-  static const Color background = Color(0xFFEEF0FC);
+  static const Color background = Color(0xFFFFF4F0);
 
   /// On-background - Text on app background
   static const Color onBackground = Color(0xFF0F172A);
@@ -136,10 +136,10 @@ class AppColors {
   static const Color outline = Color(0xFF858BA5);
 
   /// Outline variant - Subtle borders, focus rings
-  static const Color outlineVariant = Color(0xFFD9DFF0);
+  static const Color outlineVariant = Color(0xFFECD3CF);
 
   /// Outline strong - Emphasized borders
-  static const Color outlineStrong = Color(0xFF6250B8);
+  static const Color outlineStrong = Color(0xFFA83C3C);
 
   // =========================================================================
   // SHADOW / ELEVATION

@@ -1,3 +1,5 @@
+import '../widgets/fee_table_pages.dart';
+import 'package:cms/core/utils/natural_order.dart';
 import '../widgets/fee_page.dart';
 import 'package:cms/features/subjects/application/all_students_controller.dart';
 import 'package:flutter/material.dart';
@@ -108,34 +110,50 @@ class _FeeDueStudentsScreenState extends ConsumerState<FeeDueStudentsScreen> {
                     ),
                   );
                 }
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('Student')),
-                      DataColumn(label: Text('Class')),
-                      DataColumn(label: Text('Phone')),
-                      DataColumn(label: Text('Month/Year')),
-                      DataColumn(label: Text('Remaining')),
-                      DataColumn(label: Text('Due Date')),
-                    ],
-                    rows: response.records.map((r) {
-                      final student = studentById[r.studentId];
-                      final className = student != null
-                          ? (classNameById[student.classId] ?? '-')
-                          : '-';
-                      final phone = student?.guardianPhone ?? '-';
-                      return DataRow(
-                        cells: [
-                          DataCell(Text(r.studentName)),
-                          DataCell(Text(className)),
-                          DataCell(Text(phone)),
-                          DataCell(Text('${r.month}/${r.year}')),
-                          DataCell(Text(r.remaining.toStringAsFixed(0))),
-                          DataCell(Text(r.dueDate)),
-                        ],
-                      );
-                    }).toList(),
+                final records = [...response.records]
+                  ..sort((a, b) {
+                    final order = naturalCompare(
+                      classNameById[studentById[a.studentId]?.classId] ?? '',
+                      classNameById[studentById[b.studentId]?.classId] ?? '',
+                    );
+                    if (order != 0) return order;
+                    return naturalCompare(
+                      studentById[a.studentId]?.rollNumber ?? a.studentName,
+                      studentById[b.studentId]?.rollNumber ?? b.studentName,
+                    );
+                  });
+                return FeeTablePages(
+                  key: ValueKey((_mode, _upcomingDays)),
+                  records: records,
+                  builder: (page) => SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: const [
+                        DataColumn(label: Text('Student')),
+                        DataColumn(label: Text('Class')),
+                        DataColumn(label: Text('Phone')),
+                        DataColumn(label: Text('Month/Year')),
+                        DataColumn(label: Text('Remaining')),
+                        DataColumn(label: Text('Due Date')),
+                      ],
+                      rows: page.map((r) {
+                        final student = studentById[r.studentId];
+                        final className = student != null
+                            ? (classNameById[student.classId] ?? '-')
+                            : '-';
+                        final phone = student?.guardianPhone ?? '-';
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(r.studentName)),
+                            DataCell(Text(className)),
+                            DataCell(Text(phone)),
+                            DataCell(Text('${r.month}/${r.year}')),
+                            DataCell(Text(r.remaining.toStringAsFixed(0))),
+                            DataCell(Text(r.dueDate)),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   ),
                 );
               },

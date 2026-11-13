@@ -224,7 +224,7 @@ class _RequestPasswordResetScreenState
                                           vertical: 14,
                                         ),
                                         side: const BorderSide(
-                                          color: Color(0xFFD9DFF0),
+                                          color: Color(0xFFECD3CF),
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(

@@ -184,7 +184,8 @@ class _EditStaffAttendanceDialogState
   bool _saving = false;
   String? _error;
 
-  DateTime get _parsedDate => DateTime.tryParse(widget.dateIso) ?? DateTime.now();
+  DateTime get _parsedDate =>
+      DateTime.tryParse(widget.dateIso) ?? DateTime.now();
 
   @override
   void initState() {
@@ -213,7 +214,8 @@ class _EditStaffAttendanceDialogState
   }
 
   Future<void> _pickTime({required bool isCheckIn}) async {
-    final initial = (isCheckIn ? _checkInTime : _checkOutTime) ??
+    final initial =
+        (isCheckIn ? _checkInTime : _checkOutTime) ??
         TimeOfDay(hour: isCheckIn ? 8 : 14, minute: 0);
     final picked = await showTimePicker(context: context, initialTime: initial);
     if (picked == null) return;
@@ -247,7 +249,8 @@ class _EditStaffAttendanceDialogState
     } else {
       if (_checkInTime == null && _checkOutTime == null) {
         setState(() {
-          _error = 'Select at least a Check-In time (or choose Absent / Leave).';
+          _error =
+              'Select at least a Check-In time (or choose Absent / Leave).';
         });
         return;
       }
@@ -337,9 +340,9 @@ class _EditStaffAttendanceDialogState
                 onSelectionChanged: _saving
                     ? null
                     : (s) => setState(() {
-                          _mode = s.first;
-                          _error = null;
-                        }),
+                        _mode = s.first;
+                        _error = null;
+                      }),
               ),
               const SizedBox(height: 14),
               if (_mode == StaffEditMode.checkInOut) ...[
@@ -352,9 +355,9 @@ class _EditStaffAttendanceDialogState
                   onClear: _saving || _checkInTime == null
                       ? null
                       : () => setState(() {
-                            _checkInTime = null;
-                            _clearCheckIn = true;
-                          }),
+                          _checkInTime = null;
+                          _clearCheckIn = true;
+                        }),
                 ),
                 const SizedBox(height: 10),
                 _TimeFieldRow(
@@ -366,9 +369,9 @@ class _EditStaffAttendanceDialogState
                   onClear: _saving || _checkOutTime == null
                       ? null
                       : () => setState(() {
-                            _checkOutTime = null;
-                            _clearCheckOut = true;
-                          }),
+                          _checkOutTime = null;
+                          _clearCheckOut = true;
+                        }),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<bool?>(
@@ -380,8 +383,14 @@ class _EditStaffAttendanceDialogState
                   ),
                   items: const [
                     DropdownMenuItem(value: null, child: Text('Auto (Policy)')),
-                    DropdownMenuItem(value: true, child: Text('Mark Short Leave')),
-                    DropdownMenuItem(value: false, child: Text('Clear Short Leave')),
+                    DropdownMenuItem(
+                      value: true,
+                      child: Text('Mark Short Leave'),
+                    ),
+                    DropdownMenuItem(
+                      value: false,
+                      child: Text('Clear Short Leave'),
+                    ),
                   ],
                   onChanged: _saving
                       ? null
@@ -466,7 +475,7 @@ class _TimeFieldRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F6FD),
+        color: const Color(0xFFFFF7F4),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: const Color(0xFFE2DAF3)),
       ),
@@ -547,11 +556,15 @@ class _StaffAttendanceAuditDialog extends ConsumerWidget {
     if (snap['status'] != null) parts.add('Status: ${snap['status']}');
     if (snap['check_in_at'] != null) {
       final dt = DateTime.tryParse(snap['check_in_at'].toString());
-      parts.add('In: ${dt != null ? formatLocalTime(dt) : snap['check_in_at']}');
+      parts.add(
+        'In: ${dt != null ? formatLocalTime(dt) : snap['check_in_at']}',
+      );
     }
     if (snap['check_out_at'] != null) {
       final dt = DateTime.tryParse(snap['check_out_at'].toString());
-      parts.add('Out: ${dt != null ? formatLocalTime(dt) : snap['check_out_at']}');
+      parts.add(
+        'Out: ${dt != null ? formatLocalTime(dt) : snap['check_out_at']}',
+      );
     }
     if (snap['short_leave'] == true) {
       parts.add('Short Leave');
@@ -580,25 +593,30 @@ class _StaffAttendanceAuditDialog extends ConsumerWidget {
               child: auditAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(
-                  child: Text('Failed to load audit log: ${friendlyErrorMessage(e)}'),
+                  child: Text(
+                    'Failed to load audit log: ${friendlyErrorMessage(e)}',
+                  ),
                 ),
                 data: (events) {
                   if (events.isEmpty) {
-                    return const Center(child: Text('No audit events recorded.'));
+                    return const Center(
+                      child: Text('No audit events recorded.'),
+                    );
                   }
                   return ListView.separated(
                     itemCount: events.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (_, i) {
                       final ev = events[i];
-                      final whenStr = DateFormat('yyyy-MM-dd hh:mm a')
-                          .format(ev.occurredAt.toLocal());
+                      final whenStr = DateFormat(
+                        'yyyy-MM-dd hh:mm a',
+                      ).format(ev.occurredAt.toLocal());
                       return Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF8F6FD),
+                          color: const Color(0xFFFFF7F4),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE4DDF3)),
+                          border: Border.all(color: const Color(0xFFF5DCD7)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -623,7 +641,8 @@ class _StaffAttendanceAuditDialog extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            if (ev.reason != null && ev.reason!.trim().isNotEmpty) ...[
+                            if (ev.reason != null &&
+                                ev.reason!.trim().isNotEmpty) ...[
                               const SizedBox(height: 6),
                               Text(
                                 'Reason: ${ev.reason}',
@@ -653,7 +672,8 @@ class _StaffAttendanceAuditDialog extends ConsumerWidget {
                                   fontSize: 12,
                                 ),
                               ),
-                            ] else if (ev.oldStatus != null || ev.newStatus != null) ...[
+                            ] else if (ev.oldStatus != null ||
+                                ev.newStatus != null) ...[
                               const SizedBox(height: 4),
                               Text(
                                 '${ev.oldStatus ?? '—'} → ${ev.newStatus ?? '—'}',
@@ -791,7 +811,10 @@ class _StaffPersonHistoryDialogState
               children: [
                 Text(
                   '${widget.personType == 'teacher' ? 'Teacher' : 'Non-Teaching Staff'} • $fromIso to $toIso',
-                  style: const TextStyle(color: CampusStyle.muted, fontSize: 13),
+                  style: const TextStyle(
+                    color: CampusStyle.muted,
+                    fontSize: 13,
+                  ),
                 ),
                 const Spacer(),
                 OutlinedButton.icon(
@@ -811,7 +834,8 @@ class _StaffPersonHistoryDialogState
                 children: [
                   _MiniStat(
                     label: 'Attendance',
-                    value: '${summary.attendancePercentage.toStringAsFixed(1)}%',
+                    value:
+                        '${summary.attendancePercentage.toStringAsFixed(1)}%',
                   ),
                   _MiniStat(
                     label: 'Worked',
@@ -821,7 +845,10 @@ class _StaffPersonHistoryDialogState
                   _MiniStat(label: 'Late', value: '${summary.late}'),
                   _MiniStat(label: 'Absent', value: '${summary.absent}'),
                   _MiniStat(label: 'Leave', value: '${summary.leave}'),
-                  _MiniStat(label: 'Short Leave', value: '${summary.shortLeaveDays}'),
+                  _MiniStat(
+                    label: 'Short Leave',
+                    value: '${summary.shortLeaveDays}',
+                  ),
                   _MiniStat(
                     label: 'Open Out',
                     value: '${summary.incompleteCheckouts}',
@@ -834,7 +861,9 @@ class _StaffPersonHistoryDialogState
               child: historyAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(
-                  child: Text('Failed to load history: ${friendlyErrorMessage(e)}'),
+                  child: Text(
+                    'Failed to load history: ${friendlyErrorMessage(e)}',
+                  ),
                 ),
                 data: (items) {
                   if (items.isEmpty) {
@@ -852,7 +881,7 @@ class _StaffPersonHistoryDialogState
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE4DDF3)),
+                          border: Border.all(color: const Color(0xFFF5DCD7)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -878,29 +907,37 @@ class _StaffPersonHistoryDialogState
                                 ),
                                 IconButton(
                                   tooltip: 'Audit Log',
-                                  onPressed: () => showStaffAttendanceAuditDialog(
-                                    context: context,
-                                    attendanceId: r.id,
-                                    personName: widget.personName,
-                                    dateIso: r.date,
+                                  onPressed: () =>
+                                      showStaffAttendanceAuditDialog(
+                                        context: context,
+                                        attendanceId: r.id,
+                                        personName: widget.personName,
+                                        dateIso: r.date,
+                                      ),
+                                  icon: const Icon(
+                                    Icons.history_rounded,
+                                    size: 19,
                                   ),
-                                  icon: const Icon(Icons.history_rounded, size: 19),
                                 ),
                                 if (!widget.isPrincipalReadOnly)
                                   IconButton(
                                     tooltip: 'Edit Record',
-                                    onPressed: () => showEditStaffAttendanceDialog(
-                                      context: context,
-                                      attendanceId: r.id,
-                                      personName: widget.personName,
-                                      personType: widget.personType,
-                                      dateIso: r.date,
-                                      initialStatus: r.status,
-                                      initialCheckIn: r.checkInAt,
-                                      initialCheckOut: r.checkOutAt,
-                                      initialShortLeave: r.shortLeave,
+                                    onPressed: () =>
+                                        showEditStaffAttendanceDialog(
+                                          context: context,
+                                          attendanceId: r.id,
+                                          personName: widget.personName,
+                                          personType: widget.personType,
+                                          dateIso: r.date,
+                                          initialStatus: r.status,
+                                          initialCheckIn: r.checkInAt,
+                                          initialCheckOut: r.checkOutAt,
+                                          initialShortLeave: r.shortLeave,
+                                        ),
+                                    icon: const Icon(
+                                      Icons.edit_outlined,
+                                      size: 19,
                                     ),
-                                    icon: const Icon(Icons.edit_outlined, size: 19),
                                   ),
                               ],
                             ),

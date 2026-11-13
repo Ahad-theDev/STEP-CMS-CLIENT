@@ -1,3 +1,4 @@
+import 'package:cms/features/subjects/application/subjects_list_controller.dart';
 import 'package:cms/core/theme/campus_style.dart';
 import 'package:cms/features/auth/application/auth_controller.dart';
 import 'package:cms/features/auth/data/models/register_request.dart';
@@ -24,7 +25,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _departmentController = TextEditingController();
   final _hireDateController = TextEditingController();
   final _qualificationController = TextEditingController();
-  final _subjectSpecializationController = TextEditingController();
+  String? _subjectSpecializationId;
   String _role = 'teacher';
 
   @override
@@ -42,7 +43,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _departmentController.dispose();
     _hireDateController.dispose();
     _qualificationController.dispose();
-    _subjectSpecializationController.dispose();
     super.dispose();
   }
 
@@ -85,10 +85,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         qualification: _qualificationController.text.trim().isNotEmpty
             ? _qualificationController.text.trim()
             : null,
-        subjectSpecializationId:
-            _subjectSpecializationController.text.trim().isNotEmpty
-            ? _subjectSpecializationController.text.trim()
-            : null,
+        subjectSpecializationId: _subjectSpecializationId,
       );
     }
 
@@ -158,7 +155,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       appBar: AppBar(
         title: const Text('Create User'),
         centerTitle: false,
-        backgroundColor: const Color(0xFFE4DDF3),
+        backgroundColor: const Color(0xFFF5DCD7),
         elevation: 0,
       ),
       body: Stack(
@@ -297,9 +294,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                               const SizedBox(width: 16),
                                               Expanded(
                                                 child: _SubjectSpecializationField(
-                                                  controller:
-                                                      _subjectSpecializationController,
-                                                  colorScheme: colorScheme,
+                                                  value:
+                                                      _subjectSpecializationId,
+                                                  onChanged: (value) => setState(
+                                                    () =>
+                                                        _subjectSpecializationId =
+                                                            value,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -375,9 +376,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       ),
                                       const SizedBox(height: 16),
                                       _SubjectSpecializationField(
-                                        controller:
-                                            _subjectSpecializationController,
-                                        colorScheme: colorScheme,
+                                        value: _subjectSpecializationId,
+                                        onChanged: (value) => setState(
+                                          () =>
+                                              _subjectSpecializationId = value,
+                                        ),
                                       ),
                                       const SizedBox(height: 24),
                                     ],
@@ -418,7 +421,7 @@ class _HeaderSection extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF253E7A), Color(0xFF554490)],
+          colors: [Color(0xFF782323), Color(0xFFA63A33)],
         ),
         borderRadius: BorderRadius.circular(18),
       ),
@@ -817,29 +820,43 @@ class _QualificationField extends StatelessWidget {
   }
 }
 
-class _SubjectSpecializationField extends StatelessWidget {
+class _SubjectSpecializationField extends ConsumerWidget {
   const _SubjectSpecializationField({
-    required this.controller,
-    required this.colorScheme,
+    required this.value,
+    required this.onChanged,
   });
-  final TextEditingController controller;
-  final ColorScheme colorScheme;
+  final String? value;
+  final ValueChanged<String?> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-        fillColor: Colors.white,
-        labelText: 'Subject Specialization ID',
-        hintText: 'Enter subject specialization ID (optional)',
-        prefixIcon: Icon(
-          Icons.subject_outlined,
-          color: colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref
+        .watch(subjectsListControllerProvider)
+        .when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => TextButton(
+            onPressed: () => ref.invalidate(subjectsListControllerProvider),
+            child: const Text('Retry loading optional subjects'),
+          ),
+          data: (subjects) => DropdownButtonFormField<String>(
+            initialValue: subjects.any((subject) => subject.id == value)
+                ? value
+                : null,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'Subject specialization',
+            ),
+            items: [
+              const DropdownMenuItem(value: null, child: Text('None')),
+              for (final subject in subjects)
+                DropdownMenuItem(
+                  value: subject.id,
+                  child: Text(subject.name, overflow: TextOverflow.ellipsis),
+                ),
+            ],
+            onChanged: onChanged,
+          ),
+        );
   }
 }
 

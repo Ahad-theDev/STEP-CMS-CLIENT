@@ -13,14 +13,14 @@ class FeePage extends StatelessWidget {
     return Theme(
       data: theme.copyWith(
         appBarTheme: theme.appBarTheme.copyWith(
-          backgroundColor: const Color(0xFFE4DDF3),
+          backgroundColor: const Color(0xFFF5DCD7),
         ),
         inputDecorationTheme: theme.inputDecorationTheme.copyWith(
           fillColor: Colors.white,
         ),
         dataTableTheme: DataTableThemeData(
-          headingRowColor: const WidgetStatePropertyAll(Color(0xFFE1DDF5)),
-          dataRowColor: const WidgetStatePropertyAll(Color(0xFFFCFAFF)),
+          headingRowColor: const WidgetStatePropertyAll(Color(0xFFF7DEDB)),
+          dataRowColor: const WidgetStatePropertyAll(Color(0xFFFFFAF8)),
           headingTextStyle: const TextStyle(
             color: CampusStyle.primary,
             fontWeight: FontWeight.w700,
@@ -87,7 +87,7 @@ class FeeSectionIntro extends StatelessWidget {
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(18),
       gradient: const LinearGradient(
-        colors: [Color(0xFF253E7A), Color(0xFF554490)],
+        colors: [Color(0xFF782323), Color(0xFFA63A33)],
       ),
     ),
     child: Column(

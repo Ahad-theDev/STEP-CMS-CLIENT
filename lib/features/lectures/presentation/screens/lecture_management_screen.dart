@@ -14,26 +14,32 @@ import 'package:cms/features/schedule/presentation/screens/schedule_screen.dart'
 import 'package:cms/core/utils/error_utils.dart';
 import 'search_lectures_screen.dart';
 import 'package:cms/features/calendar/presentation/screens/calendar_screen.dart';
+
 class LectureManagementScreen extends ConsumerStatefulWidget {
   const LectureManagementScreen({super.key});
 
   @override
-  ConsumerState<LectureManagementScreen> createState() => _LectureManagementScreenState();
+  ConsumerState<LectureManagementScreen> createState() =>
+      _LectureManagementScreenState();
 }
 
-class _LectureManagementScreenState extends ConsumerState<LectureManagementScreen> {
+class _LectureManagementScreenState
+    extends ConsumerState<LectureManagementScreen> {
   final _searchSectionKey = GlobalKey<LectureSearchSectionState>();
 
   Future<void> _openAddLecture() async {
-    final created = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const AddLectureScreen()),
-    );
+    final created = await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const AddLectureScreen()));
     if (created == true) _searchSectionKey.currentState?.refresh();
   }
 
   Future<void> _openUpdateLecture() async {
     final selected = await Navigator.of(context).push<Lecture>(
-      MaterialPageRoute(builder: (_) => const SelectLectureRichScreen(title: 'Select Lecture to Update')),
+      MaterialPageRoute(
+        builder: (_) =>
+            const SelectLectureRichScreen(title: 'Select Lecture to Update'),
+      ),
     );
     if (selected == null || !mounted) return;
     final updated = await Navigator.of(context).push<bool>(
@@ -45,11 +51,15 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
   Future<void> _openCreateOverride() async {
     final selected = await Navigator.of(context).push<Lecture>(
       MaterialPageRoute(
-          builder: (_) => const SelectLectureScreen(title: 'Select Lecture for Override')),
+        builder: (_) =>
+            const SelectLectureRichScreen(title: 'Select Lecture for Override'),
+      ),
     );
     if (selected == null || !mounted) return;
     await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => CreateOverrideScreen(lecture: selected)),
+      MaterialPageRoute(
+        builder: (_) => CreateOverrideScreen(lecture: selected),
+      ),
     );
   }
 
@@ -68,14 +78,17 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
   }
 
   Future<void> _openPreviewSchedule() async {
-    await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const ScheduleScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const ScheduleScreen()));
   }
 
   Future<void> _openDeleteLecture() async {
     final selected = await Navigator.of(context).push<Lecture>(
-      MaterialPageRoute(builder: (_) => const SelectLectureScreen(title: 'Select Lecture to Delete')),
+      MaterialPageRoute(
+        builder: (_) =>
+            const SelectLectureScreen(title: 'Select Lecture to Delete'),
+      ),
     );
     if (selected == null || !mounted) return;
 
@@ -88,7 +101,10 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
           'deactivate this permanent slot?',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -98,30 +114,37 @@ class _LectureManagementScreenState extends ConsumerState<LectureManagementScree
     );
     if (confirmed != true || !mounted) return;
 
-    final success =
-        await ref.read(deleteLectureControllerProvider.notifier).deleteLecture(selected.id);
+    final success = await ref
+        .read(deleteLectureControllerProvider.notifier)
+        .deleteLecture(selected.id);
     if (!mounted) return;
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lecture deactivated')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Lecture deactivated')));
       _searchSectionKey.currentState?.refresh();
     } else {
       final error = ref.read(deleteLectureControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to delete lecture: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to delete lecture: ${error != null ? friendlyErrorMessage(error) : 'Unknown error'}',
+          ),
+        ),
+      );
     }
   }
 
   Future<void> _openCalendar() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CalendarScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const CalendarScreen()));
   }
 
   Future<void> _openSearchScreen() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const SearchLecturesScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const SearchLecturesScreen()));
     _searchSectionKey.currentState?.refresh();
   }
 

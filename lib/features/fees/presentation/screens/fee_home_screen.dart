@@ -16,7 +16,7 @@ class FeeHomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fees'),
-        backgroundColor: const Color(0xFFE4DDF3),
+        backgroundColor: const Color(0xFFF5DCD7),
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -37,7 +37,7 @@ class FeeHomeScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(26),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                            colors: [Color(0xFF782323), Color(0xFFA63A33)],
                           ),
                           borderRadius: BorderRadius.circular(24),
                         ),
@@ -130,7 +130,7 @@ class FeeHomeScreen extends StatelessWidget {
                               FeeActionCard(
                                 width: cardWidth,
                                 icon: Icons.receipt_long_outlined,
-                                title: 'Records',
+                                title: 'Monthly Records',
                                 description:
                                     'Generate and view monthly fee records',
                                 buttonLabel: 'Open',

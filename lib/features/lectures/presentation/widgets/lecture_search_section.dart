@@ -253,6 +253,7 @@ class LectureSearchSectionState extends ConsumerState<LectureSearchSection> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
+            showCheckboxColumn: false,
             columns: const [
               DataColumn(label: Text('Day')),
               DataColumn(label: Text('Time')),

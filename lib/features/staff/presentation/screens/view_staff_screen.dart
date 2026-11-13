@@ -25,7 +25,7 @@ class _ViewStaffScreenState extends ConsumerState<ViewStaffScreen> {
             // Profile section
             const CircleAvatar(
               radius: 50,
-              backgroundColor: Color(0xFF253E7A),
+              backgroundColor: Color(0xFF782323),
               child: Icon(Icons.person, size: 50, color: Colors.white),
             ),
             const SizedBox(height: 24),

@@ -1,3 +1,4 @@
+import 'package:cms/features/attendance/application/daily_attendance_repository_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -87,6 +88,13 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (widget.isTeacherMode &&
+        !(ref.read(dailyAttendanceClassesProvider).valueOrNull ?? []).any(
+          (item) => item.id == _selectedClassId && item.isActive,
+        )) {
+      setState(() => _errorMessage = 'Select a class assigned to you.');
+      return;
+    }
     if (_selectedClassId == null || _selectedClassId!.isEmpty) {
       setState(() => _errorMessage = 'Please select a class for this exam.');
       return;
@@ -154,7 +162,9 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(allClassesControllerProvider);
+    final classesAsync = widget.isTeacherMode
+        ? ref.watch(dailyAttendanceClassesProvider)
+        : ref.watch(allClassesControllerProvider);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -190,7 +200,8 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                         children: [
                           Text(
                             'Create Examination',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: CampusStyle.ink,
                                 ),
@@ -198,16 +209,17 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                           const SizedBox(height: 2),
                           Text(
                             'Schedule a new mid-term, final, or regular exam',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.onSurfaceVariant,
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.onSurfaceVariant),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close_rounded),
-                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                      onPressed: _isLoading
+                          ? null
+                          : () => Navigator.of(context).pop(),
                     ),
                   ],
                 ),
@@ -227,8 +239,11 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.error_outline_rounded,
-                            color: Colors.red.shade700, size: 20),
+                        Icon(
+                          Icons.error_outline_rounded,
+                          color: Colors.red.shade700,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -260,12 +275,17 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFF0EDF9),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFFD6CEF0)),
+                              border: Border.all(
+                                color: const Color(0xFFD6CEF0),
+                              ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.class_rounded,
-                                    color: CampusStyle.primary, size: 20),
+                                const Icon(
+                                  Icons.class_rounded,
+                                  color: CampusStyle.primary,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -282,11 +302,22 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                         else
                           classesAsync.when(
                             data: (classList) {
-                              final activeClasses =
-                                  classList.where((c) => c.isActive).toList();
+                              final activeClasses = classList
+                                  .where((c) => c.isActive)
+                                  .toList();
+                              if (activeClasses.isEmpty) {
+                                return const Text(
+                                  'No assigned classes are available.',
+                                );
+                              }
                               return DropdownButtonFormField<String>(
-                                initialValue: _selectedClassId,
                                 isExpanded: true,
+                                initialValue:
+                                    activeClasses.any(
+                                      (item) => item.id == _selectedClassId,
+                                    )
+                                    ? _selectedClassId
+                                    : null,
                                 decoration: const InputDecoration(
                                   labelText: 'Select Class *',
                                   prefixIcon: Icon(Icons.class_rounded),
@@ -298,8 +329,14 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                                     child: Text('${c.name} - ${c.section}'),
                                   );
                                 }).toList(),
-                                onChanged: (val) =>
-                                    setState(() => _selectedClassId = val),
+                                onChanged: (val) => setState(() {
+                                  _selectedClassId = val;
+                                  if (val != null) {
+                                    _academicYearController.text = activeClasses
+                                        .firstWhere((c) => c.id == val)
+                                        .academicYear;
+                                  }
+                                }),
                                 validator: (val) => (val == null || val.isEmpty)
                                     ? 'Class is required'
                                     : null,
@@ -322,7 +359,8 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                             prefixIcon: Icon(Icons.title_rounded),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (val) => (val == null || val.trim().isEmpty)
+                          validator: (val) =>
+                              (val == null || val.trim().isEmpty)
                               ? 'Exam title is required'
                               : null,
                         ),
@@ -351,7 +389,9 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                             ),
                           ],
                           onChanged: (val) {
-                            if (val != null) setState(() => _selectedType = val);
+                            if (val != null) {
+                              setState(() => _selectedType = val);
+                            }
                           },
                         ),
                         const SizedBox(height: 14),
@@ -369,8 +409,8 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                                 ),
                                 validator: (val) =>
                                     (val == null || val.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
+                                    ? 'Required'
+                                    : null,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -400,7 +440,9 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                             ),
                             child: Text(
                               _selectedDate != null
-                                  ? DateFormat('dd MMM yyyy').format(_selectedDate!)
+                                  ? DateFormat(
+                                      'dd MMM yyyy',
+                                    ).format(_selectedDate!)
                                   : 'Select date (optional)',
                               style: TextStyle(
                                 color: _selectedDate != null
@@ -436,8 +478,9 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                      onPressed:
-                          _isLoading ? null : () => Navigator.of(context).pop(),
+                      onPressed: _isLoading
+                          ? null
+                          : () => Navigator.of(context).pop(),
                       child: const Text('Cancel'),
                     ),
                     const SizedBox(width: 12),

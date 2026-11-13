@@ -98,7 +98,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                   padding: const EdgeInsets.all(26),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                      colors: [Color(0xFF782323), Color(0xFFA63A33)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -315,7 +315,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                       DashboardShortcutTile(
                         icon: Icons.event_note_outlined,
                         label: 'Lectures',
-                        color: const Color(0xFF6250B8),
+                        color: const Color(0xFFA83C3C),
                         onTap: () => _push(const LectureManagementScreen()),
                       ),
                       DashboardShortcutTile(
@@ -343,7 +343,7 @@ class _AdminDashboardBodyState extends ConsumerState<AdminDashboardBody> {
                       DashboardShortcutTile(
                         icon: Icons.access_time_filled_rounded,
                         label: 'Staff Check-In/Out',
-                        color: const Color(0xFF554490),
+                        color: const Color(0xFFA63A33),
                         onTap: () => _push(
                           MarkStaffAttendanceScreen(
                             isPrincipalReadOnly: widget.isPrincipalReadOnly,

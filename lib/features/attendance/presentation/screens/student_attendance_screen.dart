@@ -18,7 +18,7 @@ class StudentAttendanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Student Attendance')),
+      appBar: AppBar(title: const Text('Student Attendance Records')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Wrap(
@@ -33,19 +33,26 @@ class StudentAttendanceScreen extends StatelessWidget {
               backgroundColor: _viewAttendanceBg,
               iconColor: _viewAttendanceIcon,
               buttonColor: _viewAttendanceBtn,
-              onPressed: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const ViewStudentAttendanceScreen())),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ViewStudentAttendanceScreen(),
+                ),
+              ),
             ),
             AttendanceActionCard(
               icon: Icons.edit_note_rounded,
-              title: 'Correct Attendance',
-              description: 'Audit and correct daily morning & closing checkpoints',
+              title: 'Edit Student Attendance',
+              description:
+                  'Audit and correct daily morning & closing checkpoints',
               buttonLabel: 'Correct Now',
               backgroundColor: _correctAttendanceBg,
               iconColor: _correctAttendanceIcon,
               buttonColor: _correctAttendanceBtn,
-              onPressed: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const CorrectAttendanceScreen())),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const CorrectAttendanceScreen(),
+                ),
+              ),
             ),
           ],
         ),

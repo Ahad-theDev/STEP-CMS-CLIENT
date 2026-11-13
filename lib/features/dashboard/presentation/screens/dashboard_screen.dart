@@ -41,7 +41,7 @@ class DashboardScreen extends ConsumerWidget {
     final bool isCampusUser = canAccessAi;
     final compact = MediaQuery.sizeOf(context).width < 480;
     return AppBar(
-      backgroundColor: isCampusUser ? const Color(0xFFF4F1FC) : null,
+      backgroundColor: isCampusUser ? const Color(0xFFFFF2EF) : null,
       foregroundColor: isCampusUser ? CampusStyle.ink : null,
       surfaceTintColor: isCampusUser ? Colors.transparent : null,
       elevation: 0,
@@ -91,7 +91,7 @@ class DashboardScreen extends ConsumerWidget {
                 child: IconButton(
                   tooltip: 'Open navigation menu',
                   style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFFE1DDF5),
+                    backgroundColor: const Color(0xFFF7DEDB),
                     foregroundColor: CampusStyle.primary,
                     minimumSize: const Size(48, 48),
                     shape: RoundedRectangleBorder(
@@ -212,7 +212,7 @@ class DashboardScreen extends ConsumerWidget {
           drawer: isAdmin
               ? SafeArea(
                   child: Material(
-                    color: const Color(0xFFF4F1FC),
+                    color: const Color(0xFFFFF2EF),
                     child: SizedBox(
                       width: 280,
                       child: Column(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../application/classes_list_controller.dart';
+import '../../application/classes_list_controller.dart' show classPageSize;
+import '../../application/all_classes_controller.dart';
 import '../../data/models/school_class.dart';
 import '../screens/view_class_screen.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
@@ -19,9 +20,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
   String _query = '';
 
   Future<void> refresh() async {
-    await ref
-        .read(classesListControllerProvider(page: _page).notifier)
-        .refresh(page: _page);
+    await ref.read(allClassesControllerProvider.notifier).refresh();
   }
 
   void _exportStub() {
@@ -32,7 +31,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
 
   @override
   Widget build(BuildContext context) {
-    final classesAsync = ref.watch(classesListControllerProvider(page: _page));
+    final classesAsync = ref.watch(allClassesControllerProvider);
     final teacherNameById = <String, String>{
       for (final t
           in ref.watch(teachersListControllerProvider).valueOrNull ?? [])
@@ -87,7 +86,10 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
                       prefixIcon: Icon(Icons.search, size: 20),
                       isDense: true,
                     ),
-                    onChanged: (v) => setState(() => _query = v),
+                    onChanged: (v) => setState(() {
+                      _query = v;
+                      _page = 1;
+                    }),
                   ),
                 ),
                 OutlinedButton.icon(
@@ -160,6 +162,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
+            showCheckboxColumn: false,
             columns: const [
               DataColumn(label: Text('Name')),
               DataColumn(label: Text('Section')),
@@ -168,6 +171,8 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
               DataColumn(label: Text('Status')),
             ],
             rows: filtered
+                .skip((_page - 1) * classPageSize)
+                .take(classPageSize)
                 .map(
                   (c) => DataRow(
                     onSelectChanged: (b) {
@@ -210,7 +215,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
           ),
         ),
         const SizedBox(height: 12),
-        if (_query.isEmpty)
+        if (filtered.length > classPageSize || _page > 1)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -221,7 +226,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
               Text('Page $_page'),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
-                onPressed: classes.length >= classPageSize
+                onPressed: _page * classPageSize < filtered.length
                     ? () => setState(() => _page += 1)
                     : null,
               ),

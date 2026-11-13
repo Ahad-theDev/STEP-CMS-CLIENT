@@ -1,3 +1,5 @@
+import '../widgets/fee_table_pages.dart';
+import 'package:cms/core/utils/natural_order.dart';
 import '../widgets/fee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +42,8 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
     switch (_sortBy) {
       case _SortBy.className:
         sorted.sort(
-          (a, b) => (classNameById[a.classId] ?? '').compareTo(
+          (a, b) => naturalCompare(
+            classNameById[a.classId] ?? '',
             classNameById[b.classId] ?? '',
           ),
         );
@@ -215,45 +218,49 @@ class _FeeDefaultersScreenState extends ConsumerState<FeeDefaultersScreen> {
           );
         }
         final sorted = _sorted(response.defaulters, classNameById);
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Student')),
-              DataColumn(label: Text('Class')),
-              DataColumn(label: Text('Month/Year')),
-              DataColumn(label: Text('Remaining')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Days Overdue')),
-            ],
-            rows: sorted
-                .map(
-                  (d) => DataRow(
-                    cells: [
-                      DataCell(Text(d.studentName)),
-                      DataCell(Text(classNameById[d.classId] ?? '-')),
-                      DataCell(Text('${d.month}/${d.year}')),
-                      DataCell(Text(d.remaining.toStringAsFixed(0))),
-                      DataCell(
-                        Chip(
-                          label: Text(
-                            d.status[0].toUpperCase() + d.status.substring(1),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+        return FeeTablePages(
+          key: ValueKey((_selectedClass?.id, _month, _year, _sortBy)),
+          records: sorted,
+          builder: (page) => SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('Student')),
+                DataColumn(label: Text('Class')),
+                DataColumn(label: Text('Month/Year')),
+                DataColumn(label: Text('Remaining')),
+                DataColumn(label: Text('Status')),
+                DataColumn(label: Text('Days Overdue')),
+              ],
+              rows: page
+                  .map(
+                    (d) => DataRow(
+                      cells: [
+                        DataCell(Text(d.studentName)),
+                        DataCell(Text(classNameById[d.classId] ?? '-')),
+                        DataCell(Text('${d.month}/${d.year}')),
+                        DataCell(Text(d.remaining.toStringAsFixed(0))),
+                        DataCell(
+                          Chip(
+                            label: Text(
+                              d.status[0].toUpperCase() + d.status.substring(1),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
+                            backgroundColor: _statusColor(d.status),
+                            padding: EdgeInsets.zero,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
                           ),
-                          backgroundColor: _statusColor(d.status),
-                          padding: EdgeInsets.zero,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
                         ),
-                      ),
-                      DataCell(Text('${d.daysOverdue}')),
-                    ],
-                  ),
-                )
-                .toList(),
+                        DataCell(Text('${d.daysOverdue}')),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         );
       },

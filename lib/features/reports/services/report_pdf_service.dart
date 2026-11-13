@@ -1,5 +1,7 @@
+import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
-import 'package:flutter/material.dart' show BuildContext, MaterialPageRoute, Navigator;
+import 'package:flutter/material.dart'
+    show BuildContext, MaterialPageRoute, Navigator;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -20,18 +22,15 @@ class ReportPdfService {
       final base = await PdfGoogleFonts.openSansRegular();
       final bold = await PdfGoogleFonts.openSansBold();
       return pw.Document(
-        theme: pw.ThemeData.withFont(
-          base: base,
-          bold: bold,
-        ),
+        theme: pw.ThemeData.withFont(base: base, bold: bold),
       );
     } catch (_) {
       return pw.Document();
     }
   }
 
-  static const _primaryColor = PdfColor.fromInt(0xFF4A3780);
-  static const _secondaryColor = PdfColor.fromInt(0xFFE8DEF8);
+  static const _primaryColor = PdfColor.fromInt(0xFF922B2B);
+  static const _secondaryColor = PdfColor.fromInt(0xFFFAE7E3);
   static const _textColor = PdfColor.fromInt(0xFF1D1B20);
   static const _mutedColor = PdfColor.fromInt(0xFF6B7280);
   static const _borderColor = PdfColor.fromInt(0xFFE5E7EB);
@@ -41,6 +40,7 @@ class ReportPdfService {
     required String title,
     required String subtitle,
     required String scopeDescription,
+    required pw.MemoryImage crest,
   }) {
     final nowStr = DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.now());
 
@@ -51,42 +51,45 @@ class ReportPdfService {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text(
-                  'STEP CAMPUS MANAGEMENT SYSTEM',
-                  style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _primaryColor,
+            pw.Image(crest, width: 40, height: 40),
+            pw.SizedBox(width: 10),
+            pw.Expanded(
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'CITY IDEAL SCHOOL',
+                    style: pw.TextStyle(
+                      fontSize: 16,
+                      fontWeight: pw.FontWeight.bold,
+                      color: _primaryColor,
+                    ),
                   ),
-                ),
-                pw.SizedBox(height: 4),
-                pw.Text(
-                  title,
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _textColor,
+                  pw.SizedBox(height: 4),
+                  pw.Text(
+                    title,
+                    style: pw.TextStyle(
+                      fontSize: 14,
+                      fontWeight: pw.FontWeight.bold,
+                      color: _textColor,
+                    ),
                   ),
-                ),
-                pw.SizedBox(height: 2),
-                pw.Text(
-                  subtitle,
-                  style: const pw.TextStyle(
-                    fontSize: 10,
-                    color: _mutedColor,
+                  pw.SizedBox(height: 2),
+                  pw.Text(
+                    subtitle,
+                    style: const pw.TextStyle(fontSize: 10, color: _mutedColor),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
                 pw.Container(
                   padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: pw.BoxDecoration(
                     color: _secondaryColor,
                     borderRadius: pw.BorderRadius.circular(4),
@@ -103,10 +106,7 @@ class ReportPdfService {
                 pw.SizedBox(height: 4),
                 pw.Text(
                   'Generated: $nowStr',
-                  style: const pw.TextStyle(
-                    fontSize: 8,
-                    color: _mutedColor,
-                  ),
+                  style: const pw.TextStyle(fontSize: 8, color: _mutedColor),
                 ),
               ],
             ),
@@ -175,6 +175,15 @@ class ReportPdfService {
     String scopeDescription = 'Class Attendance',
   }) async {
     final pdf = await _createDocument();
+    final crestBytes = await rootBundle.load(
+      'lib/core/assets/logo/city_ideal_school.jpeg',
+    );
+    final crest = pw.MemoryImage(
+      crestBytes.buffer.asUint8List(
+        crestBytes.offsetInBytes,
+        crestBytes.lengthInBytes,
+      ),
+    );
     final summary = report.summary;
 
     pdf.addPage(
@@ -182,6 +191,7 @@ class ReportPdfService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
         header: (ctx) => _buildHeader(
+          crest: crest,
           title: 'Daily Student Attendance Report',
           subtitle:
               'Working Days: ${summary.daysRecorded} | Attendance Rate: ${summary.attendancePercentage.toStringAsFixed(1)}%',
@@ -262,8 +272,10 @@ class ReportPdfService {
             },
             rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
             oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-            cellPadding:
-                const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+            cellPadding: const pw.EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 5,
+            ),
           ),
         ],
       ),
@@ -278,6 +290,15 @@ class ReportPdfService {
     String scopeDescription = 'Lecture Attendance',
   }) async {
     final pdf = await _createDocument();
+    final crestBytes = await rootBundle.load(
+      'lib/core/assets/logo/city_ideal_school.jpeg',
+    );
+    final crest = pw.MemoryImage(
+      crestBytes.buffer.asUint8List(
+        crestBytes.offsetInBytes,
+        crestBytes.lengthInBytes,
+      ),
+    );
     final summary = report.summary;
 
     pdf.addPage(
@@ -285,6 +306,7 @@ class ReportPdfService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
         header: (ctx) => _buildHeader(
+          crest: crest,
           title: 'Lecture-wise Student Attendance Report',
           subtitle:
               'Scheduled Slots: ${summary.scheduledLectureSlots} | Attendance Rate: ${summary.attendancePercentage.toStringAsFixed(1)}%',
@@ -300,7 +322,10 @@ class ReportPdfService {
         build: (ctx) => [
           pw.Row(
             children: [
-              _buildKpiBox('Scheduled Slots', '${summary.scheduledLectureSlots}'),
+              _buildKpiBox(
+                'Scheduled Slots',
+                '${summary.scheduledLectureSlots}',
+              ),
               _buildKpiBox('Total Students', '${report.students.length}'),
               _buildKpiBox(
                 'Overall %',
@@ -356,8 +381,10 @@ class ReportPdfService {
             },
             rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
             oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-            cellPadding:
-                const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+            cellPadding: const pw.EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 5,
+            ),
           ),
         ],
       ),
@@ -372,6 +399,15 @@ class ReportPdfService {
     String scopeDescription = 'Fee Collection Report',
   }) async {
     final pdf = await _createDocument();
+    final crestBytes = await rootBundle.load(
+      'lib/core/assets/logo/city_ideal_school.jpeg',
+    );
+    final crest = pw.MemoryImage(
+      crestBytes.buffer.asUint8List(
+        crestBytes.offsetInBytes,
+        crestBytes.lengthInBytes,
+      ),
+    );
     final summary = report.summary;
 
     pdf.addPage(
@@ -379,6 +415,7 @@ class ReportPdfService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
         header: (ctx) => _buildHeader(
+          crest: crest,
           title: 'Fee Collection & Defaulters Report',
           subtitle:
               'Collection Rate: ${summary.collectionPercentage.toStringAsFixed(1)}% | Records: ${summary.feeRecords}',
@@ -394,8 +431,10 @@ class ReportPdfService {
         build: (ctx) => [
           pw.Row(
             children: [
-              _buildKpiBox('Total Fee Due',
-                  'PKR ${summary.totalFeeDue.toStringAsFixed(0)}'),
+              _buildKpiBox(
+                'Total Fee Due',
+                'PKR ${summary.totalFeeDue.toStringAsFixed(0)}',
+              ),
               _buildKpiBox(
                 'Fee Collected',
                 'PKR ${summary.totalFeeSubmitted.toStringAsFixed(0)}',
@@ -465,8 +504,10 @@ class ReportPdfService {
             },
             rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
             oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-            cellPadding:
-                const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+            cellPadding: const pw.EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 5,
+            ),
           ),
         ],
       ),
@@ -481,6 +522,15 @@ class ReportPdfService {
     String scopeDescription = 'Exam Marks Report',
   }) async {
     final pdf = await _createDocument();
+    final crestBytes = await rootBundle.load(
+      'lib/core/assets/logo/city_ideal_school.jpeg',
+    );
+    final crest = pw.MemoryImage(
+      crestBytes.buffer.asUint8List(
+        crestBytes.offsetInBytes,
+        crestBytes.lengthInBytes,
+      ),
+    );
     final summary = report.summary;
     final examMeta = report.exam;
 
@@ -489,6 +539,7 @@ class ReportPdfService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
         header: (ctx) => _buildHeader(
+          crest: crest,
           title: 'Examination Marks & Merit Report',
           subtitle:
               '${examMeta.title} (${examMeta.academicYear}) | Class Average: ${summary.averagePercentage.toStringAsFixed(1)}%',
@@ -505,12 +556,18 @@ class ReportPdfService {
           pw.Row(
             children: [
               _buildKpiBox('Total Candidates', '${summary.studentsCount}'),
-              _buildKpiBox('Class Average',
-                  '${summary.averagePercentage.toStringAsFixed(1)}%'),
-              _buildKpiBox('Marks Obtained',
-                  summary.totalObtainedMarks.toStringAsFixed(1)),
-              _buildKpiBox('Total Maximum',
-                  summary.totalMaximumMarks.toStringAsFixed(0)),
+              _buildKpiBox(
+                'Class Average',
+                '${summary.averagePercentage.toStringAsFixed(1)}%',
+              ),
+              _buildKpiBox(
+                'Marks Obtained',
+                summary.totalObtainedMarks.toStringAsFixed(1),
+              ),
+              _buildKpiBox(
+                'Total Maximum',
+                summary.totalMaximumMarks.toStringAsFixed(0),
+              ),
             ],
           ),
           pw.SizedBox(height: 16),
@@ -553,8 +610,10 @@ class ReportPdfService {
               cellAlignment: pw.Alignment.centerLeft,
               rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
               oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-              cellPadding:
-                  const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              cellPadding: const pw.EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 4,
+              ),
             ),
             pw.SizedBox(height: 16),
           ],
@@ -607,8 +666,10 @@ class ReportPdfService {
             },
             rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
             oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-            cellPadding:
-                const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+            cellPadding: const pw.EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 5,
+            ),
           ),
         ],
       ),
@@ -632,6 +693,15 @@ class ReportPdfService {
     String scopeDescription = 'Class Results',
   }) async {
     final pdf = await _createDocument();
+    final crestBytes = await rootBundle.load(
+      'lib/core/assets/logo/city_ideal_school.jpeg',
+    );
+    final crest = pw.MemoryImage(
+      crestBytes.buffer.asUint8List(
+        crestBytes.offsetInBytes,
+        crestBytes.lengthInBytes,
+      ),
+    );
     final students = results.students;
 
     double avgPct = 0.0;
@@ -639,7 +709,9 @@ class ReportPdfService {
     if (students.isNotEmpty) {
       final sum = students.fold<double>(0.0, (acc, s) => acc + s.percentage);
       avgPct = sum / students.length;
-      topPct = students.map((s) => s.percentage).reduce((a, b) => a > b ? a : b);
+      topPct = students
+          .map((s) => s.percentage)
+          .reduce((a, b) => a > b ? a : b);
     }
 
     pdf.addPage(
@@ -647,6 +719,7 @@ class ReportPdfService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
         header: (ctx) => _buildHeader(
+          crest: crest,
           title: 'Official Class Examination Merit Roster',
           subtitle:
               '${results.examTitle} (${results.academicYear}) | Class Average: ${avgPct.toStringAsFixed(1)}%',
@@ -664,8 +737,11 @@ class ReportPdfService {
             children: [
               _buildKpiBox('Total Candidates', '${students.length}'),
               _buildKpiBox('Class Average', '${avgPct.toStringAsFixed(1)}%'),
-              _buildKpiBox('Highest Score', '${topPct.toStringAsFixed(1)}%',
-                  valueColor: const PdfColor(0.08, 0.64, 0.29)),
+              _buildKpiBox(
+                'Highest Score',
+                '${topPct.toStringAsFixed(1)}%',
+                valueColor: const PdfColor(0.08, 0.64, 0.29),
+              ),
               _buildKpiBox('Status', results.examStatus.value.toUpperCase()),
             ],
           ),
@@ -719,8 +795,10 @@ class ReportPdfService {
             },
             rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
             oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-            cellPadding:
-                const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+            cellPadding: const pw.EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 5,
+            ),
           ),
           pw.SizedBox(height: 32),
           // Signature lines
@@ -734,12 +812,15 @@ class ReportPdfService {
                     width: 140,
                     decoration: const pw.BoxDecoration(
                       border: pw.Border(
-                          bottom: pw.BorderSide(color: _textColor, width: 1)),
+                        bottom: pw.BorderSide(color: _textColor, width: 1),
+                      ),
                     ),
                   ),
                   pw.SizedBox(height: 4),
-                  pw.Text('Class Incharge Signature',
-                      style: const pw.TextStyle(fontSize: 8, color: _mutedColor)),
+                  pw.Text(
+                    'Class Incharge Signature',
+                    style: const pw.TextStyle(fontSize: 8, color: _mutedColor),
+                  ),
                 ],
               ),
               pw.Column(
@@ -753,8 +834,13 @@ class ReportPdfService {
                       borderRadius: pw.BorderRadius.circular(4),
                     ),
                     alignment: pw.Alignment.center,
-                    child: pw.Text('OFFICIAL STAMP',
-                        style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
+                    child: pw.Text(
+                      'OFFICIAL STAMP',
+                      style: const pw.TextStyle(
+                        fontSize: 7,
+                        color: _mutedColor,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -765,12 +851,15 @@ class ReportPdfService {
                     width: 140,
                     decoration: const pw.BoxDecoration(
                       border: pw.Border(
-                          bottom: pw.BorderSide(color: _textColor, width: 1)),
+                        bottom: pw.BorderSide(color: _textColor, width: 1),
+                      ),
                     ),
                   ),
                   pw.SizedBox(height: 4),
-                  pw.Text('Principal Signature',
-                      style: const pw.TextStyle(fontSize: 8, color: _mutedColor)),
+                  pw.Text(
+                    'Principal Signature',
+                    style: const pw.TextStyle(fontSize: 8, color: _mutedColor),
+                  ),
                 ],
               ),
             ],
@@ -789,6 +878,15 @@ class ReportPdfService {
     String? academicYear,
   }) async {
     final pdf = await _createDocument();
+    final crestBytes = await rootBundle.load(
+      'lib/core/assets/logo/city_ideal_school.jpeg',
+    );
+    final crest = pw.MemoryImage(
+      crestBytes.buffer.asUint8List(
+        crestBytes.offsetInBytes,
+        crestBytes.lengthInBytes,
+      ),
+    );
     final grade = calculateGrade(studentResult.percentage);
     final isPassed = studentResult.percentage >= 33.0;
 
@@ -797,6 +895,7 @@ class ReportPdfService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
         header: (ctx) => _buildHeader(
+          crest: crest,
           title: 'STUDENT ACADEMIC REPORT CARD',
           subtitle: 'Official Performance Transcript & Marksheet',
           scopeDescription:
@@ -826,7 +925,10 @@ class ReportPdfService {
                   children: [
                     pw.Text(
                       'STUDENT NAME',
-                      style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                      style: const pw.TextStyle(
+                        fontSize: 7,
+                        color: _mutedColor,
+                      ),
                     ),
                     pw.SizedBox(height: 2),
                     pw.Text(
@@ -840,7 +942,10 @@ class ReportPdfService {
                     pw.SizedBox(height: 6),
                     pw.Text(
                       'EXAMINATION',
-                      style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                      style: const pw.TextStyle(
+                        fontSize: 7,
+                        color: _mutedColor,
+                      ),
                     ),
                     pw.SizedBox(height: 2),
                     pw.Text(
@@ -858,7 +963,10 @@ class ReportPdfService {
                   children: [
                     pw.Text(
                       'ROLL NUMBER',
-                      style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                      style: const pw.TextStyle(
+                        fontSize: 7,
+                        color: _mutedColor,
+                      ),
                     ),
                     pw.SizedBox(height: 2),
                     pw.Text(
@@ -873,7 +981,10 @@ class ReportPdfService {
                       pw.SizedBox(height: 6),
                       pw.Text(
                         'CLASS',
-                        style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                        style: const pw.TextStyle(
+                          fontSize: 7,
+                          color: _mutedColor,
+                        ),
                       ),
                       pw.SizedBox(height: 2),
                       pw.Text(
@@ -895,10 +1006,14 @@ class ReportPdfService {
           // Academic Performance Banner
           pw.Row(
             children: [
-              _buildKpiBox('Marks Obtained',
-                  studentResult.totalObtained.toStringAsFixed(1)),
-              _buildKpiBox('Total Maximum',
-                  studentResult.totalMaximum.toStringAsFixed(0)),
+              _buildKpiBox(
+                'Marks Obtained',
+                studentResult.totalObtained.toStringAsFixed(1),
+              ),
+              _buildKpiBox(
+                'Total Maximum',
+                studentResult.totalMaximum.toStringAsFixed(0),
+              ),
               _buildKpiBox(
                 'Percentage',
                 '${studentResult.percentage.toStringAsFixed(1)}%',
@@ -906,10 +1021,13 @@ class ReportPdfService {
                     ? const PdfColor(0.08, 0.64, 0.29)
                     : const PdfColor(0.86, 0.15, 0.15),
               ),
-              _buildKpiBox('Overall Grade', grade,
-                  valueColor: isPassed
-                      ? const PdfColor(0.08, 0.64, 0.29)
-                      : const PdfColor(0.86, 0.15, 0.15)),
+              _buildKpiBox(
+                'Overall Grade',
+                grade,
+                valueColor: isPassed
+                    ? const PdfColor(0.08, 0.64, 0.29)
+                    : const PdfColor(0.86, 0.15, 0.15),
+              ),
               _buildKpiBox(
                 'Result Status',
                 isPassed ? 'PASSED' : 'FAILED',
@@ -945,14 +1063,15 @@ class ReportPdfService {
               final subPassed = sub.isAbsent
                   ? false
                   : (sub.marksObtained != null &&
-                      sub.marksObtained! >= sub.passingMarks);
+                        sub.marksObtained! >= sub.passingMarks);
               final obtainedStr = sub.isAbsent
                   ? 'ABSENT'
                   : (sub.marksObtained != null
-                      ? sub.marksObtained!.toStringAsFixed(1)
-                      : '-');
-              final statusStr =
-                  sub.isAbsent ? 'ABSENT' : (subPassed ? 'PASS' : 'FAIL');
+                        ? sub.marksObtained!.toStringAsFixed(1)
+                        : '-');
+              final statusStr = sub.isAbsent
+                  ? 'ABSENT'
+                  : (subPassed ? 'PASS' : 'FAIL');
 
               return [
                 sub.subjectName,
@@ -982,8 +1101,10 @@ class ReportPdfService {
             },
             rowDecoration: const pw.BoxDecoration(color: PdfColors.white),
             oddRowDecoration: const pw.BoxDecoration(color: _altRowColor),
-            cellPadding:
-                const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            cellPadding: const pw.EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 6,
+            ),
           ),
           pw.SizedBox(height: 16),
 
@@ -998,23 +1119,38 @@ class ReportPdfService {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
               children: [
-                pw.Text('Grading System: ',
-                    style: pw.TextStyle(
-                        fontSize: 7,
-                        fontWeight: pw.FontWeight.bold,
-                        color: _textColor)),
-                pw.Text('A+ (>=80%)',
-                    style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
-                pw.Text('A (70-79%)',
-                    style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
-                pw.Text('B (60-69%)',
-                    style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
-                pw.Text('C (50-59%)',
-                    style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
-                pw.Text('D (33-49%)',
-                    style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
-                pw.Text('F (<33%)',
-                    style: const pw.TextStyle(fontSize: 7, color: _mutedColor)),
+                pw.Text(
+                  'Grading System: ',
+                  style: pw.TextStyle(
+                    fontSize: 7,
+                    fontWeight: pw.FontWeight.bold,
+                    color: _textColor,
+                  ),
+                ),
+                pw.Text(
+                  'A+ (>=80%)',
+                  style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                ),
+                pw.Text(
+                  'A (70-79%)',
+                  style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                ),
+                pw.Text(
+                  'B (60-69%)',
+                  style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                ),
+                pw.Text(
+                  'C (50-59%)',
+                  style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                ),
+                pw.Text(
+                  'D (33-49%)',
+                  style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                ),
+                pw.Text(
+                  'F (<33%)',
+                  style: const pw.TextStyle(fontSize: 7, color: _mutedColor),
+                ),
               ],
             ),
           ),
@@ -1031,12 +1167,15 @@ class ReportPdfService {
                     width: 140,
                     decoration: const pw.BoxDecoration(
                       border: pw.Border(
-                          bottom: pw.BorderSide(color: _textColor, width: 1)),
+                        bottom: pw.BorderSide(color: _textColor, width: 1),
+                      ),
                     ),
                   ),
                   pw.SizedBox(height: 4),
-                  pw.Text('Class Teacher Signature',
-                      style: const pw.TextStyle(fontSize: 8, color: _mutedColor)),
+                  pw.Text(
+                    'Class Teacher Signature',
+                    style: const pw.TextStyle(fontSize: 8, color: _mutedColor),
+                  ),
                 ],
               ),
               pw.Column(
@@ -1050,9 +1189,13 @@ class ReportPdfService {
                       borderRadius: pw.BorderRadius.circular(4),
                     ),
                     alignment: pw.Alignment.center,
-                    child: pw.Text('INSTITUTION STAMP',
-                        style: const pw.TextStyle(
-                            fontSize: 6.5, color: _mutedColor)),
+                    child: pw.Text(
+                      'INSTITUTION STAMP',
+                      style: const pw.TextStyle(
+                        fontSize: 6.5,
+                        color: _mutedColor,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -1063,12 +1206,15 @@ class ReportPdfService {
                     width: 140,
                     decoration: const pw.BoxDecoration(
                       border: pw.Border(
-                          bottom: pw.BorderSide(color: _textColor, width: 1)),
+                        bottom: pw.BorderSide(color: _textColor, width: 1),
+                      ),
                     ),
                   ),
                   pw.SizedBox(height: 4),
-                  pw.Text('Principal Signature',
-                      style: const pw.TextStyle(fontSize: 8, color: _mutedColor)),
+                  pw.Text(
+                    'Principal Signature',
+                    style: const pw.TextStyle(fontSize: 8, color: _mutedColor),
+                  ),
                 ],
               ),
             ],

@@ -14,11 +14,11 @@ class CampusBackground extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFFDDD5F3),
-                Color(0xFFE8E0F8),
-                Color(0xFFEEF0FC),
-                Color(0xFFD8E6FA),
-                Color(0xFFE6EDF9), // Crisp campus slate base
+                Color(0xFFF4D5CF),
+                Color(0xFFFAE7E3),
+                Color(0xFFFFF4F0),
+                Color(0xFFF9E1D8),
+                Color(0xFFFBEAE3), // Crisp campus slate base
               ],
               stops: [0.0, 0.25, 0.55, 0.80, 1.0],
             ),
@@ -156,11 +156,11 @@ class CampusStyle {
     gradient: const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Colors.white, Color(0xFFF6F1FF), Color(0xFFF0F6FF)],
+      colors: [Colors.white, Color(0xFFFFF3EF), Color(0xFFFDE9E3)],
       stops: [0, .55, 1],
     ),
     borderRadius: BorderRadius.circular(22),
-    border: Border.all(color: const Color(0xFFDADDF4)),
+    border: Border.all(color: const Color(0xFFF0D6D1)),
     boxShadow: const [
       BoxShadow(
         color: Color(0x127C3AED),
@@ -182,7 +182,7 @@ class CampusStyle {
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: const BorderSide(color: Color(0xFFD9DFF0)),
+      borderSide: const BorderSide(color: Color(0xFFECD3CF)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),

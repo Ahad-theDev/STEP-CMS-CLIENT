@@ -25,7 +25,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
   late final TextEditingController _roomController;
   Teacher? _selectedTeacher;
   Subject? _selectedSubject;
-  late String _selectedDay;
+  String? _selectedDay;
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
 
@@ -33,7 +33,8 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
   void initState() {
     super.initState();
     _roomController = TextEditingController(text: widget.lecture.roomNumber);
-    _selectedDay = widget.lecture.dayOfWeek;
+    final day = widget.lecture.dayOfWeek.trim().toLowerCase();
+    _selectedDay = weekDays.contains(day) ? day : null;
     _startTime = TimeOfDayUtils.parse(widget.lecture.startTime);
     _endTime = TimeOfDayUtils.parse(widget.lecture.endTime);
   }
@@ -69,7 +70,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
         );
       },
     );
-    if (picked != null) setState(() => _startTime = picked);
+    if (mounted && picked != null) setState(() => _startTime = picked);
   }
 
   Future<void> _pickEndTime() async {
@@ -83,11 +84,18 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
         );
       },
     );
-    if (picked != null) setState(() => _endTime = picked);
+    if (mounted && picked != null) setState(() => _endTime = picked);
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (_startTime.hour * 60 + _startTime.minute >=
+        _endTime.hour * 60 + _endTime.minute) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('End time must be after start time')),
+      );
+      return;
+    }
 
     final request = LectureUpdateRequest(
       teacherId: _selectedTeacher?.id,
@@ -177,6 +185,7 @@ class _UpdateLectureScreenState extends ConsumerState<UpdateLectureScreen> {
             DropdownButtonFormField<String>(
               initialValue: _selectedDay,
               decoration: const InputDecoration(labelText: 'Day of Week'),
+              validator: (value) => value == null ? 'Select a day' : null,
               items: weekDays
                   .map(
                     (d) => DropdownMenuItem(

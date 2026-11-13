@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/natural_order.dart';
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'class_repository_provider.dart';
@@ -10,7 +11,12 @@ class AllClassesController extends _$AllClassesController {
   @override
   Future<List<SchoolClass>> build() async {
     final repo = ref.read(classRepositoryProvider);
-    return repo.listAllClasses();
+    final items = await repo.listAllClasses();
+    return [...items]..sort(
+      (a, b) => naturalCompare(a.name, b.name) != 0
+          ? naturalCompare(a.name, b.name)
+          : naturalCompare(a.section, b.section),
+    );
   }
 
   Future<void> refresh() async {

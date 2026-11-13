@@ -34,7 +34,7 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Attendance'),
-        backgroundColor: const Color(0xFFE4DDF3),
+        backgroundColor: const Color(0xFFF5DCD7),
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -55,7 +55,7 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                         padding: const EdgeInsets.all(26),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                            colors: [Color(0xFF782323), Color(0xFFA63A33)],
                           ),
                           borderRadius: BorderRadius.circular(24),
                         ),
@@ -87,6 +87,137 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 28),
+                      const Text(
+                        'Attendance workspace',
+                        style: TextStyle(
+                          color: CampusStyle.ink,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final columns = (constraints.maxWidth / 250)
+                              .floor()
+                              .clamp(1, 3);
+                          final cardWidth =
+                              (constraints.maxWidth - (columns - 1) * 14) /
+                              columns;
+                          return Wrap(
+                            spacing: 14,
+                            runSpacing: 14,
+                            children: [
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.co_present_rounded,
+                                title: 'Mark Student Attendance',
+                                description:
+                                    'Morning & closing checkpoint marks for classes',
+                                buttonLabel: 'Mark Daily',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const ClassDailyAttendanceScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.fact_check_rounded,
+                                title: 'Review and Edit Student Attendance',
+                                description:
+                                    'Review full daily roster & audit corrections',
+                                buttonLabel: 'Review Daily',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AdminDailyAttendanceScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.how_to_reg_rounded,
+                                title: widget.isPrincipalReadOnly
+                                    ? 'Staff & Teacher Roster'
+                                    : 'Mark Staff & Teacher Attendance',
+                                description:
+                                    'Daily check-in/out times, bulk marking, short leave & absent/leave exceptions',
+                                buttonLabel: widget.isPrincipalReadOnly
+                                    ? 'View Roster'
+                                    : 'Mark Now',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => MarkStaffAttendanceScreen(
+                                      isPrincipalReadOnly:
+                                          widget.isPrincipalReadOnly,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.fact_check_outlined,
+                                title: 'Staff & Teacher Records',
+                                description:
+                                    'Browse saved check-in/out records, edit with audit reason, history & summary',
+                                buttonLabel: 'View Now',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => StaffAttendanceListScreen(
+                                      isPrincipalReadOnly:
+                                          widget.isPrincipalReadOnly,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.groups_outlined,
+                                title: 'Student Attendance Records',
+                                description:
+                                    'View and correct student daily attendance records',
+                                buttonLabel: 'Open',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const StudentAttendanceScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.summarize_outlined,
+                                title: 'Attendance Summary',
+                                description:
+                                    'Per-student daily attendance % over a date range',
+                                buttonLabel: 'View Summary',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AttendanceSummaryScreen(),
+                                  ),
+                                ),
+                              ),
+                              AttendanceActionCard(
+                                width: cardWidth,
+                                icon: Icons.warning_amber_rounded,
+                                title: 'Defaulters',
+                                description:
+                                    'Students below an attendance % threshold',
+                                buttonLabel: 'View List',
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const DefaultersScreen(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 26),
                       const Text(
@@ -138,7 +269,8 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                                   buttonLabel: 'Launch Kiosk',
                                   onPressed: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => const TeacherKioskScreen(),
+                                      builder: (_) =>
+                                          const TeacherKioskScreen(),
                                     ),
                                   ),
                                 ),
@@ -181,137 +313,6 @@ class _AttendanceHomeScreenState extends State<AttendanceHomeScreen> {
                                   MaterialPageRoute(
                                     builder: (_) =>
                                         const AttendancePolicyScreen(),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 28),
-                      const Text(
-                        'Attendance workspace',
-                        style: TextStyle(
-                          color: CampusStyle.ink,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final columns = (constraints.maxWidth / 250)
-                              .floor()
-                              .clamp(1, 3);
-                          final cardWidth =
-                              (constraints.maxWidth - (columns - 1) * 14) /
-                              columns;
-                          return Wrap(
-                            spacing: 14,
-                            runSpacing: 14,
-                            children: [
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.co_present_rounded,
-                                title: 'Class In-Charge Attendance',
-                                description:
-                                    'Morning & closing checkpoint marks for classes',
-                                buttonLabel: 'Mark Daily',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const ClassDailyAttendanceScreen(),
-                                  ),
-                                ),
-                              ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.fact_check_rounded,
-                                title: 'Daily Attendance Review',
-                                description:
-                                    'Review full daily roster & audit corrections',
-                                buttonLabel: 'Review Daily',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const AdminDailyAttendanceScreen(),
-                                  ),
-                                ),
-                              ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.how_to_reg_rounded,
-                                title: widget.isPrincipalReadOnly
-                                    ? 'Staff & Teacher Roster'
-                                    : 'Mark Staff & Teacher Attendance',
-                                description:
-                                    'Daily check-in/out times, bulk marking, short leave & absent/leave exceptions',
-                                buttonLabel: widget.isPrincipalReadOnly
-                                    ? 'View Roster'
-                                    : 'Mark Now',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => MarkStaffAttendanceScreen(
-                                      isPrincipalReadOnly:
-                                          widget.isPrincipalReadOnly,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.fact_check_outlined,
-                                title: 'Staff & Teacher Records',
-                                description:
-                                    'Browse saved check-in/out records, edit with audit reason, history & summary',
-                                buttonLabel: 'View Now',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => StaffAttendanceListScreen(
-                                      isPrincipalReadOnly:
-                                          widget.isPrincipalReadOnly,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.groups_outlined,
-                                title: 'Student Attendance',
-                                description:
-                                    'View and correct student daily attendance records',
-                                buttonLabel: 'Open',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const StudentAttendanceScreen(),
-                                  ),
-                                ),
-                              ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.summarize_outlined,
-                                title: 'Attendance Summary',
-                                description:
-                                    'Per-student daily attendance % over a date range',
-                                buttonLabel: 'View Summary',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const AttendanceSummaryScreen(),
-                                  ),
-                                ),
-                              ),
-                              AttendanceActionCard(
-                                width: cardWidth,
-                                icon: Icons.warning_amber_rounded,
-                                title: 'Defaulters',
-                                description:
-                                    'Students below an attendance % threshold',
-                                buttonLabel: 'View List',
-                                onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const DefaultersScreen(),
                                   ),
                                 ),
                               ),

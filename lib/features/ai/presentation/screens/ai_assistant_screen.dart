@@ -69,7 +69,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
       backgroundColor: const Color(0xFFF7F3FD),
       appBar: AppBar(
         titleSpacing: 0,
-        backgroundColor: const Color(0xFFE4DDF3),
+        backgroundColor: const Color(0xFFF5DCD7),
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Row(
@@ -113,10 +113,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   ),
                   Text(
                     'Campus Insights & Operations',
-                    style: TextStyle(
-                      color: CampusStyle.muted,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: CampusStyle.muted, fontSize: 12),
                   ),
                 ],
               ),
@@ -127,7 +124,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           if (chatState.messages.isNotEmpty)
             IconButton(
               tooltip: 'Start New Chat',
-              icon: const Icon(Icons.refresh_rounded, color: CampusStyle.accent),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: CampusStyle.accent,
+              ),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -147,7 +147,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         ),
                         onPressed: () {
                           Navigator.of(ctx).pop();
-                          ref.read(aiChatControllerProvider.notifier).clearChat();
+                          ref
+                              .read(aiChatControllerProvider.notifier)
+                              .clearChat();
                         },
                         child: const Text('Clear'),
                       ),
@@ -201,7 +203,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                      colors: [Color(0xFF782323), Color(0xFFA63A33)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -243,7 +245,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                 const SizedBox(height: 16),
                 // Campus status pill
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEDE8F8),
                     borderRadius: BorderRadius.circular(20),
@@ -303,7 +308,11 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               ),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.refresh_rounded, size: 20, color: CampusStyle.accent),
+                icon: const Icon(
+                  Icons.refresh_rounded,
+                  size: 20,
+                  color: CampusStyle.accent,
+                ),
                 tooltip: 'Reload suggestions',
                 onPressed: () {
                   ref
@@ -320,7 +329,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               child: Padding(
                 padding: EdgeInsets.all(32.0),
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(CampusStyle.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    CampusStyle.primary,
+                  ),
                 ),
               ),
             ),
@@ -329,13 +340,14 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF1F2),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: const Color(0xFFFECDD3),
-                ),
+                border: Border.all(color: const Color(0xFFFECDD3)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.error_outline_rounded, color: AppColors.error),
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    color: AppColors.error,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -353,7 +365,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFDADDF4)),
+                    border: Border.all(color: const Color(0xFFF0D6D1)),
                   ),
                   child: const Center(
                     child: Text(
@@ -378,9 +390,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: const Color(0xFFDADDF4),
-                            ),
+                            border: Border.all(color: const Color(0xFFF0D6D1)),
                             boxShadow: const [
                               BoxShadow(
                                 color: Color(0x06253E7A),
@@ -463,7 +473,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               gradient: const LinearGradient(
-                colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                colors: [Color(0xFF782323), Color(0xFFA63A33)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -497,9 +507,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                 bottomLeft: Radius.circular(18),
                 bottomRight: Radius.circular(18),
               ),
-              border: Border.all(
-                color: const Color(0xFFDADDF4),
-              ),
+              border: Border.all(color: const Color(0xFFF0D6D1)),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x0C7C3AED),
@@ -516,7 +524,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   height: 14,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(CampusStyle.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CampusStyle.primary,
+                    ),
                   ),
                 ),
                 SizedBox(width: 12),
@@ -542,8 +552,9 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
@@ -557,7 +568,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         colors: [Color(0xFFE11D48), Color(0xFFBE123C)],
                       )
                     : const LinearGradient(
-                        colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                        colors: [Color(0xFF782323), Color(0xFFA63A33)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -590,18 +601,22 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               decoration: BoxDecoration(
                 gradient: isUser
                     ? const LinearGradient(
-                        colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                        colors: [Color(0xFF782323), Color(0xFFA63A33)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       )
                     : (message.isError
-                        ? null
-                        : const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Colors.white, Color(0xFFF7F3FF), Color(0xFFF0F5FE)],
-                            stops: [0, 0.55, 1],
-                          )),
+                          ? null
+                          : const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white,
+                                Color(0xFFF7F3FF),
+                                Color(0xFFF0F5FE),
+                              ],
+                              stops: [0, 0.55, 1],
+                            )),
                 color: message.isError ? const Color(0xFFFFF1F2) : null,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
@@ -617,8 +632,8 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   color: isUser
                       ? Colors.transparent
                       : (message.isError
-                          ? const Color(0xFFFECDD3)
-                          : const Color(0xFFDADDF4)),
+                            ? const Color(0xFFFECDD3)
+                            : const Color(0xFFF0D6D1)),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -675,8 +690,8 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                       color: isUser
                           ? Colors.white
                           : (message.isError
-                              ? const Color(0xFFBE123C)
-                              : CampusStyle.ink),
+                                ? const Color(0xFFBE123C)
+                                : CampusStyle.ink),
                       fontSize: 14.5,
                       height: 1.48,
                       fontWeight: FontWeight.w400,
@@ -734,12 +749,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: Color(0xFFDADDF4),
-            width: 1.2,
-          ),
-        ),
+        border: Border(top: BorderSide(color: Color(0xFFF0D6D1), width: 1.2)),
         boxShadow: [
           BoxShadow(
             color: Color(0x0A253E7A),
@@ -792,7 +802,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                           border: Border.all(
                             color: isFocused
                                 ? CampusStyle.accent
-                                : const Color(0xFFD9DFF0),
+                                : const Color(0xFFECD3CF),
                             width: isFocused ? 1.6 : 1.2,
                           ),
                         ),
@@ -846,7 +856,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         shape: BoxShape.circle,
                         gradient: canSend
                             ? const LinearGradient(
-                                colors: [Color(0xFF253E7A), Color(0xFF554490)],
+                                colors: [Color(0xFF782323), Color(0xFFA63A33)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               )
@@ -869,14 +879,17 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                                 height: 18,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : Icon(
                                 Icons.arrow_upward_rounded,
                                 size: 22,
-                                color: canSend ? Colors.white : const Color(0xFF94A3B8),
+                                color: canSend
+                                    ? Colors.white
+                                    : const Color(0xFF94A3B8),
                               ),
                         onPressed: canSend ? () => _sendMessage() : null,
                         padding: EdgeInsets.zero,
@@ -924,9 +937,7 @@ class _RawDataViewState extends State<_RawDataView> {
       decoration: BoxDecoration(
         color: const Color(0xFFF7F4FD),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: const Color(0xFFDADDF4),
-        ),
+        border: Border.all(color: const Color(0xFFF0D6D1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

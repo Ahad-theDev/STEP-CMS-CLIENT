@@ -73,7 +73,10 @@ class _MarkStaffAttendanceScreenState
         }
         if (item.checkOutAt != null) {
           final local = item.checkOutAt!.toLocal();
-          d.checkOutOverride = TimeOfDay(hour: local.hour, minute: local.minute);
+          d.checkOutOverride = TimeOfDay(
+            hour: local.hour,
+            minute: local.minute,
+          );
         }
         d.shortLeaveOverride = item.shortLeave ? true : null;
       }
@@ -97,7 +100,8 @@ class _MarkStaffAttendanceScreenState
   }
 
   Future<void> _pickDefaultTime({required bool isCheckIn}) async {
-    final initial = (isCheckIn ? _defaultCheckIn : _defaultCheckOut) ??
+    final initial =
+        (isCheckIn ? _defaultCheckIn : _defaultCheckOut) ??
         TimeOfDay(hour: isCheckIn ? 8 : 14, minute: 0);
     final picked = await showTimePicker(context: context, initialTime: initial);
     if (picked == null) return;
@@ -115,7 +119,8 @@ class _MarkStaffAttendanceScreenState
     required bool isCheckIn,
   }) async {
     final draft = _draftFor(item);
-    final initial = (isCheckIn
+    final initial =
+        (isCheckIn
             ? (draft.checkInOverride ?? _defaultCheckIn)
             : (draft.checkOutOverride ?? _defaultCheckOut)) ??
         TimeOfDay(hour: isCheckIn ? 8 : 14, minute: 0);
@@ -176,12 +181,16 @@ class _MarkStaffAttendanceScreenState
           ? null
           : (draft.checkOutOverride ?? _defaultCheckOut);
       if (checkInTod == null) {
-        _showSnack('Set a Check-In time for ${item.personName}.', isError: true);
+        _showSnack(
+          'Set a Check-In time for ${item.personName}.',
+          isError: true,
+        );
         return;
       }
       final checkInDt = combineLocalDateAndTime(_date, checkInTod);
-      final checkOutDt =
-          checkOutTod != null ? combineLocalDateAndTime(_date, checkOutTod) : null;
+      final checkOutDt = checkOutTod != null
+          ? combineLocalDateAndTime(_date, checkOutTod)
+          : null;
       if (checkOutDt != null && checkOutDt.isBefore(checkInDt)) {
         _showSnack(
           'Check-Out cannot be earlier than Check-In for ${item.personName}.',
@@ -257,8 +266,9 @@ class _MarkStaffAttendanceScreenState
             ? null
             : (draft.checkOutOverride ?? _defaultCheckOut);
         final inDt = combineLocalDateAndTime(_date, effectiveIn);
-        final outDt =
-            effectiveOut != null ? combineLocalDateAndTime(_date, effectiveOut) : null;
+        final outDt = effectiveOut != null
+            ? combineLocalDateAndTime(_date, effectiveOut)
+            : null;
         if (outDt != null && outDt.isBefore(inDt)) {
           _showSnack(
             'Check-Out cannot be earlier than Check-In for ${item.personName}.',
@@ -271,10 +281,8 @@ class _MarkStaffAttendanceScreenState
           BulkStaffAttendanceEntry(
             personType: item.personType,
             personId: item.personId,
-            checkInAt:
-                draft.checkInOverride != null ? inDt : null,
-            checkOutAt:
-                draft.checkOutOverride != null ? outDt : null,
+            checkInAt: draft.checkInOverride != null ? inDt : null,
+            checkOutAt: draft.checkOutOverride != null ? outDt : null,
             shortLeave: draft.shortLeaveOverride,
           ),
         );
@@ -291,8 +299,7 @@ class _MarkStaffAttendanceScreenState
       defaultCheckOutAt: _defaultCheckOut != null
           ? combineLocalDateAndTime(_date, _defaultCheckOut!)
           : null,
-      reason:
-          _reasonCtrl.text.trim().isEmpty ? null : _reasonCtrl.text.trim(),
+      reason: _reasonCtrl.text.trim().isEmpty ? null : _reasonCtrl.text.trim(),
       entries: entries,
     );
 
@@ -338,7 +345,7 @@ class _MarkStaffAttendanceScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Staff & Teacher Check-In / Out'),
-        backgroundColor: const Color(0xFFE4DDF3),
+        backgroundColor: const Color(0xFFF5DCD7),
         actions: [
           TextButton.icon(
             onPressed: () => Navigator.of(context).push(
@@ -380,8 +387,9 @@ class _MarkStaffAttendanceScreenState
                       ),
                       const SizedBox(height: 12),
                       FilledButton.icon(
-                        onPressed: () =>
-                            ref.invalidate(staffAttendanceRosterProvider(dateIso)),
+                        onPressed: () => ref.invalidate(
+                          staffAttendanceRosterProvider(dateIso),
+                        ),
                         icon: const Icon(Icons.refresh_rounded),
                         label: const Text('Retry'),
                       ),
@@ -393,10 +401,12 @@ class _MarkStaffAttendanceScreenState
                 final filtered = _applyFilters(roster);
                 final markedCount = roster.where((r) => r.isMarked).length;
                 final unmarkedCount = roster.length - markedCount;
-                final presentCount =
-                    roster.where((r) => r.isMarked && r.status == 'present').length;
-                final lateCount =
-                    roster.where((r) => r.isMarked && r.status == 'late').length;
+                final presentCount = roster
+                    .where((r) => r.isMarked && r.status == 'present')
+                    .length;
+                final lateCount = roster
+                    .where((r) => r.isMarked && r.status == 'late')
+                    .length;
 
                 return Column(
                   children: [
@@ -404,7 +414,9 @@ class _MarkStaffAttendanceScreenState
                       child: RefreshIndicator(
                         onRefresh: () async {
                           _drafts.clear();
-                          ref.invalidate(staffAttendanceRosterProvider(dateIso));
+                          ref.invalidate(
+                            staffAttendanceRosterProvider(dateIso),
+                          );
                         },
                         child: ListView(
                           padding: EdgeInsets.all(
@@ -459,7 +471,9 @@ class _MarkStaffAttendanceScreenState
                             if (filtered.isEmpty)
                               CampusCard(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 28),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 28,
+                                  ),
                                   child: Column(
                                     children: [
                                       const Icon(
@@ -535,8 +549,9 @@ class _MarkStaffAttendanceScreenState
                               ),
                               const SizedBox(width: 8),
                               FilledButton.icon(
-                                onPressed:
-                                    isBusy ? null : () => _submitBulk(roster),
+                                onPressed: isBusy
+                                    ? null
+                                    : () => _submitBulk(roster),
                                 icon: bulkState.isLoading
                                     ? const SizedBox(
                                         width: 16,
@@ -677,8 +692,9 @@ class _MarkStaffAttendanceScreenState
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               OutlinedButton.icon(
-                onPressed:
-                    isBusy ? null : () => _pickDefaultTime(isCheckIn: true),
+                onPressed: isBusy
+                    ? null
+                    : () => _pickDefaultTime(isCheckIn: true),
                 icon: const Icon(Icons.login_rounded, size: 18),
                 label: Text(
                   'Default In: ${_defaultCheckIn != null ? formatTimeOfDay12h(_defaultCheckIn!) : 'Not set'}',
@@ -729,8 +745,8 @@ class _MarkStaffAttendanceScreenState
                 onPressed: isBusy || filtered.isEmpty
                     ? null
                     : () => setState(() {
-                          _selectedKeys.addAll(filtered.map((e) => e.rosterKey));
-                        }),
+                        _selectedKeys.addAll(filtered.map((e) => e.rosterKey));
+                      }),
                 icon: const Icon(Icons.select_all_rounded, size: 18),
                 label: const Text('Select Visible'),
               ),
@@ -738,19 +754,20 @@ class _MarkStaffAttendanceScreenState
                 onPressed: isBusy || filtered.isEmpty
                     ? null
                     : () => setState(() {
-                          _selectedKeys.addAll(
-                            filtered
-                                .where((e) => !e.isMarked)
-                                .map((e) => e.rosterKey),
-                          );
-                        }),
+                        _selectedKeys.addAll(
+                          filtered
+                              .where((e) => !e.isMarked)
+                              .map((e) => e.rosterKey),
+                        );
+                      }),
                 icon: const Icon(Icons.playlist_add_check_rounded, size: 18),
                 label: const Text('Select Not Marked'),
               ),
               if (_selectedKeys.isNotEmpty)
                 TextButton.icon(
-                  onPressed:
-                      isBusy ? null : () => setState(_selectedKeys.clear),
+                  onPressed: isBusy
+                      ? null
+                      : () => setState(_selectedKeys.clear),
                   icon: const Icon(Icons.clear_all_rounded, size: 18),
                   label: const Text('Clear Selection'),
                 ),
@@ -783,9 +800,7 @@ class _MarkStaffAttendanceScreenState
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: selected
-              ? CampusStyle.primary
-              : const Color(0xFFE4DDF3),
+          color: selected ? CampusStyle.primary : const Color(0xFFF5DCD7),
           width: selected ? 1.5 : 1,
         ),
       ),
@@ -914,16 +929,16 @@ class _MarkStaffAttendanceScreenState
                             : () async {
                                 final updated =
                                     await showEditStaffAttendanceDialog(
-                                  context: context,
-                                  attendanceId: item.attendanceId!,
-                                  personName: item.personName,
-                                  personType: item.personType,
-                                  dateIso: dateIso,
-                                  initialStatus: item.status,
-                                  initialCheckIn: item.checkInAt,
-                                  initialCheckOut: item.checkOutAt,
-                                  initialShortLeave: item.shortLeave,
-                                );
+                                      context: context,
+                                      attendanceId: item.attendanceId!,
+                                      personName: item.personName,
+                                      personType: item.personType,
+                                      dateIso: dateIso,
+                                      initialStatus: item.status,
+                                      initialCheckIn: item.checkInAt,
+                                      initialCheckOut: item.checkOutAt,
+                                      initialShortLeave: item.shortLeave,
+                                    );
                                 if (updated != null && mounted) {
                                   _drafts.remove(item.rosterKey);
                                   _showSnack(
@@ -950,8 +965,8 @@ class _MarkStaffAttendanceScreenState
                     onSelected: isBusy
                         ? null
                         : (_) => setState(
-                              () => draft.mode = _RosterRowMode.checkInOut,
-                            ),
+                            () => draft.mode = _RosterRowMode.checkInOut,
+                          ),
                   ),
                   ChoiceChip(
                     label: const Text('Absent'),
@@ -959,17 +974,16 @@ class _MarkStaffAttendanceScreenState
                     onSelected: isBusy
                         ? null
                         : (_) => setState(
-                              () => draft.mode = _RosterRowMode.absent,
-                            ),
+                            () => draft.mode = _RosterRowMode.absent,
+                          ),
                   ),
                   ChoiceChip(
                     label: const Text('Leave'),
                     selected: draft.mode == _RosterRowMode.leave,
                     onSelected: isBusy
                         ? null
-                        : (_) => setState(
-                              () => draft.mode = _RosterRowMode.leave,
-                            ),
+                        : (_) =>
+                              setState(() => draft.mode = _RosterRowMode.leave),
                   ),
                   if (draft.mode == _RosterRowMode.checkInOut) ...[
                     OutlinedButton.icon(
@@ -996,8 +1010,8 @@ class _MarkStaffAttendanceScreenState
                       onSelected: isBusy
                           ? null
                           : (v) => setState(
-                                () => draft.shortLeaveOverride = v ? true : null,
-                              ),
+                              () => draft.shortLeaveOverride = v ? true : null,
+                            ),
                     ),
                   ],
                   FilledButton.tonalIcon(
