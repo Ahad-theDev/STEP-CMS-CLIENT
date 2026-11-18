@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/theme/campus_page.dart';
@@ -58,7 +59,7 @@ class _FeeReportScreenState extends ConsumerState<FeeReportScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to export PDF: $e'),
+          content: Text('Failed to export PDF: ${friendlyErrorMessage(e)}'),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -171,7 +172,7 @@ class _FeeReportScreenState extends ConsumerState<FeeReportScreen> {
                             );
                           },
                           loading: () => const LinearProgressIndicator(),
-                          error: (e, _) => Text('Error: $e'),
+                          error: (e, _) => Text('Error: ${friendlyErrorMessage(e)}'),
                         );
 
                         final statusDropdown =

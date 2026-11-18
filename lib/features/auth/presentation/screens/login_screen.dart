@@ -311,6 +311,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Made with love ❤️ by Avenor',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: CampusStyle.muted,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -704,7 +713,9 @@ class _FooterSection extends StatelessWidget {
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Help & Support - coming soon'),
+                content: Text(
+                  'Contact your school administration for account or sign-in assistance.',
+                ),
                 behavior: SnackBarBehavior.floating,
               ),
             );

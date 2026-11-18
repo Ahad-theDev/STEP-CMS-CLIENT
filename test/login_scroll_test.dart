@@ -22,6 +22,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(scroll.position.pixels, greaterThan(0));
+    final credit = find.text('Made with love ❤️ by Avenor');
+    await tester.ensureVisible(credit);
+    await tester.pumpAndSettle();
+    expect(credit.hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('touch scrolls login from the phone gutter', (tester) async {
@@ -35,5 +40,10 @@ void main() {
     await tester.dragFrom(const Offset(8, 360), const Offset(0, -220));
     await tester.pumpAndSettle();
     expect(scroll.position.pixels, greaterThan(0));
+    final credit = find.text('Made with love ❤️ by Avenor');
+    await tester.ensureVisible(credit);
+    await tester.pumpAndSettle();
+    expect(credit.hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

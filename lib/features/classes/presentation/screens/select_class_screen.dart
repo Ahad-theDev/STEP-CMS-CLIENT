@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/features/classes/application/all_classes_controller.dart';
@@ -37,7 +38,7 @@ class _SelectClassScreenState extends ConsumerState<SelectClassScreen> {
               child: classesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) =>
-                    Center(child: Text('Failed to load classes: $e')),
+                    Center(child: Text('Failed to load classes: ${friendlyErrorMessage(e)}')),
                 data: (classes) {
                   final filtered = _query.isEmpty
                       ? classes

@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/classes_list_controller.dart' show classPageSize;
@@ -23,12 +24,6 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
     await ref.read(allClassesControllerProvider.notifier).refresh();
   }
 
-  void _exportStub() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Export — coming soon')));
-  }
-
   @override
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(allClassesControllerProvider);
@@ -47,7 +42,7 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
         error: (e, _) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Text(
-            'Failed to load classes: $e',
+            'Failed to load classes: ${friendlyErrorMessage(e)}',
             style: const TextStyle(color: Colors.red),
           ),
         ),
@@ -91,11 +86,6 @@ class ClassSearchSectionState extends ConsumerState<ClassSearchSection> {
                       _page = 1;
                     }),
                   ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: _exportStub,
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Export'),
                 ),
                 IconButton(
                   onPressed: refresh,

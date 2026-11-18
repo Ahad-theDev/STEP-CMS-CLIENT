@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/theme/campus_page.dart';
@@ -69,7 +70,7 @@ class _MarksReportScreenState extends ConsumerState<MarksReportScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to export PDF: $e'),
+          content: Text('Failed to export PDF: ${friendlyErrorMessage(e)}'),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -101,7 +102,7 @@ class _MarksReportScreenState extends ConsumerState<MarksReportScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to export Report Card: $e'),
+          content: Text('Failed to export Report Card: ${friendlyErrorMessage(e)}'),
           backgroundColor: Colors.red.shade700,
         ),
       );

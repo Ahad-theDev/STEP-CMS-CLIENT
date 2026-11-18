@@ -1,3 +1,5 @@
+import 'package:cms/core/exceptions/api_exception.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:cms/features/exams/data/models/exam_model.dart';
 import 'package:cms/features/exams/data/models/exam_subject_model.dart';
@@ -6,14 +8,9 @@ import 'package:cms/features/exams/data/models/bulk_marks_save_request.dart';
 import 'package:cms/features/exams/data/models/exam_results_model.dart';
 import 'package:cms/features/exams/data/models/exam_correction_model.dart';
 
-class ExamException implements Exception {
-  final String message;
-  final int? statusCode;
-
-  ExamException(this.message, [this.statusCode]);
-
-  @override
-  String toString() => message;
+class ExamException extends ApiException {
+  ExamException(String message, [int? statusCode])
+      : super(message: message, statusCode: statusCode);
 }
 
 class ExamRepository {
@@ -41,11 +38,11 @@ class ExamRepository {
         }
       }
       throw ExamException(
-        msg ?? e.message ?? 'An unexpected network error occurred',
+        msg ?? friendlyErrorMessage(e),
         e.response?.statusCode,
       );
     }
-    throw ExamException(e.toString());
+    throw ExamException(friendlyErrorMessage(e));
   }
 
   /// 1. List exams (GET /exams)

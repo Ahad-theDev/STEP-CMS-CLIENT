@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/core/theme/campus_page.dart';
@@ -286,7 +287,7 @@ class _EnterMarksGridScreenState extends ConsumerState<EnterMarksGridScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save marks: $e'),
+            content: Text('Failed to save marks: ${friendlyErrorMessage(e)}'),
             backgroundColor: Colors.red,
           ),
         );

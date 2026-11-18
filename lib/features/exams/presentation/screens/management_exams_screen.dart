@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -185,7 +186,7 @@ class _ManagementExamsScreenState extends ConsumerState<ManagementExamsScreen> {
                             );
                           },
                           loading: () => const LinearProgressIndicator(),
-                          error: (e, _) => Text('Failed to load classes: $e'),
+                          error: (e, _) => Text('Failed to load classes: ${friendlyErrorMessage(e)}'),
                         );
 
                         final searchBox = TextField(

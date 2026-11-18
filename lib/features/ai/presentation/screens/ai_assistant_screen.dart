@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -351,7 +352,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Failed to load suggestions: $err',
+                      'Failed to load suggestions: ${friendlyErrorMessage(err)}',
                       style: const TextStyle(color: AppColors.error),
                     ),
                   ),

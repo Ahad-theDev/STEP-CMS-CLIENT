@@ -115,7 +115,7 @@ class _SelectStudentScreenState extends ConsumerState<SelectStudentScreen> {
 
     return studentsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Failed to load students: $e')),
+      error: (e, _) => Center(child: Text('Failed to load students: ${friendlyErrorMessage(e)}')),
       data: (students) {
         final filtered = _query.isEmpty
             ? students

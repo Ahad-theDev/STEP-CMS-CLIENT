@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:cms/core/storage/secure_storage_service.dart';
 import 'package:cms/core/utils/attendance_event_utils.dart';
 
@@ -51,18 +52,19 @@ class LocalTemplateRecord {
         teacherName: json['teacher_name'] as String? ?? '',
         deviceId: json['device_id'] as String,
         templateReference: json['template_reference'] as String,
-        templateVersion: json['template_version'] as String? ?? 'local-kiosk-v1',
+        templateVersion:
+            json['template_version'] as String? ?? 'local-kiosk-v1',
         enrolledAtIso: json['enrolled_at'] as String? ?? '',
       );
 
   Map<String, dynamic> toJson() => {
-        'teacher_id': teacherId,
-        'teacher_name': teacherName,
-        'device_id': deviceId,
-        'template_reference': templateReference,
-        'template_version': templateVersion,
-        'enrolled_at': enrolledAtIso,
-      };
+    'teacher_id': teacherId,
+    'teacher_name': teacherName,
+    'device_id': deviceId,
+    'template_reference': templateReference,
+    'template_version': templateVersion,
+    'enrolled_at': enrolledAtIso,
+  };
 }
 
 /// Vendor-agnostic abstraction for USB fingerprint scanner SDK integration.
@@ -101,11 +103,14 @@ class LocalWorkstationScannerAdapter implements BiometricScannerAdapter {
   @override
   Future<ScannerConnectionStatus> checkConnection() async {
     return const ScannerConnectionStatus(
-      isReady: true,
+      isReady: kDebugMode,
       isHardwareSdkAttached: false,
-      adapterName: 'Workstation Kiosk Adapter (SDK Ready)',
-      statusDetail:
-          'Local secure template matching active. Connect a Windows USB scanner SDK plugin for live sensor capture.',
+      adapterName: kDebugMode
+          ? 'Development Scanner Simulator'
+          : 'Scanner integration required',
+      statusDetail: kDebugMode
+          ? 'Simulated scans are enabled for development.'
+          : 'Use Staff & Teacher Check-In / Out until a hardware scanner integration is configured.',
     );
   }
 
@@ -140,8 +145,12 @@ class LocalWorkstationScannerAdapter implements BiometricScannerAdapter {
     required String teacherName,
     required String deviceId,
   }) async {
+    if (!kDebugMode) {
+      throw UnsupportedError('A hardware scanner integration is required.');
+    }
     final existing = await listLocalTemplates(deviceId);
-    final tplRef = 'tpl_${generateEventUuid().replaceAll('-', '').substring(0, 16)}';
+    final tplRef =
+        'tpl_${generateEventUuid().replaceAll('-', '').substring(0, 16)}';
     final record = LocalTemplateRecord(
       teacherId: teacherId,
       teacherName: teacherName,
@@ -176,6 +185,9 @@ class LocalWorkstationScannerAdapter implements BiometricScannerAdapter {
     required String deviceId,
     required String teacherId,
   }) async {
+    if (!kDebugMode) {
+      throw UnsupportedError('A hardware scanner integration is required.');
+    }
     final existing = await listLocalTemplates(deviceId);
     for (final item in existing) {
       if (item.teacherId == teacherId) {

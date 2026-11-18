@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/teachers_list_controller.dart';
@@ -34,7 +35,7 @@ class _SelectTeacherScreenState extends ConsumerState<SelectTeacherScreen> {
             Expanded(
               child: teachersAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Failed to load teachers: $e')),
+                error: (e, _) => Center(child: Text('Failed to load teachers: ${friendlyErrorMessage(e)}')),
                 data: (teachers) {
                   final filtered = _query.isEmpty
                       ? teachers

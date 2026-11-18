@@ -46,7 +46,7 @@ class PdfPreviewScreen extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Printing issue: $error. You can use the Save/Download icon to save the PDF file directly.',
+                'Printing is unavailable. Use the Save/Download icon to save the PDF file.',
               ),
               backgroundColor: Colors.orange.shade800,
             ),

@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/subjects_list_controller.dart';
@@ -34,7 +35,7 @@ class _SelectSubjectScreenState extends ConsumerState<SelectSubjectScreen> {
             Expanded(
               child: subjectsAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(child: Text('Failed to load subjects: $e')),
+                error: (e, _) => Center(child: Text('Failed to load subjects: ${friendlyErrorMessage(e)}')),
                 data: (subjects) {
                   final filtered = _query.isEmpty
                       ? subjects

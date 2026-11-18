@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/subjects_list_controller.dart';
@@ -17,12 +18,6 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
 
   Future<void> refresh() async {
     await ref.read(subjectsListControllerProvider.notifier).refresh();
-  }
-
-  void _exportStub() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Export — coming soon')));
   }
 
   @override
@@ -60,11 +55,6 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
                       onChanged: (v) => setState(() => _query = v),
                     ),
                   ),
-                  OutlinedButton.icon(
-                    onPressed: _exportStub,
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Export'),
-                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -76,7 +66,7 @@ class SubjectSearchSectionState extends ConsumerState<SubjectSearchSection> {
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
-                    'Failed to load subjects: $e',
+                    'Failed to load subjects: ${friendlyErrorMessage(e)}',
                     style: const TextStyle(color: Colors.red),
                   ),
                 ),

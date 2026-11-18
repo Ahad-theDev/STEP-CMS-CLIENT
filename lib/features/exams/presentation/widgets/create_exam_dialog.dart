@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/attendance/application/daily_attendance_repository_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -344,7 +345,7 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                             },
                             loading: () => const LinearProgressIndicator(),
                             error: (err, _) => Text(
-                              'Failed to load classes: $err',
+                              'Failed to load classes: ${friendlyErrorMessage(err)}',
                               style: const TextStyle(color: Colors.red),
                             ),
                           ),

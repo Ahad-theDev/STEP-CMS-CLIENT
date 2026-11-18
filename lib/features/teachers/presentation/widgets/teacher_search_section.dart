@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cms/features/subjects/application/subjects_list_controller.dart';
@@ -9,7 +10,8 @@ class TeacherSearchSection extends ConsumerStatefulWidget {
   const TeacherSearchSection({super.key});
 
   @override
-  ConsumerState<TeacherSearchSection> createState() => TeacherSearchSectionState();
+  ConsumerState<TeacherSearchSection> createState() =>
+      TeacherSearchSectionState();
 }
 
 class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
@@ -27,25 +29,23 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
 
   Future<void> refresh() async {
     await ref
-        .read(teacherSearchControllerProvider(
-          department: _department,
-          subjectId: _selectedSubject?.id,
-          page: _page,
-        ).notifier)
+        .read(
+          teacherSearchControllerProvider(
+            department: _department,
+            subjectId: _selectedSubject?.id,
+            page: _page,
+          ).notifier,
+        )
         .refresh();
   }
 
   void _applyDepartmentFilter() {
     setState(() {
-      _department =
-          _departmentController.text.trim().isEmpty ? null : _departmentController.text.trim();
+      _department = _departmentController.text.trim().isEmpty
+          ? null
+          : _departmentController.text.trim();
       _page = 1;
     });
-  }
-
-  void _exportStub() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Export — coming soon')));
   }
 
   @override
@@ -57,7 +57,10 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Search Teachers', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Search Teachers',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 12,
@@ -73,7 +76,10 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
                 ),
               ),
               subjectsAsync.when(
-                loading: () => const SizedBox(width: 200, child: LinearProgressIndicator()),
+                loading: () => const SizedBox(
+                  width: 200,
+                  child: LinearProgressIndicator(),
+                ),
                 error: (e, _) => const SizedBox.shrink(),
                 data: (subjects) => SizedBox(
                   width: 220,
@@ -81,8 +87,13 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
                     initialValue: _selectedSubject,
                     decoration: const InputDecoration(labelText: 'Subject'),
                     items: [
-                      const DropdownMenuItem<Subject?>(value: null, child: Text('All Subjects')),
-                      ...subjects.map((s) => DropdownMenuItem(value: s, child: Text(s.name))),
+                      const DropdownMenuItem<Subject?>(
+                        value: null,
+                        child: Text('All Subjects'),
+                      ),
+                      ...subjects.map(
+                        (s) => DropdownMenuItem(value: s, child: Text(s.name)),
+                      ),
                     ],
                     onChanged: (v) => setState(() {
                       _selectedSubject = v;
@@ -91,7 +102,10 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
                   ),
                 ),
               ),
-              ElevatedButton(onPressed: _applyDepartmentFilter, child: const Text('Apply')),
+              ElevatedButton(
+                onPressed: _applyDepartmentFilter,
+                child: const Text('Apply'),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -102,11 +116,13 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
   }
 
   Widget _buildResultsCard(BuildContext context) {
-    final teachersAsync = ref.watch(teacherSearchControllerProvider(
-      department: _department,
-      subjectId: _selectedSubject?.id,
-      page: _page,
-    ));
+    final teachersAsync = ref.watch(
+      teacherSearchControllerProvider(
+        department: _department,
+        subjectId: _selectedSubject?.id,
+        page: _page,
+      ),
+    );
 
     return Card(
       elevation: 1,
@@ -120,11 +136,12 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
               runSpacing: 8,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text('All Teachers',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  'All Teachers',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 SizedBox(
                   width: 220,
                   child: TextField(
@@ -136,11 +153,6 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
                     onChanged: (v) => setState(() => _query = v),
                   ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: _exportStub,
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Export'),
-                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -151,7 +163,10 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text('Failed to load teachers: $e', style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Failed to load teachers: ${friendlyErrorMessage(e)}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
               data: (teachers) => _buildTableAndPagination(teachers),
             ),
@@ -164,7 +179,11 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
   Widget _buildTableAndPagination(List<Teacher> teachers) {
     final filtered = _query.isEmpty
         ? teachers
-        : teachers.where((t) => t.fullName.toLowerCase().contains(_query.toLowerCase())).toList();
+        : teachers
+              .where(
+                (t) => t.fullName.toLowerCase().contains(_query.toLowerCase()),
+              )
+              .toList();
 
     if (teachers.isEmpty) {
       return const Padding(
@@ -186,15 +205,23 @@ class TeacherSearchSectionState extends ConsumerState<TeacherSearchSection> {
               DataColumn(label: Text('Status')),
             ],
             rows: filtered
-                .map((t) => DataRow(cells: [
+                .map(
+                  (t) => DataRow(
+                    cells: [
                       DataCell(Text(t.fullName)),
                       DataCell(Text(t.department ?? '-')),
                       DataCell(Text(t.qualification ?? '-')),
-                      DataCell(Text(
-                        t.isActive ? 'Active' : 'Inactive',
-                        style: TextStyle(color: t.isActive ? Colors.green : Colors.grey),
-                      )),
-                    ]))
+                      DataCell(
+                        Text(
+                          t.isActive ? 'Active' : 'Inactive',
+                          style: TextStyle(
+                            color: t.isActive ? Colors.green : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         ),

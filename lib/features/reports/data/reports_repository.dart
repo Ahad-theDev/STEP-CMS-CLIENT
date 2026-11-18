@@ -1,17 +1,14 @@
+import 'package:cms/core/exceptions/api_exception.dart';
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:cms/features/reports/data/models/daily_attendance_report_model.dart';
 import 'package:cms/features/reports/data/models/lecture_attendance_report_model.dart';
 import 'package:cms/features/reports/data/models/fee_report_model.dart';
 import 'package:cms/features/reports/data/models/marks_report_model.dart';
 
-class ReportException implements Exception {
-  final String message;
-  final int? statusCode;
-
-  ReportException(this.message, [this.statusCode]);
-
-  @override
-  String toString() => message;
+class ReportException extends ApiException {
+  ReportException(String message, [int? statusCode])
+      : super(message: message, statusCode: statusCode);
 }
 
 class ReportsRepository {
@@ -39,11 +36,11 @@ class ReportsRepository {
         }
       }
       throw ReportException(
-        msg ?? e.message ?? 'An unexpected network error occurred',
+        msg ?? friendlyErrorMessage(e),
         e.response?.statusCode,
       );
     }
-    throw ReportException(e.toString());
+    throw ReportException(friendlyErrorMessage(e));
   }
 
   /// 1. Daily Attendance Report (GET /reports/attendance/daily)

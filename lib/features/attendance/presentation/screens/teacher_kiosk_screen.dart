@@ -7,6 +7,7 @@ import 'package:cms/features/teachers/application/teachers_list_controller.dart'
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/staff_attendance_list_controller.dart';
 import '../../application/teacher_biometric_attendance_providers.dart';
@@ -47,8 +48,9 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
   Future<void> _initKioskEnvironment() async {
     final scanner = ref.read(biometricScannerAdapterProvider);
     final status = await scanner.checkConnection();
-    final savedDeviceId =
-        await ref.read(secureStorageProvider).getActiveKioskDeviceId();
+    final savedDeviceId = await ref
+        .read(secureStorageProvider)
+        .getActiveKioskDeviceId();
     if (!mounted) return;
     setState(() => _scannerStatus = status);
 
@@ -330,7 +332,8 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
             builder: (context, constraints) {
               final narrow = constraints.maxWidth < 600;
               final dropdown = DropdownButtonFormField<AttendanceDevice>(
-                initialValue: activeDevices.any((d) => d.id == _selectedDevice?.id)
+                initialValue:
+                    activeDevices.any((d) => d.id == _selectedDevice?.id)
                     ? activeDevices.firstWhere(
                         (d) => d.id == _selectedDevice?.id,
                       )
@@ -362,7 +365,9 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
                 children: [
                   Chip(
                     avatar: Icon(
-                      isPaired ? Icons.lock_rounded : Icons.warning_amber_rounded,
+                      isPaired
+                          ? Icons.lock_rounded
+                          : Icons.warning_amber_rounded,
                       size: 16,
                       color: Colors.white,
                     ),
@@ -448,12 +453,12 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
             onTap: _submitting
                 ? null
                 : () => setState(() {
-                      _eventType = 'check_in';
-                      _pendingRetryRequest = null;
-                      _errorMessage = null;
-                      _lastResult = null;
-                      _showUnknownFingerprint = false;
-                    }),
+                    _eventType = 'check_in';
+                    _pendingRetryRequest = null;
+                    _errorMessage = null;
+                    _lastResult = null;
+                    _showUnknownFingerprint = false;
+                  }),
           ),
         ),
         const SizedBox(width: 12),
@@ -467,12 +472,12 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
             onTap: _submitting
                 ? null
                 : () => setState(() {
-                      _eventType = 'check_out';
-                      _pendingRetryRequest = null;
-                      _errorMessage = null;
-                      _lastResult = null;
-                      _showUnknownFingerprint = false;
-                    }),
+                    _eventType = 'check_out';
+                    _pendingRetryRequest = null;
+                    _errorMessage = null;
+                    _lastResult = null;
+                    _showUnknownFingerprint = false;
+                  }),
           ),
         ),
       ],
@@ -499,9 +504,7 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
           Row(
             children: [
               Icon(
-                res.duplicate
-                    ? Icons.info_rounded
-                    : Icons.check_circle_rounded,
+                res.duplicate ? Icons.info_rounded : Icons.check_circle_rounded,
                 color: border,
                 size: 28,
               ),
@@ -525,7 +528,10 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          Text(res.message, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            res.message,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 6),
           Text(
             'Date: ${res.attendanceDate} • Check-In: ${formatLocalTime(res.checkInAt)} • Check-Out: ${formatLocalTime(res.checkOutAt)}',
@@ -546,7 +552,11 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.fingerprint_rounded, color: Color(0xFFEA580C), size: 30),
+          const Icon(
+            Icons.fingerprint_rounded,
+            color: Color(0xFFEA580C),
+            size: 30,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -620,11 +630,22 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
   }
 
   Widget _buildScannerInteractionPanel(List<Teacher> teachers) {
+    if (!kDebugMode) {
+      return const Padding(
+        padding: EdgeInsets.all(18),
+        child: Text(
+          'Fingerprint attendance requires a hardware scanner integration. '
+          'Use Staff & Teacher Check-In / Out to record verified attendance.',
+        ),
+      );
+    }
+
     final activeTeachers = teachers.where((t) => t.isActive).toList()
       ..sort((a, b) => a.fullName.compareTo(b.fullName));
     final enrolledIds = _localTemplates.map((e) => e.teacherId).toSet();
-    final enrolledTeachers =
-        activeTeachers.where((t) => enrolledIds.contains(t.id)).toList();
+    final enrolledTeachers = activeTeachers
+        .where((t) => enrolledIds.contains(t.id))
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -681,8 +702,9 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
               runSpacing: 10,
               children: enrolledTeachers.map((teacher) {
                 return FilledButton.tonalIcon(
-                  onPressed:
-                      _submitting ? null : () => _handleScanForTeacher(teacher),
+                  onPressed: _submitting
+                      ? null
+                      : () => _handleScanForTeacher(teacher),
                   icon: const Icon(Icons.fingerprint_rounded),
                   label: Text('Scan ${teacher.fullName}'),
                 );
@@ -726,11 +748,7 @@ class _TeacherKioskScreenState extends ConsumerState<TeacherKioskScreen> {
               if (narrow) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    selector,
-                    const SizedBox(height: 10),
-                    btn,
-                  ],
+                  children: [selector, const SizedBox(height: 10), btn],
                 );
               }
               return Row(

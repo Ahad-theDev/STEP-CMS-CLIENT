@@ -44,12 +44,6 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
         .refresh();
   }
 
-  void _exportStub() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Export — coming soon')));
-  }
-
   @override
   Widget build(BuildContext context) {
     final classesAsync = ref.watch(allClassesControllerProvider);
@@ -147,11 +141,6 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
                     onChanged: (v) => setState(() => _query = v),
                   ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: _exportStub,
-                  icon: const Icon(Icons.download_outlined, size: 18),
-                  label: const Text('Export'),
-                ),
                 IconButton(
                   onPressed: refreshIfClassSelected,
                   icon: const Icon(Icons.refresh, size: 20),
@@ -168,7 +157,7 @@ class StudentSearchSectionState extends ConsumerState<StudentSearchSection> {
               error: (e, _) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Text(
-                  'Failed to load students: $e',
+                  'Failed to load students: ${friendlyErrorMessage(e)}',
                   style: const TextStyle(color: Colors.red),
                 ),
               ),

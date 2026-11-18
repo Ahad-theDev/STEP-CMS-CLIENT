@@ -2,7 +2,7 @@
 ///
 /// This file demonstrates various ways to use the AppDialog component.
 /// Import this in your screens to see usage patterns.
-// ignore_for_file: dangling_library_doc_comments, avoid_print
+// ignore_for_file: dangling_library_doc_comments
 
 import 'package:flutter/material.dart';
 import 'app_dialog.dart';
@@ -16,7 +16,6 @@ Future<void> showErrorExample(BuildContext context) async {
     actionLabel: 'OK',
     onActionPressed: () {
       // Handle OK action
-      print('Error acknowledged');
     },
   );
 }
@@ -34,26 +33,22 @@ Future<void> showInfoExample(BuildContext context) async {
 
 /// Example: Confirmation dialog (e.g., delete confirmation)
 Future<void> showDeleteConfirmationExample(BuildContext context) async {
-  final confirmed = await AppDialog.showConfirmation(
+  await AppDialog.showConfirmation(
     context: context,
     title: 'Delete User',
-    message: 'Are you sure you want to delete this user? This action cannot be undone.',
+    message:
+        'Are you sure you want to delete this user? This action cannot be undone.',
     confirmLabel: 'Delete',
     cancelLabel: 'Cancel',
     isDestructive: true,
     onConfirm: () {
       // Handle delete action
-      print('User deleted');
     },
     onCancel: () {
       // Handle cancel action
-      print('Deletion cancelled');
     },
   );
 
-  if (confirmed == true) {
-    print('User confirmed deletion');
-  }
 }
 
 /// Example: Custom dialog with form content
@@ -96,7 +91,7 @@ Future<void> showCustomFormDialogExample(BuildContext context) async {
           // Handle save with form data
           final name = nameController.text;
           final email = emailController.text;
-          print('Saving: $name, $email');
+
           Navigator.of(context).pop({'name': name, 'email': email});
         },
       ),

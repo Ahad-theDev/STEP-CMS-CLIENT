@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/staff_list_controller.dart';
@@ -18,11 +19,6 @@ class StaffSearchSectionState extends ConsumerState<StaffSearchSection> {
     await ref.read(staffListControllerProvider(page: _page).notifier).refresh();
   }
 
-  void _exportStub() {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Export — coming soon')));
-  }
-
   @override
   Widget build(BuildContext context) {
     final staffAsync = ref.watch(staffListControllerProvider(page: _page));
@@ -41,11 +37,12 @@ class StaffSearchSectionState extends ConsumerState<StaffSearchSection> {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text('All Staff',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'All Staff',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   SizedBox(
                     width: 220,
                     child: TextField(
@@ -57,11 +54,6 @@ class StaffSearchSectionState extends ConsumerState<StaffSearchSection> {
                       onChanged: (v) => setState(() => _query = v),
                     ),
                   ),
-                  OutlinedButton.icon(
-                    onPressed: _exportStub,
-                    icon: const Icon(Icons.download_outlined, size: 18),
-                    label: const Text('Export'),
-                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -72,7 +64,10 @@ class StaffSearchSectionState extends ConsumerState<StaffSearchSection> {
                 ),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Text('Failed to load staff: $e', style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    'Failed to load staff: ${friendlyErrorMessage(e)}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
                 data: (staffList) => _buildTableAndPagination(staffList),
               ),
@@ -112,17 +107,29 @@ class StaffSearchSectionState extends ConsumerState<StaffSearchSection> {
               DataColumn(label: Text('Status')),
             ],
             rows: filtered
-                .map((s) => DataRow(cells: [
+                .map(
+                  (s) => DataRow(
+                    cells: [
                       DataCell(Text(s.fullName)),
                       DataCell(Text(s.designation ?? '-')),
-                      DataCell(Text(s.joinDate == null
-                          ? '-'
-                          : '${s.joinDate!.year}-${s.joinDate!.month.toString().padLeft(2, '0')}-${s.joinDate!.day.toString().padLeft(2, '0')}')),
-                      DataCell(Text(
-                        s.isActive ? 'Active' : 'Inactive',
-                        style: TextStyle(color: s.isActive ? Colors.green : Colors.grey),
-                      )),
-                    ]))
+                      DataCell(
+                        Text(
+                          s.joinDate == null
+                              ? '-'
+                              : '${s.joinDate!.year}-${s.joinDate!.month.toString().padLeft(2, '0')}-${s.joinDate!.day.toString().padLeft(2, '0')}',
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          s.isActive ? 'Active' : 'Inactive',
+                          style: TextStyle(
+                            color: s.isActive ? Colors.green : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         ),

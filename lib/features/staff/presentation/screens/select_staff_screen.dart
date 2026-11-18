@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/core/theme/campus_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +38,7 @@ class _SelectStaffScreenState extends ConsumerState<SelectStaffScreen> {
               child: staffAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) =>
-                    Center(child: Text('Failed to load staff: $e')),
+                    Center(child: Text('Failed to load staff: ${friendlyErrorMessage(e)}')),
                 data: (staffList) {
                   final filtered = _query.isEmpty
                       ? staffList

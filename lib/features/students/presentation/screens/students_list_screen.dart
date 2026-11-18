@@ -1,3 +1,4 @@
+import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/core/theme/campus_page.dart';
 import 'package:cms/features/students/application/students_list_controller.dart';
 import 'package:cms/features/students/presentation/screens/add_student_screen.dart';
@@ -38,7 +39,7 @@ class StudentsListScreen extends ConsumerWidget {
             ),
           );
         },
-        error: (e, _) => Center(child: Text("Failed to load Students: $e")),
+        error: (e, _) => Center(child: Text("Failed to load Students: ${friendlyErrorMessage(e)}")),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton(

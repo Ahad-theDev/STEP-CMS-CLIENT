@@ -4,6 +4,7 @@ import 'package:cms/core/utils/error_utils.dart';
 import 'package:cms/features/teachers/application/teachers_list_controller.dart';
 import 'package:cms/features/teachers/data/models/teacher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../application/teacher_biometric_attendance_providers.dart';
@@ -28,7 +29,9 @@ class _TeacherEnrollmentScreenState
     if (!_selectedDevice!.isActive) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Selected device is disabled. Enable it before enrolling.'),
+          content: Text(
+            'Selected device is disabled. Enable it before enrolling.',
+          ),
         ),
       );
       return;
@@ -79,7 +82,10 @@ class _TeacherEnrollmentScreenState
     }
   }
 
-  Future<void> _revokeEnrollment(FingerprintEnrollment item, String deviceName) async {
+  Future<void> _revokeEnrollment(
+    FingerprintEnrollment item,
+    String deviceName,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -209,8 +215,9 @@ class _TeacherEnrollmentScreenState
                     style: const TextStyle(color: Colors.red),
                   ),
                   data: (devices) {
-                    final activeDevices =
-                        devices.where((d) => d.isActive).toList();
+                    final activeDevices = devices
+                        .where((d) => d.isActive)
+                        .toList();
                     if (_selectedDevice == null && activeDevices.length == 1) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (mounted && _selectedDevice == null) {
@@ -219,9 +226,8 @@ class _TeacherEnrollmentScreenState
                       });
                     }
                     return DropdownButtonFormField<AttendanceDevice>(
-                      initialValue: activeDevices.any(
-                        (d) => d.id == _selectedDevice?.id,
-                      )
+                      initialValue:
+                          activeDevices.any((d) => d.id == _selectedDevice?.id)
                           ? activeDevices.firstWhere(
                               (d) => d.id == _selectedDevice?.id,
                             )
@@ -270,7 +276,9 @@ class _TeacherEnrollmentScreenState
             SizedBox(
               height: 48,
               child: FilledButton.icon(
-                onPressed: (_isBusy ||
+                onPressed:
+                    (!kDebugMode ||
+                        _isBusy ||
                         _selectedTeacher == null ||
                         _selectedDevice == null)
                     ? null
@@ -292,6 +300,13 @@ class _TeacherEnrollmentScreenState
                 ),
               ),
             ),
+            if (!kDebugMode)
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Text(
+                  'Fingerprint enrollment requires a hardware scanner integration.',
+                ),
+              ),
             const SizedBox(height: 24),
             if (_selectedTeacher != null) ...[
               Text(
