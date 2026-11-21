@@ -27,8 +27,8 @@ class CreateExamDialog extends ConsumerStatefulWidget {
     String? preselectedClassId,
     String? preselectedClassName,
     bool isTeacherMode = false,
-  }) {
-    return showDialog<Exam>(
+  }) async {
+    final created = await showDialog<Exam>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => CreateExamDialog(
@@ -37,6 +37,36 @@ class CreateExamDialog extends ConsumerStatefulWidget {
         isTeacherMode: isTeacherMode,
       ),
     );
+    if (created == null || !context.mounted) return created;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('Exam "${created.title}" created successfully!'),
+        backgroundColor: Colors.green.shade700,
+        duration: const Duration(seconds: 4),
+        persist: false,
+        showCloseIcon: true,
+        closeIconColor: Colors.white,
+        action: SnackBarAction(
+          label: 'Configure Subjects',
+          textColor: Colors.white,
+          onPressed: () {
+            if (!context.mounted) return;
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ExamSubjectsScreen(
+                  examId: created.id,
+                  examTitle: created.title,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    return created;
   }
 
   @override
@@ -130,28 +160,6 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
 
       if (!mounted) return;
       Navigator.of(context).pop(created);
-
-      // Offer to configure subjects immediately
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Exam "${created.title}" created successfully!'),
-          backgroundColor: Colors.green.shade700,
-          action: SnackBarAction(
-            label: 'Configure Subjects',
-            textColor: Colors.white,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ExamSubjectsScreen(
-                    examId: created.id,
-                    examTitle: created.title,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      );
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -369,6 +377,7 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
 
                         // Exam Type Dropdown
                         DropdownButtonFormField<ExamType>(
+                          isExpanded: true,
                           initialValue: _selectedType,
                           decoration: const InputDecoration(
                             labelText: 'Exam Type *',
@@ -386,7 +395,10 @@ class _CreateExamDialogState extends ConsumerState<CreateExamDialog> {
                             ),
                             DropdownMenuItem(
                               value: ExamType.regular,
-                              child: Text('Regular Assessment / Test'),
+                              child: Text(
+                                'Regular Assessment / Test',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                           onChanged: (val) {
