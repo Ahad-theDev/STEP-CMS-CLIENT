@@ -889,6 +889,12 @@ class ReportPdfService {
     );
     final grade = calculateGrade(studentResult.percentage);
     final isPassed = studentResult.percentage >= 33.0;
+    final sessionSubtitle =
+        academicYear != null && academicYear.trim().isNotEmpty
+            ? (academicYear.trim().toLowerCase().startsWith('session')
+                ? academicYear.trim()
+                : 'Session ${academicYear.trim()}')
+            : 'Session 2026-2027';
 
     pdf.addPage(
       pw.MultiPage(
@@ -896,8 +902,8 @@ class ReportPdfService {
         margin: const pw.EdgeInsets.all(32),
         header: (ctx) => _buildHeader(
           crest: crest,
-          title: 'STUDENT ACADEMIC REPORT CARD',
-          subtitle: 'Official Performance Transcript & Marksheet',
+          title: 'Student Report Card',
+          subtitle: sessionSubtitle,
           scopeDescription:
               'Student: ${studentResult.studentName} (${studentResult.rollNumber})',
         ),
